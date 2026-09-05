@@ -1,0 +1,1741 @@
+{
+    "status_code": "200",
+    "status": "SUCCESS",
+    "message": "",
+    "data": {
+        "number": null,
+        "fetch_by": null,
+        "mobile": "6001263561",
+        "name": "KOUSHIK DEKA",
+        "credit_score": "746",
+        "credit_report": {
+            "InquiryResponseHeader": {
+                "ClientID": "007FP18210",
+                "CustRefField": "REF16271",
+                "ReportOrderNO": "2893396847",
+                "ProductCode": [
+                    "IDCR"
+                ],
+                "SuccessCode": "1",
+                "Date": "2026-08-29",
+                "Time": "14:02:29"
+            },
+            "InquiryRequestInfo": {
+                "InquiryPurpose": "00",
+                "TransactionAmount": "0",
+                "FirstName": "KOUSHIK DEKA",
+                "InquiryAddresses": [
+                    {
+                        "seq": "1",
+                        "AddressType": [
+                            "H"
+                        ],
+                        "AddressLine1": "Near Paradise School",
+                        "City": "Varanasi",
+                        "State": "UP",
+                        "Postal": "221005"
+                    }
+                ],
+                "InquiryPhones": [
+                    {
+                        "seq": "1",
+                        "PhoneType": [
+                            "M"
+                        ],
+                        "Number": "6001263561"
+                    }
+                ],
+                "IDDetails": [
+                    {
+                        "seq": "1",
+                        "IDType": "T",
+                        "IDValue": "HOXPD0197F"
+                    }
+                ],
+                "DOB": "2026-08-29",
+                "Gender": "M"
+            },
+            "Score": [
+                {
+                    "Type": "ERS",
+                    "Version": "4.0"
+                }
+            ],
+            "CCRResponse": {
+                "Status": "1",
+                "CIRReportDataLst": [
+                    {
+                        "InquiryResponseHeader": {
+                            "CustomerCode": "TSPK",
+                            "CustRefField": "REF16271",
+                            "ReportOrderNO": "2893396847",
+                            "ProductCode": [
+                                "IDCR"
+                            ],
+                            "SuccessCode": "1",
+                            "Date": "2026-08-29",
+                            "Time": "14:02:29",
+                            "HitCode": "10",
+                            "CustomerName": "TSPK"
+                        },
+                        "InquiryRequestInfo": {
+                            "InquiryPurpose": "Other",
+                            "TransactionAmount": "0",
+                            "FirstName": "KOUSHIK DEKA",
+                            "InquiryAddresses": [
+                                {
+                                    "seq": "1",
+                                    "AddressType": [
+                                        "H"
+                                    ],
+                                    "AddressLine1": "Near Paradise School",
+                                    "City": "Varanasi",
+                                    "State": "UP",
+                                    "Postal": "221005"
+                                }
+                            ],
+                            "InquiryPhones": [
+                                {
+                                    "seq": "1",
+                                    "PhoneType": [
+                                        "M"
+                                    ],
+                                    "Number": "6001263561"
+                                }
+                            ],
+                            "IDDetails": [
+                                {
+                                    "seq": "1",
+                                    "IDType": "T",
+                                    "IDValue": "HOXPD0197F"
+                                }
+                            ],
+                            "DOB": "2026-08-29",
+                            "Gender": "M"
+                        },
+                        "Score": [
+                            {
+                                "Type": "ERS",
+                                "Version": "4.0"
+                            }
+                        ],
+                        "CIRReportData": {
+                            "IDAndContactInfo": {
+                                "PersonalInfo": {
+                                    "Name": {
+                                        "FullName": "KOUSHIK DEKA ",
+                                        "FirstName": "KOUSHIK ",
+                                        "MiddleName": "DEKA "
+                                    },
+                                    " AliasName": [],
+                                    "DateOfBirth": "2004-01-15",
+                                    "Gender": "Male",
+                                    "Age": {
+                                        "Age": "22"
+                                    },
+                                    "PlaceOfBirthInfo": []
+                                },
+                                "IdentityInfo": {
+                                    "PANId": [
+                                        {
+                                            "seq": "1",
+                                            "ReportedDate": "2026-08-09",
+                                            "IdNumber": "HOXPD0197F"
+                                        }
+                                    ],
+                                    "OtherId": [
+                                        {
+                                            "seq": "1",
+                                            "ReportedDate": "2026-04-18",
+                                            "IdNumber": "30090966050090"
+                                        }
+                                    ]
+                                },
+                                "AddressInfo": [
+                                    {
+                                        "Seq": "1",
+                                        "ReportedDate": "2026-07-16",
+                                        "Address": "S/O RANJIT KUMAR DEKA  NEAR MANDIR MARIGAON KHULAGAON MAYONG KALBARI ASSAM INDIA 782411",
+                                        "State": "AS",
+                                        "Postal": "782411",
+                                        "Type": "Permanent"
+                                    },
+                                    {
+                                        "Seq": "2",
+                                        "ReportedDate": "2026-07-16",
+                                        "Address": "81 A KHULAGAON KHULAGAON NAGAON MARIGAON ASSAM 782411",
+                                        "State": "AS",
+                                        "Postal": "782411",
+                                        "Type": "Owns,Permanent"
+                                    },
+                                    {
+                                        "Seq": "3",
+                                        "ReportedDate": "2024-12-15",
+                                        "Address": "81 A KHULAGAON KHULAGAON NAGAON MARIGAON ASSAM 782411",
+                                        "State": "AS",
+                                        "Postal": "782411",
+                                        "Type": "Owns,Permanent"
+                                    },
+                                    {
+                                        "Seq": "4",
+                                        "ReportedDate": "2024-10-06",
+                                        "Address": "81 A A NAGAON ASSAM 782411",
+                                        "State": "AS",
+                                        "Postal": "782411",
+                                        "Type": "Owns,Permanent"
+                                    },
+                                    {
+                                        "Seq": "5",
+                                        "ReportedDate": "2023-09-30",
+                                        "Address": "S/O RANJIT KUMAR DEKA  NEAR MANDIR KHULAGAON MAYONG MARIGAON KALBARI ASSAM INDIA 782411",
+                                        "State": "AS",
+                                        "Postal": "782411",
+                                        "Type": "Permanent"
+                                    }
+                                ],
+                                "PhoneInfo": [
+                                    {
+                                        "seq": "1",
+                                        "typeCode": "H",
+                                        "ReportedDate": "2026-08-09",
+                                        "Number": "7575952432"
+                                    },
+                                    {
+                                        "seq": "2",
+                                        "typeCode": "M",
+                                        "ReportedDate": "2026-07-16",
+                                        "Number": "6001263561"
+                                    },
+                                    {
+                                        "seq": "3",
+                                        "typeCode": "M",
+                                        "ReportedDate": "2026-08-09",
+                                        "Number": "7575952432"
+                                    }
+                                ],
+                                "EmailAddressInfo": [
+                                    {
+                                        "seq": "1",
+                                        "ReportedDate": "2026-07-16",
+                                        "EmailAddress": "KOU7445K@GMAIL.COM"
+                                    }
+                                ]
+                            },
+                            "RetailAccountDetails": [
+                                {
+                                    "seq": "1",
+                                    "AccountNumber": "MKV47996A65ID275040059",
+                                    "Institution": "Mpokket Financial Services Privat Limited",
+                                    "AccountType": "Short Term Personal Loan",
+                                    "OwnershipType": "Individual",
+                                    "Balance": "1000",
+                                    "PastDueAmount": "447",
+                                    "Open": "Yes",
+                                    "SanctionAmount": "1000",
+                                    "DateReported": "2026-08-16",
+                                    "DateOpened": "2026-07-16",
+                                    "RepaymentTenure": "6",
+                                    "TermFrequency": "Monthly",
+                                    "AccountStatus": "1-29 days past due",
+                                    "source": "INDIVIDUAL",
+                                    "History48Months": [
+                                        {
+                                            "key": "08-26",
+                                            "PaymentStatus": "01+",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "07-26",
+                                            "PaymentStatus": "NEW",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "seq": "2",
+                                    "AccountNumber": "MKVC7D06AD3ID274599791",
+                                    "Institution": "Mpokket Financial Services Privat Limited",
+                                    "AccountType": "Short Term Personal Loan",
+                                    "OwnershipType": "Individual",
+                                    "Balance": "600",
+                                    "PastDueAmount": "0",
+                                    "LastPayment": "427",
+                                    "Open": "Yes",
+                                    "SanctionAmount": "1000",
+                                    "LastPaymentDate": "2026-08-14",
+                                    "DateReported": "2026-08-16",
+                                    "DateOpened": "2026-07-14",
+                                    "RepaymentTenure": "6",
+                                    "TermFrequency": "Monthly",
+                                    "AccountStatus": "Current Account",
+                                    "source": "INDIVIDUAL",
+                                    "History48Months": [
+                                        {
+                                            "key": "08-26",
+                                            "PaymentStatus": "000",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "07-26",
+                                            "PaymentStatus": "NEW",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "seq": "3",
+                                    "AccountNumber": "79344361",
+                                    "Institution": "HDB Financial Services Pvt. Ltd",
+                                    "AccountType": "Auto Loan (Personal)",
+                                    "OwnershipType": "Joint Account",
+                                    "Balance": "383154",
+                                    "PastDueAmount": "0",
+                                    "LastPayment": "7237",
+                                    "Open": "Yes",
+                                    "SanctionAmount": "393566",
+                                    "LastPaymentDate": "2026-08-04",
+                                    "DateReported": "2026-08-09",
+                                    "DateOpened": "2026-03-26",
+                                    "RepaymentTenure": "84",
+                                    "InstallmentAmount": "7237",
+                                    "TermFrequency": "Monthly",
+                                    "AccountStatus": "Current Account",
+                                    "source": "INDIVIDUAL",
+                                    "History48Months": [
+                                        {
+                                            "key": "08-26",
+                                            "PaymentStatus": "000",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "07-26",
+                                            "PaymentStatus": "000",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "06-26",
+                                            "PaymentStatus": "000",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "05-26",
+                                            "PaymentStatus": "000",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "04-26",
+                                            "PaymentStatus": "000",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "03-26",
+                                            "PaymentStatus": "NEW",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "seq": "4",
+                                    "AccountNumber": "MKV6EBB6A4AID273189702",
+                                    "Institution": "Mpokket Financial Services Privat Limited",
+                                    "AccountType": "Short Term Personal Loan",
+                                    "OwnershipType": "Individual",
+                                    "Balance": "1200",
+                                    "PastDueAmount": "0",
+                                    "LastPayment": "855",
+                                    "Open": "Yes",
+                                    "SanctionAmount": "2000",
+                                    "LastPaymentDate": "2026-08-06",
+                                    "DateReported": "2026-08-09",
+                                    "DateOpened": "2026-07-07",
+                                    "RepaymentTenure": "6",
+                                    "TermFrequency": "Monthly",
+                                    "AccountStatus": "Current Account",
+                                    "source": "INDIVIDUAL",
+                                    "History48Months": [
+                                        {
+                                            "key": "08-26",
+                                            "PaymentStatus": "000",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "07-26",
+                                            "PaymentStatus": "NEW",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "seq": "5",
+                                    "AccountNumber": "MKE80176803ID216727494",
+                                    "Institution": "Mpokket Financial Services Privat Limited",
+                                    "AccountType": "Short Term Personal Loan",
+                                    "OwnershipType": "Individual",
+                                    "Balance": "2760",
+                                    "PastDueAmount": "0",
+                                    "LastPayment": "2839",
+                                    "Open": "Yes",
+                                    "SanctionAmount": "15000",
+                                    "LastPaymentDate": "2026-07-27",
+                                    "DateReported": "2026-07-31",
+                                    "DateOpened": "2025-10-04",
+                                    "RepaymentTenure": "12",
+                                    "InstallmentAmount": "1425",
+                                    "TermFrequency": "Monthly",
+                                    "AccountStatus": "Current Account",
+                                    "source": "INDIVIDUAL",
+                                    "History48Months": [
+                                        {
+                                            "key": "07-26",
+                                            "PaymentStatus": "000",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "06-26",
+                                            "PaymentStatus": "000",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "05-26",
+                                            "PaymentStatus": "000",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "04-26",
+                                            "PaymentStatus": "000",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "03-26",
+                                            "PaymentStatus": "000",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "02-26",
+                                            "PaymentStatus": "000",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "01-26",
+                                            "PaymentStatus": "000",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "12-25",
+                                            "PaymentStatus": "000",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "11-25",
+                                            "PaymentStatus": "000",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "10-25",
+                                            "PaymentStatus": "NEW",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "seq": "6",
+                                    "AccountNumber": "MKVE45B6929ID251922953",
+                                    "Institution": "Mpokket Financial Services Privat Limited",
+                                    "AccountType": "Short Term Personal Loan",
+                                    "OwnershipType": "Individual",
+                                    "Balance": "1200",
+                                    "PastDueAmount": "0",
+                                    "LastPayment": "651",
+                                    "Open": "Yes",
+                                    "SanctionAmount": "5000",
+                                    "LastPaymentDate": "2026-07-17",
+                                    "DateReported": "2026-07-31",
+                                    "DateOpened": "2026-03-18",
+                                    "RepaymentTenure": "6",
+                                    "TermFrequency": "Monthly",
+                                    "AccountStatus": "Current Account",
+                                    "source": "INDIVIDUAL",
+                                    "History48Months": [
+                                        {
+                                            "key": "07-26",
+                                            "PaymentStatus": "000",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "06-26",
+                                            "PaymentStatus": "000",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "05-26",
+                                            "PaymentStatus": "000",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "04-26",
+                                            "PaymentStatus": "000",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "03-26",
+                                            "PaymentStatus": "NEW",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "seq": "7",
+                                    "AccountNumber": "MKV3C0669B2ID247969643",
+                                    "Institution": "Mpokket Financial Services Privat Limited",
+                                    "AccountType": "Short Term Personal Loan",
+                                    "OwnershipType": "Individual",
+                                    "Balance": "480",
+                                    "PastDueAmount": "0",
+                                    "LastPayment": "507",
+                                    "Open": "Yes",
+                                    "SanctionAmount": "4000",
+                                    "LastPaymentDate": "2026-07-30",
+                                    "DateReported": "2026-07-31",
+                                    "DateOpened": "2026-02-28",
+                                    "RepaymentTenure": "6",
+                                    "TermFrequency": "Monthly",
+                                    "AccountStatus": "Current Account",
+                                    "source": "INDIVIDUAL",
+                                    "History48Months": [
+                                        {
+                                            "key": "07-26",
+                                            "PaymentStatus": "000",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "06-26",
+                                            "PaymentStatus": "000",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "05-26",
+                                            "PaymentStatus": "000",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "04-26",
+                                            "PaymentStatus": "000",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "03-26",
+                                            "PaymentStatus": "000",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "02-26",
+                                            "PaymentStatus": "NEW",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "seq": "8",
+                                    "AccountNumber": "ALEFKOQ7A",
+                                    "Institution": "Kreon Finnancial Services Limited",
+                                    "AccountType": "Personal Loan",
+                                    "OwnershipType": "Individual",
+                                    "Balance": "0",
+                                    "PastDueAmount": "0",
+                                    "Open": "No",
+                                    "SanctionAmount": "1000",
+                                    "LastPaymentDate": "2026-08-13",
+                                    "DateReported": "2026-08-16",
+                                    "DateOpened": "2026-07-16",
+                                    "DateClosed": "2026-08-13",
+                                    "Reason": "Closed Account",
+                                    "AccountStatus": "Closed Account",
+                                    "AssetClassification": "Standard",
+                                    "source": "INDIVIDUAL",
+                                    "History48Months": [
+                                        {
+                                            "key": "08-26",
+                                            "PaymentStatus": "CLSD",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "STD"
+                                        },
+                                        {
+                                            "key": "07-26",
+                                            "PaymentStatus": "NEW",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "STD"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "seq": "9",
+                                    "AccountNumber": "ALFE1GB2U",
+                                    "Institution": "Kreon Finnancial Services Limited",
+                                    "AccountType": "Personal Loan",
+                                    "OwnershipType": "Individual",
+                                    "Balance": "0",
+                                    "PastDueAmount": "0",
+                                    "Open": "No",
+                                    "SanctionAmount": "1000",
+                                    "LastPaymentDate": "2026-08-10",
+                                    "DateReported": "2026-08-16",
+                                    "DateOpened": "2026-07-12",
+                                    "DateClosed": "2026-08-10",
+                                    "Reason": "Closed Account",
+                                    "AccountStatus": "Closed Account",
+                                    "AssetClassification": "Standard",
+                                    "source": "INDIVIDUAL",
+                                    "History48Months": [
+                                        {
+                                            "key": "08-26",
+                                            "PaymentStatus": "CLSD",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "STD"
+                                        },
+                                        {
+                                            "key": "07-26",
+                                            "PaymentStatus": "NEW",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "STD"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "seq": "10",
+                                    "AccountNumber": "ALL7D7URK",
+                                    "Institution": "Kreon Finnancial Services Limited",
+                                    "AccountType": "Personal Loan",
+                                    "OwnershipType": "Individual",
+                                    "Balance": "0",
+                                    "PastDueAmount": "0",
+                                    "Open": "No",
+                                    "SanctionAmount": "1000",
+                                    "LastPaymentDate": "2026-08-13",
+                                    "DateReported": "2026-08-16",
+                                    "DateOpened": "2026-07-16",
+                                    "DateClosed": "2026-08-13",
+                                    "Reason": "Closed Account",
+                                    "AccountStatus": "Closed Account",
+                                    "AssetClassification": "Standard",
+                                    "source": "INDIVIDUAL",
+                                    "History48Months": [
+                                        {
+                                            "key": "08-26",
+                                            "PaymentStatus": "CLSD",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "STD"
+                                        },
+                                        {
+                                            "key": "07-26",
+                                            "PaymentStatus": "NEW",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "STD"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "seq": "11",
+                                    "AccountNumber": "AL2QSBP6F",
+                                    "Institution": "Kreon Finnancial Services Limited",
+                                    "AccountType": "Personal Loan",
+                                    "OwnershipType": "Individual",
+                                    "Balance": "0",
+                                    "PastDueAmount": "0",
+                                    "Open": "No",
+                                    "SanctionAmount": "1000",
+                                    "LastPaymentDate": "2026-07-16",
+                                    "DateReported": "2026-07-31",
+                                    "DateOpened": "2026-05-19",
+                                    "DateClosed": "2026-07-16",
+                                    "Reason": "Closed Account",
+                                    "AccountStatus": "Closed Account",
+                                    "AssetClassification": "Standard",
+                                    "source": "INDIVIDUAL",
+                                    "History48Months": [
+                                        {
+                                            "key": "07-26",
+                                            "PaymentStatus": "CLSD",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "STD"
+                                        },
+                                        {
+                                            "key": "06-26",
+                                            "PaymentStatus": "000",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "STD"
+                                        },
+                                        {
+                                            "key": "05-26",
+                                            "PaymentStatus": "NEW",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "STD"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "seq": "12",
+                                    "AccountNumber": "ALAAY8HJW",
+                                    "Institution": "Kreon Finnancial Services Limited",
+                                    "AccountType": "Personal Loan",
+                                    "OwnershipType": "Individual",
+                                    "Balance": "0",
+                                    "PastDueAmount": "0",
+                                    "Open": "No",
+                                    "SanctionAmount": "1000",
+                                    "LastPaymentDate": "2026-07-16",
+                                    "DateReported": "2026-07-31",
+                                    "DateOpened": "2026-06-15",
+                                    "DateClosed": "2026-07-16",
+                                    "Reason": "Closed Account",
+                                    "AccountStatus": "Closed Account",
+                                    "AssetClassification": "Standard",
+                                    "source": "INDIVIDUAL",
+                                    "History48Months": [
+                                        {
+                                            "key": "07-26",
+                                            "PaymentStatus": "CLSD",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "STD"
+                                        },
+                                        {
+                                            "key": "06-26",
+                                            "PaymentStatus": "NEW",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "STD"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "seq": "13",
+                                    "AccountNumber": "ALMPRCNGN",
+                                    "Institution": "Kreon Finnancial Services Limited",
+                                    "AccountType": "Personal Loan",
+                                    "OwnershipType": "Individual",
+                                    "Balance": "0",
+                                    "PastDueAmount": "0",
+                                    "Open": "No",
+                                    "SanctionAmount": "1000",
+                                    "LastPaymentDate": "2026-07-12",
+                                    "DateReported": "2026-07-31",
+                                    "DateOpened": "2026-06-13",
+                                    "DateClosed": "2026-07-12",
+                                    "Reason": "Closed Account",
+                                    "AccountStatus": "Closed Account",
+                                    "AssetClassification": "Standard",
+                                    "source": "INDIVIDUAL",
+                                    "History48Months": [
+                                        {
+                                            "key": "07-26",
+                                            "PaymentStatus": "CLSD",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "STD"
+                                        },
+                                        {
+                                            "key": "06-26",
+                                            "PaymentStatus": "NEW",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "STD"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "seq": "14",
+                                    "AccountNumber": "ALVF672U7",
+                                    "Institution": "Kreon Finnancial Services Limited",
+                                    "AccountType": "Personal Loan",
+                                    "OwnershipType": "Individual",
+                                    "Balance": "0",
+                                    "PastDueAmount": "0",
+                                    "Open": "No",
+                                    "SanctionAmount": "2000",
+                                    "LastPaymentDate": "2026-06-13",
+                                    "DateReported": "2026-06-30",
+                                    "DateOpened": "2026-05-16",
+                                    "DateClosed": "2026-06-13",
+                                    "Reason": "Closed Account",
+                                    "AccountStatus": "Closed Account",
+                                    "AssetClassification": "Standard",
+                                    "source": "INDIVIDUAL",
+                                    "History48Months": [
+                                        {
+                                            "key": "06-26",
+                                            "PaymentStatus": "CLSD",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "STD"
+                                        },
+                                        {
+                                            "key": "05-26",
+                                            "PaymentStatus": "NEW",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "STD"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "seq": "15",
+                                    "AccountNumber": "ALWEK8GYT",
+                                    "Institution": "Kreon Finnancial Services Limited",
+                                    "AccountType": "Personal Loan",
+                                    "OwnershipType": "Individual",
+                                    "Balance": "0",
+                                    "PastDueAmount": "0",
+                                    "Open": "No",
+                                    "SanctionAmount": "3000",
+                                    "LastPaymentDate": "2026-05-16",
+                                    "DateReported": "2026-05-31",
+                                    "DateOpened": "2026-03-18",
+                                    "DateClosed": "2026-05-16",
+                                    "Reason": "Closed Account",
+                                    "AccountStatus": "Closed Account",
+                                    "AssetClassification": "Standard",
+                                    "source": "INDIVIDUAL",
+                                    "History48Months": [
+                                        {
+                                            "key": "05-26",
+                                            "PaymentStatus": "CLSD",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "STD"
+                                        },
+                                        {
+                                            "key": "04-26",
+                                            "PaymentStatus": "000",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "STD"
+                                        },
+                                        {
+                                            "key": "03-26",
+                                            "PaymentStatus": "NEW",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "STD"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "seq": "16",
+                                    "AccountNumber": "MKV75B569E3ID252006209",
+                                    "Institution": "Mpokket Financial Services Privat Limited",
+                                    "AccountType": "Short Term Personal Loan",
+                                    "OwnershipType": "Individual",
+                                    "Balance": "0",
+                                    "PastDueAmount": "0",
+                                    "LastPayment": "643",
+                                    "Open": "No",
+                                    "SanctionAmount": "1000",
+                                    "LastPaymentDate": "2026-05-19",
+                                    "DateReported": "2026-05-31",
+                                    "DateOpened": "2026-03-19",
+                                    "DateClosed": "2026-05-19",
+                                    "Reason": "Closed or Paid Account/Zero Balance",
+                                    "RepaymentTenure": "6",
+                                    "TermFrequency": "Monthly",
+                                    "AccountStatus": "Closed Account",
+                                    "source": "INDIVIDUAL",
+                                    "History48Months": [
+                                        {
+                                            "key": "05-26",
+                                            "PaymentStatus": "CLSD",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "04-26",
+                                            "PaymentStatus": "000",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "03-26",
+                                            "PaymentStatus": "NEW",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "seq": "17",
+                                    "AccountNumber": "AL2ZVDFR7",
+                                    "Institution": "Kreon Finnancial Services Limited",
+                                    "AccountType": "Personal Loan",
+                                    "OwnershipType": "Individual",
+                                    "Balance": "0",
+                                    "PastDueAmount": "0",
+                                    "Open": "No",
+                                    "SanctionAmount": "3000",
+                                    "LastPaymentDate": "2026-03-03",
+                                    "DateReported": "2026-03-31",
+                                    "DateOpened": "2026-01-06",
+                                    "DateClosed": "2026-03-03",
+                                    "Reason": "Closed Account",
+                                    "AccountStatus": "Closed Account",
+                                    "AssetClassification": "Standard",
+                                    "source": "INDIVIDUAL",
+                                    "History48Months": [
+                                        {
+                                            "key": "03-26",
+                                            "PaymentStatus": "CLSD",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "STD"
+                                        },
+                                        {
+                                            "key": "02-26",
+                                            "PaymentStatus": "000",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "STD"
+                                        },
+                                        {
+                                            "key": "01-26",
+                                            "PaymentStatus": "NEW",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "STD"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "seq": "18",
+                                    "AccountNumber": "MKV8C3D68B5ID218117461",
+                                    "Institution": "Mpokket Financial Services Privat Limited",
+                                    "AccountType": "Short Term Personal Loan",
+                                    "OwnershipType": "Individual",
+                                    "Balance": "0",
+                                    "PastDueAmount": "0",
+                                    "LastPayment": "1507",
+                                    "Open": "No",
+                                    "SanctionAmount": "4000",
+                                    "LastPaymentDate": "2026-02-07",
+                                    "DateReported": "2026-02-28",
+                                    "DateOpened": "2025-10-10",
+                                    "DateClosed": "2026-02-07",
+                                    "Reason": "Closed Account",
+                                    "RepaymentTenure": "6",
+                                    "TermFrequency": "Monthly",
+                                    "AccountStatus": "Closed Account",
+                                    "source": "INDIVIDUAL",
+                                    "History48Months": [
+                                        {
+                                            "key": "02-26",
+                                            "PaymentStatus": "CLSD",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "01-26",
+                                            "PaymentStatus": "000",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "12-25",
+                                            "PaymentStatus": "000",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "11-25",
+                                            "PaymentStatus": "000",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "10-25",
+                                            "PaymentStatus": "NEW",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "seq": "19",
+                                    "AccountNumber": "MKE168D680AID181912471",
+                                    "Institution": "Mpokket Financial Services Privat Limited",
+                                    "AccountType": "Short Term Personal Loan",
+                                    "OwnershipType": "Individual",
+                                    "Balance": "0",
+                                    "PastDueAmount": "0",
+                                    "LastPayment": "4850",
+                                    "Open": "No",
+                                    "SanctionAmount": "5000",
+                                    "LastPaymentDate": "2025-06-04",
+                                    "DateReported": "2025-06-30",
+                                    "DateOpened": "2025-04-22",
+                                    "DateClosed": "2025-06-04",
+                                    "Reason": "Closed Account",
+                                    "RepaymentTenure": "9",
+                                    "InstallmentAmount": "629",
+                                    "TermFrequency": "Monthly",
+                                    "AccountStatus": "Closed Account",
+                                    "source": "INDIVIDUAL",
+                                    "History48Months": [
+                                        {
+                                            "key": "06-25",
+                                            "PaymentStatus": "CLSD",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "05-25",
+                                            "PaymentStatus": "000",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "04-25",
+                                            "PaymentStatus": "NEW",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "seq": "20",
+                                    "AccountNumber": "Q339SOJ",
+                                    "Institution": "Kreon Finnancial Services Limited",
+                                    "AccountType": "Personal Loan",
+                                    "OwnershipType": "Individual",
+                                    "Balance": "0",
+                                    "PastDueAmount": "0",
+                                    "Open": "No",
+                                    "SanctionAmount": "1000",
+                                    "LastPaymentDate": "2025-06-04",
+                                    "DateReported": "2025-06-30",
+                                    "DateOpened": "2025-03-09",
+                                    "DateClosed": "2025-06-04",
+                                    "Reason": "Closed Account",
+                                    "AccountStatus": "Closed Account",
+                                    "AssetClassification": "Standard",
+                                    "source": "INDIVIDUAL",
+                                    "History48Months": [
+                                        {
+                                            "key": "06-25",
+                                            "PaymentStatus": "CLSD",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "STD"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "seq": "21",
+                                    "AccountNumber": "BLG42EQ",
+                                    "Institution": "Kreon Finnancial Services Limited",
+                                    "AccountType": "Personal Loan",
+                                    "OwnershipType": "Individual",
+                                    "Balance": "0",
+                                    "PastDueAmount": "0",
+                                    "Open": "No",
+                                    "SanctionAmount": "1000",
+                                    "LastPaymentDate": "2025-04-09",
+                                    "DateReported": "2025-04-30",
+                                    "DateOpened": "2025-03-15",
+                                    "DateClosed": "2025-04-09",
+                                    "Reason": "Closed Account",
+                                    "AccountStatus": "Closed Account",
+                                    "AssetClassification": "Standard",
+                                    "source": "INDIVIDUAL",
+                                    "History48Months": [
+                                        {
+                                            "key": "04-25",
+                                            "PaymentStatus": "CLSD",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "STD"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "seq": "22",
+                                    "AccountNumber": "MKV9E966643ID142843384",
+                                    "Institution": "Mpokket Financial Services Privat Limited",
+                                    "AccountType": "Short Term Personal Loan",
+                                    "OwnershipType": "Individual",
+                                    "Balance": "0",
+                                    "PastDueAmount": "0",
+                                    "LastPayment": "787",
+                                    "Open": "No",
+                                    "SanctionAmount": "2000",
+                                    "LastPaymentDate": "2025-02-02",
+                                    "DateReported": "2025-02-28",
+                                    "DateOpened": "2024-10-04",
+                                    "DateClosed": "2025-02-02",
+                                    "Reason": "Closed Account",
+                                    "RepaymentTenure": "6",
+                                    "TermFrequency": "Monthly",
+                                    "AccountStatus": "Closed Account",
+                                    "source": "INDIVIDUAL",
+                                    "History48Months": [
+                                        {
+                                            "key": "02-25",
+                                            "PaymentStatus": "CLSD",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "01-25",
+                                            "PaymentStatus": "000",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "12-24",
+                                            "PaymentStatus": "000",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "11-24",
+                                            "PaymentStatus": "NEW",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "10-24",
+                                            "PaymentStatus": "NEW",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "STD"
+                                        },
+                                        {
+                                            "key": "09-24",
+                                            "PaymentStatus": "STD",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "STD"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "seq": "23",
+                                    "AccountNumber": "S5IUWUP",
+                                    "Institution": "Kreon Finnancial Services Limited",
+                                    "AccountType": "Personal Loan",
+                                    "OwnershipType": "Individual",
+                                    "Balance": "0",
+                                    "PastDueAmount": "0",
+                                    "Open": "No",
+                                    "SanctionAmount": "1000",
+                                    "LastPaymentDate": "2025-02-23",
+                                    "DateReported": "2025-02-28",
+                                    "DateOpened": "2025-02-02",
+                                    "DateClosed": "2025-02-23",
+                                    "Reason": "Closed Account",
+                                    "AccountStatus": "Closed Account",
+                                    "AssetClassification": "Standard",
+                                    "source": "INDIVIDUAL",
+                                    "History48Months": [
+                                        {
+                                            "key": "02-25",
+                                            "PaymentStatus": "CLSD",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "STD"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "seq": "24",
+                                    "AccountNumber": "2U1EKZP",
+                                    "Institution": "Kreon Finnancial Services Limited",
+                                    "AccountType": "Personal Loan",
+                                    "OwnershipType": "Individual",
+                                    "Balance": "0",
+                                    "PastDueAmount": "0",
+                                    "Open": "No",
+                                    "SanctionAmount": "1000",
+                                    "LastPaymentDate": "2025-01-17",
+                                    "DateReported": "2025-01-31",
+                                    "DateOpened": "2024-11-21",
+                                    "DateClosed": "2025-01-17",
+                                    "Reason": "Closed Account",
+                                    "AccountStatus": "Closed Account",
+                                    "AssetClassification": "Standard",
+                                    "source": "INDIVIDUAL",
+                                    "History48Months": [
+                                        {
+                                            "key": "01-25",
+                                            "PaymentStatus": "CLSD",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "STD"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "seq": "25",
+                                    "AccountNumber": "MKVDA2467BDID146720368",
+                                    "Institution": "Mpokket Financial Services Privat Limited",
+                                    "AccountType": "Short Term Personal Loan",
+                                    "OwnershipType": "Individual",
+                                    "Balance": "0",
+                                    "PastDueAmount": "0",
+                                    "LastPayment": "258",
+                                    "Open": "No",
+                                    "SanctionAmount": "500",
+                                    "LastPaymentDate": "2025-01-20",
+                                    "DateReported": "2025-01-31",
+                                    "DateOpened": "2024-10-22",
+                                    "DateClosed": "2025-01-20",
+                                    "Reason": "Closed Account",
+                                    "RepaymentTenure": "6",
+                                    "TermFrequency": "Monthly",
+                                    "AccountStatus": "Closed Account",
+                                    "source": "INDIVIDUAL",
+                                    "History48Months": [
+                                        {
+                                            "key": "01-25",
+                                            "PaymentStatus": "CLSD",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "12-24",
+                                            "PaymentStatus": "000",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "11-24",
+                                            "PaymentStatus": "000",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "10-24",
+                                            "PaymentStatus": "NEW",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "STD"
+                                        },
+                                        {
+                                            "key": "09-24",
+                                            "PaymentStatus": "STD",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "STD"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "seq": "26",
+                                    "AccountNumber": "MKV5D286758ID149306472",
+                                    "Institution": "Mpokket Financial Services Privat Limited",
+                                    "AccountType": "Short Term Personal Loan",
+                                    "OwnershipType": "Individual",
+                                    "Balance": "0",
+                                    "PastDueAmount": "0",
+                                    "LastPayment": "973",
+                                    "Open": "No",
+                                    "SanctionAmount": "1000",
+                                    "LastPaymentDate": "2024-11-05",
+                                    "DateReported": "2024-11-30",
+                                    "DateOpened": "2024-11-03",
+                                    "DateClosed": "2024-11-05",
+                                    "Reason": "Closed Account",
+                                    "RepaymentTenure": "6",
+                                    "TermFrequency": "Monthly",
+                                    "AccountStatus": "Closed Account",
+                                    "source": "INDIVIDUAL",
+                                    "History48Months": [
+                                        {
+                                            "key": "11-24",
+                                            "PaymentStatus": "CLSD",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "seq": "27",
+                                    "AccountNumber": "MKVD3156662ID142845178",
+                                    "Institution": "Mpokket Financial Services Privat Limited",
+                                    "AccountType": "Short Term Personal Loan",
+                                    "OwnershipType": "Individual",
+                                    "Balance": "0",
+                                    "PastDueAmount": "0",
+                                    "LastPayment": "1953",
+                                    "Open": "No",
+                                    "SanctionAmount": "2000",
+                                    "LastPaymentDate": "2024-10-04",
+                                    "DateReported": "2024-10-31",
+                                    "DateOpened": "2024-10-04",
+                                    "DateClosed": "2024-10-04",
+                                    "Reason": "Closed Account",
+                                    "RepaymentTenure": "6",
+                                    "TermFrequency": "Monthly",
+                                    "AccountStatus": "Closed Account",
+                                    "source": "INDIVIDUAL",
+                                    "History48Months": [
+                                        {
+                                            "key": "10-24",
+                                            "PaymentStatus": "CLSD",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "09-24",
+                                            "PaymentStatus": "000",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "seq": "28",
+                                    "AccountNumber": "MKEBFE76600ID112020095",
+                                    "Institution": "Mpokket Financial Services Privat Limited",
+                                    "AccountType": "Short Term Personal Loan",
+                                    "OwnershipType": "Individual",
+                                    "Balance": "0",
+                                    "PastDueAmount": "0",
+                                    "LastPayment": "1083",
+                                    "Open": "No",
+                                    "SanctionAmount": "3000",
+                                    "LastPaymentDate": "2024-07-05",
+                                    "DateReported": "2024-07-31",
+                                    "DateOpened": "2024-04-16",
+                                    "DateClosed": "2024-07-05",
+                                    "Reason": "Closed Account",
+                                    "RepaymentTenure": "3",
+                                    "InstallmentAmount": "1081",
+                                    "TermFrequency": "Monthly",
+                                    "AccountStatus": "Closed Account",
+                                    "source": "INDIVIDUAL",
+                                    "History48Months": [
+                                        {
+                                            "key": "07-24",
+                                            "PaymentStatus": "CLSD",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "06-24",
+                                            "PaymentStatus": "000",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "05-24",
+                                            "PaymentStatus": "000",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "04-24",
+                                            "PaymentStatus": "NEW",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "STD"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "seq": "29",
+                                    "AccountNumber": "MK624765B3ID90225970",
+                                    "Institution": "Mpokket Financial Services Privat Limited",
+                                    "AccountType": "Short Term Personal Loan",
+                                    "OwnershipType": "Individual",
+                                    "Balance": "0",
+                                    "PastDueAmount": "0",
+                                    "Open": "No",
+                                    "SanctionAmount": "500",
+                                    "LastPaymentDate": "2023-11-21",
+                                    "DateReported": "2023-11-30",
+                                    "DateOpened": "2023-11-12",
+                                    "DateClosed": "2023-11-21",
+                                    "Reason": "Closed Account",
+                                    "RepaymentTenure": "1",
+                                    "TermFrequency": "Bullet Payment",
+                                    "AccountStatus": "Closed Account",
+                                    "source": "INDIVIDUAL",
+                                    "History48Months": [
+                                        {
+                                            "key": "11-23",
+                                            "PaymentStatus": "CLSD",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "seq": "30",
+                                    "AccountNumber": "MK4B9B657BID83315291",
+                                    "Institution": "Mpokket Financial Services Privat Limited",
+                                    "AccountType": "Short Term Personal Loan",
+                                    "OwnershipType": "Individual",
+                                    "Balance": "0",
+                                    "PastDueAmount": "0",
+                                    "Open": "No",
+                                    "SanctionAmount": "500",
+                                    "LastPaymentDate": "2023-10-10",
+                                    "DateReported": "2023-10-31",
+                                    "DateOpened": "2023-09-15",
+                                    "DateClosed": "2023-10-10",
+                                    "Reason": "Closed Account",
+                                    "RepaymentTenure": "1",
+                                    "TermFrequency": "Bullet Payment",
+                                    "AccountStatus": "Closed Account",
+                                    "source": "INDIVIDUAL",
+                                    "History48Months": [
+                                        {
+                                            "key": "10-23",
+                                            "PaymentStatus": "CLSD",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "09-23",
+                                            "PaymentStatus": "NEW",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "STD"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "seq": "31",
+                                    "AccountNumber": "MKEF5B6511ID85297162",
+                                    "Institution": "Mpokket Financial Services Privat Limited",
+                                    "AccountType": "Short Term Personal Loan",
+                                    "OwnershipType": "Individual",
+                                    "Balance": "0",
+                                    "PastDueAmount": "0",
+                                    "Open": "No",
+                                    "SanctionAmount": "500",
+                                    "LastPaymentDate": "2023-10-29",
+                                    "DateReported": "2023-10-31",
+                                    "DateOpened": "2023-10-03",
+                                    "DateClosed": "2023-10-29",
+                                    "Reason": "Closed Account",
+                                    "RepaymentTenure": "1",
+                                    "TermFrequency": "Bullet Payment",
+                                    "AccountStatus": "Closed Account",
+                                    "source": "INDIVIDUAL",
+                                    "History48Months": [
+                                        {
+                                            "key": "10-23",
+                                            "PaymentStatus": "CLSD",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "seq": "32",
+                                    "AccountNumber": "71Z2M4D",
+                                    "Institution": "Kreon Finnancial Services Limited",
+                                    "AccountType": "Personal Loan",
+                                    "OwnershipType": "Individual",
+                                    "Balance": "0",
+                                    "PastDueAmount": "0",
+                                    "Open": "No",
+                                    "SanctionAmount": "1000",
+                                    "DateReported": "2023-09-30",
+                                    "DateOpened": "2023-08-30",
+                                    "DateClosed": "2023-09-30",
+                                    "AccountStatus": "Closed Account",
+                                    "AssetClassification": "Standard",
+                                    "source": "INDIVIDUAL",
+                                    "History48Months": [
+                                        {
+                                            "key": "09-23",
+                                            "PaymentStatus": "CLSD",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "STD"
+                                        },
+                                        {
+                                            "key": "08-23",
+                                            "PaymentStatus": "NEW",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "STD"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "seq": "33",
+                                    "AccountNumber": "2FI88TV",
+                                    "Institution": "Kreon Finnancial Services Limited",
+                                    "AccountType": "Personal Loan",
+                                    "OwnershipType": "Individual",
+                                    "Balance": "0",
+                                    "PastDueAmount": "0",
+                                    "Open": "No",
+                                    "SanctionAmount": "1000",
+                                    "LastPaymentDate": "2023-08-29",
+                                    "DateReported": "2023-08-31",
+                                    "DateOpened": "2023-08-13",
+                                    "DateClosed": "2023-08-29",
+                                    "Reason": "Closed Account",
+                                    "AccountStatus": "Closed Account",
+                                    "AssetClassification": "Standard",
+                                    "source": "INDIVIDUAL",
+                                    "History48Months": [
+                                        {
+                                            "key": "08-23",
+                                            "PaymentStatus": "CLSD",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "STD"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "seq": "34",
+                                    "AccountNumber": "MKB62064D7ID76708245",
+                                    "Institution": "Mpokket Financial Services Privat Limited",
+                                    "AccountType": "Personal Loan",
+                                    "OwnershipType": "Individual",
+                                    "Balance": "0",
+                                    "PastDueAmount": "0",
+                                    "Open": "No",
+                                    "SanctionAmount": "500",
+                                    "LastPaymentDate": "2023-08-15",
+                                    "DateReported": "2023-08-31",
+                                    "DateOpened": "2023-07-28",
+                                    "DateClosed": "2023-08-15",
+                                    "Reason": "Closed Account",
+                                    "RepaymentTenure": "1",
+                                    "TermFrequency": "Bullet Payment",
+                                    "AccountStatus": "Closed Account",
+                                    "source": "INDIVIDUAL",
+                                    "History48Months": [
+                                        {
+                                            "key": "08-23",
+                                            "PaymentStatus": "CLSD",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "07-23",
+                                            "PaymentStatus": "NEW",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "STD"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "seq": "35",
+                                    "AccountNumber": "MKC14A6416ID70147848",
+                                    "Institution": "Mpokket Financial Services Privat Limited",
+                                    "AccountType": "Personal Loan",
+                                    "OwnershipType": "Individual",
+                                    "Balance": "0",
+                                    "PastDueAmount": "0",
+                                    "Open": "No",
+                                    "SanctionAmount": "1000",
+                                    "LastPaymentDate": "2023-07-01",
+                                    "DateReported": "2023-07-31",
+                                    "DateOpened": "2023-06-09",
+                                    "DateClosed": "2023-07-01",
+                                    "Reason": "Closed Account",
+                                    "RepaymentTenure": "1",
+                                    "TermFrequency": "Bullet Payment",
+                                    "AccountStatus": "Closed Account",
+                                    "source": "INDIVIDUAL",
+                                    "History48Months": [
+                                        {
+                                            "key": "07-23",
+                                            "PaymentStatus": "CLSD",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "06-23",
+                                            "PaymentStatus": "NEW",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "STD"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "seq": "36",
+                                    "AccountNumber": "MK159464AAID74435992",
+                                    "Institution": "Mpokket Financial Services Privat Limited",
+                                    "AccountType": "Personal Loan",
+                                    "OwnershipType": "Individual",
+                                    "Balance": "0",
+                                    "PastDueAmount": "0",
+                                    "Open": "No",
+                                    "SanctionAmount": "500",
+                                    "LastPaymentDate": "2023-07-18",
+                                    "DateReported": "2023-07-31",
+                                    "DateOpened": "2023-07-11",
+                                    "DateClosed": "2023-07-18",
+                                    "Reason": "Closed Account",
+                                    "RepaymentTenure": "1",
+                                    "TermFrequency": "Bullet Payment",
+                                    "AccountStatus": "Closed Account",
+                                    "source": "INDIVIDUAL",
+                                    "History48Months": [
+                                        {
+                                            "key": "07-23",
+                                            "PaymentStatus": "CLSD",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "seq": "37",
+                                    "AccountNumber": "MKCC836431ID68613550",
+                                    "Institution": "Mpokket Financial Services Privat Limited",
+                                    "AccountType": "Personal Loan",
+                                    "OwnershipType": "Individual",
+                                    "Balance": "0",
+                                    "PastDueAmount": "0",
+                                    "Open": "No",
+                                    "SanctionAmount": "1000",
+                                    "LastPaymentDate": "2023-06-03",
+                                    "DateReported": "2023-06-30",
+                                    "DateOpened": "2023-05-28",
+                                    "DateClosed": "2023-06-03",
+                                    "Reason": "Closed Account",
+                                    "RepaymentTenure": "1",
+                                    "TermFrequency": "Bullet Payment",
+                                    "AccountStatus": "Closed Account",
+                                    "source": "INDIVIDUAL",
+                                    "History48Months": [
+                                        {
+                                            "key": "06-23",
+                                            "PaymentStatus": "CLSD",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "05-23",
+                                            "PaymentStatus": "NEW",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "STD"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "seq": "38",
+                                    "AccountNumber": "MKB388647CID62393226",
+                                    "Institution": "Mpokket Financial Services Privat Limited",
+                                    "AccountType": "Personal Loan",
+                                    "OwnershipType": "Individual",
+                                    "Balance": "0",
+                                    "PastDueAmount": "0",
+                                    "Open": "No",
+                                    "SanctionAmount": "500",
+                                    "LastPaymentDate": "2023-05-02",
+                                    "DateReported": "2023-05-31",
+                                    "DateOpened": "2023-04-03",
+                                    "DateClosed": "2023-05-02",
+                                    "Reason": "Closed Account",
+                                    "RepaymentTenure": "1",
+                                    "TermFrequency": "Bullet Payment",
+                                    "AccountStatus": "Closed Account",
+                                    "source": "INDIVIDUAL",
+                                    "History48Months": [
+                                        {
+                                            "key": "05-23",
+                                            "PaymentStatus": "CLSD",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "*"
+                                        },
+                                        {
+                                            "key": "04-23",
+                                            "PaymentStatus": "NEW",
+                                            "SuitFiledStatus": "*",
+                                            "AssetClassificationStatus": "STD"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "RetailAccountsSummary": {
+                                "NoOfAccounts": "38",
+                                "NoOfActiveAccounts": "7",
+                                "NoOfWriteOffs": "0",
+                                "TotalPastDue": "447.00",
+                                "MostSevereStatusWithIn24Months": "01+",
+                                "SingleHighestCredit": "0.00",
+                                "SingleHighestSanctionAmount": "393566.00",
+                                "TotalHighCredit": "0.00",
+                                "AverageOpenBalance": "55770.57",
+                                "SingleHighestBalance": "383154.00",
+                                "NoOfPastDueAccounts": "1",
+                                "NoOfZeroBalanceAccounts": "0",
+                                "RecentAccount": "Personal Loan on 16-07-2026",
+                                "OldestAccount": "Personal Loan on 03-04-2023",
+                                "TotalBalanceAmount": "390394.00",
+                                "TotalSanctionAmount": "421566.00",
+                                "TotalCreditLimit": "0.0",
+                                "TotalMonthlyPaymentAmount": "8662.00"
+                            },
+                            "ScoreDetails": [
+                                {
+                                    "Type": "ERS",
+                                    "Version": "4.0",
+                                    "Name": "ERS4.0",
+                                    "Value": "746",
+                                    "ScoringElements": [
+                                        {
+                                            "type": "RES",
+                                            "seq": "1",
+                                            "code": "600",
+                                            "Description": "Recent Credit exposure"
+                                        },
+                                        {
+                                            "type": "RES",
+                                            "seq": "2",
+                                            "code": "609",
+                                            "Description": "Total credit exposure"
+                                        },
+                                        {
+                                            "type": "RES",
+                                            "seq": "3",
+                                            "code": "601",
+                                            "Description": "Overdue Amount"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "EnquirySummary": {
+                                "Purpose": "ALL",
+                                "Total": "0",
+                                "Past30Days": "0",
+                                "Past12Months": "0",
+                                "Past24Months": "0"
+                            },
+                            "OtherKeyInd": {
+                                "AgeOfOldestTrade": "40",
+                                "NumberOfOpenTrades": "7",
+                                "AllLinesEVERWritten": "0.00",
+                                "AllLinesEVERWrittenIn9Months": "0",
+                                "AllLinesEVERWrittenIn6Months": "0"
+                            },
+                            "RecentActivities": {
+                                "AccountsDeliquent": "1",
+                                "AccountsOpened": "8",
+                                "TotalInquiries": "0",
+                                "AccountsUpdated": "16"
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    "orderid": "TXN17879923457760"
+}

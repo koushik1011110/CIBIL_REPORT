@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equifax Credit Report Gateway</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 20px;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.1) 0px, transparent 50%);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-header {
+            margin-bottom: 24px;
+        }
+
+        .card-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .card-header p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 6px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input, select {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px 16px;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        button.btn-submit {
+            background: linear-gradient(135deg, var(--primary), #1d4ed8);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 14px 28px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        button.btn-submit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.4);
+        }
+
+        button.btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .report-section {
+            display: none;
+            background: #ffffff;
+            color: #1e293b;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .report-section.active {
+            display: block;
+        }
+
+        .pdf-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 20px;
+            margin-bottom: 24px;
+        }
+
+        .pdf-header .logo-area h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #0f172a;
+            letter-spacing: -0.5px;
+        }
+
+        .pdf-header .logo-area span {
+            color: var(--primary);
+        }
+
+        .pdf-header .meta-info {
+            text-align: right;
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .actions-bar {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .btn-action {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .btn-print {
+            background: #0f172a;
+            color: #fff;
+        }
+
+        .btn-print:hover {
+            background: #1e293b;
+        }
+
+        .btn-toggle-json {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .score-box-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .score-card-main {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-right: 1px solid #e2e8f0;
+            padding-right: 20px;
+        }
+
+        .score-card-main:last-child {
+            border-right: none;
+        }
+
+        .score-number {
+            font-size: 3.2rem;
+            font-weight: 800;
+            line-height: 1;
+            color: #2563eb;
+            margin: 8px 0;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-excellent { background: #dcfce7; color: #166534; }
+        .badge-good { background: #dbeafe; color: #1e40af; }
+        .badge-fair { background: #fef3c7; color: #92400e; }
+        .badge-poor { background: #fee2e2; color: #991b1b; }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .stat-item .label {
+            font-size: 0.8rem;
+            color: #64748b;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .stat-item .value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-top: 4px;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 28px 0 14px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #f1f5f9;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            background: #f8fafc;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid #f1f5f9;
+        }
+
+        .info-item .lbl {
+            font-size: 0.75rem;
+            color: #64748b;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .info-item .val {
+            font-size: 0.95rem;
+            color: #0f172a;
+            font-weight: 600;
+            margin-top: 4px;
+            word-break: break-all;
+        }
+
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+            font-size: 0.85rem;
+        }
+
+        .report-table th, .report-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .report-table th {
+            background: #f8fafc;
+            color: #475569;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+        }
+
+        .report-table tr:hover {
+            background: #f8fafc;
+        }
+
+        pre.json-box {
+            background: #0f172a;
+            color: #38bdf8;
+            padding: 16px;
+            border-radius: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 0.8rem;
+            display: none;
+            margin-top: 20px;
+        }
+
+        @media print {
+            body {
+                background: #fff;
+                color: #000;
+                padding: 0;
+            }
+            .card, .actions-bar, pre.json-box {
+                display: none !important;
+            }
+            .report-section {
+                display: block !important;
+                box-shadow: none;
+                border: none;
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<div class="container">
+    <div class="card">
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div>
+                <h2>Equifax Credit Report Gateway</h2>
+                <p>Fetch real-time CIBIL / Equifax credit report by PAN or Aadhaar</p>
+            </div>
+            <div>
+                <input type="file" id="jsonFileInput" accept=".json" style="display:none" onchange="convertJsonFileToPdf(event)">
+                <button type="button" class="btn-action" style="background: #3b82f6; color: #fff;" onclick="document.getElementById('jsonFileInput').click()">📄 Convert JSON File to PDF</button>
+            </div>
+        </div>
+
+        <form id="cibilForm">
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" placeholder="Enter full name as per ID" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="mobile">Mobile Number</label>
+                    <input type="tel" id="mobile" name="mobile" maxlength="10" placeholder="10-digit mobile number" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="fetch_by">ID Type (Fetch By)</label>
+                    <select id="fetch_by" name="fetch_by" required>
+                        <option value="pan">PAN Card</option>
+                        <option value="aadhaar">Aadhaar Card</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="number" id="idLabel">PAN Number</label>
+                    <input type="text" id="number" name="number" placeholder="ABCDE1234F" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="orderid">Order ID (Optional)</label>
+                    <input type="text" id="orderid" name="orderid" placeholder="Auto-generated if empty">
+                </div>
+
+                <div class="form-group full-width">
+                    <button type="submit" class="btn-submit" id="btnSubmit">
+                        <div class="spinner" id="spinner"></div>
+                        <span id="btnText">Fetch Credit Report</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="actions-bar" id="actionsBar" style="display: none;">
+        <button class="btn-action btn-print" style="background:#3b82f6; color:#fff;" onclick="downloadReportPdf()">📄 Download PDF from JSON</button>
+        <button class="btn-action btn-print" onclick="window.print()">🖨️ Print / Save PDF</button>
+        <button class="btn-action btn-toggle-json" onclick="toggleJsonView()">{ } Toggle Raw JSON</button>
+        <button class="btn-action btn-toggle-json" style="background:#10b981; color:#fff;" onclick="downloadOverallJson()">📥 Export Overall JSON</button>
+    </div>
+
+    <div class="report-section" id="reportSection">
+        <div class="pdf-header">
+            <div class="logo-area">
+                <h1>EQUIFAX <span>CREDIT REPORT</span></h1>
+                <p style="font-size: 0.85rem; color: #64748b;">Comprehensive Credit Bureau Assessment</p>
+            </div>
+            <div class="meta-info">
+                <div><strong>Report Date:</strong> <span id="rptDate">-</span></div>
+                <div><strong>Report Order NO:</strong> <span id="rptOrderNo">-</span></div>
+                <div><strong>Transaction ID:</strong> <span id="rptTxId">-</span></div>
+            </div>
+        </div>
+
+        <div class="score-box-wrapper">
+            <div class="score-card-main">
+                <span style="font-size: 0.8rem; color: #64748b; font-weight: 700; text-transform: uppercase;">Credit Score</span>
+                <div class="score-number" id="rptScore">---</div>
+                <span class="badge badge-good" id="rptBadge">Good</span>
+            </div>
+            <div class="stat-item">
+                <span class="label">Total Accounts</span>
+                <span class="value" id="statTotalTrades">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="label">Active Open Accounts</span>
+                <span class="value" id="statOpenTrades">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="label">Delinquent Accounts</span>
+                <span class="value" id="statDelinquent" style="color: #ef4444;">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="label">Total Inquiries</span>
+                <span class="value" id="statInquiries">0</span>
+            </div>
+        </div>
+
+        <div class="section-title">Personal & Identity Information</div>
+        <div class="info-grid">
+            <div class="info-item"><div class="lbl">Full Name</div><div class="val" id="infoName">-</div></div>
+            <div class="info-item"><div class="lbl">Date of Birth</div><div class="val" id="infoDOB">-</div></div>
+            <div class="info-item"><div class="lbl">Gender / Age</div><div class="val" id="infoGenderAge">-</div></div>
+            <div class="info-item"><div class="lbl">PAN Number</div><div class="val" id="infoPAN">-</div></div>
+            <div class="info-item"><div class="lbl">Mobile Number</div><div class="val" id="infoMobile">-</div></div>
+            <div class="info-item"><div class="lbl">Email Address</div><div class="val" id="infoEmail">-</div></div>
+        </div>
+
+        <div class="section-title">Reported Address</div>
+        <div class="info-item" style="margin-bottom: 20px;">
+            <div class="lbl">Primary Address</div>
+            <div class="val" id="infoAddress">-</div>
+        </div>
+
+        <div class="section-title">Credit Accounts / Trade Lines Summary</div>
+        <div style="overflow-x: auto;">
+            <table class="report-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Institution / Lender</th>
+                        <th>Account Type</th>
+                        <th>Sanctioned</th>
+                        <th>Current Balance</th>
+                        <th>Past Due</th>
+                        <th>Opened Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="accountsTableBody">
+                    <tr><td colspan="8" style="text-align:center;">No accounts data available</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <pre class="json-box" id="rawJsonBox"></pre>
+    </div>
+</div>
+
+<script>
+    const fetchBySelect = document.getElementById('fetch_by');
+    const idLabel = document.getElementById('idLabel');
+    const numberInput = document.getElementById('number');
+    const form = document.getElementById('cibilForm');
+    const reportSection = document.getElementById('reportSection');
+    const actionsBar = document.getElementById('actionsBar');
+    const spinner = document.getElementById('spinner');
+    const btnText = document.getElementById('btnText');
+    const btnSubmit = document.getElementById('btnSubmit');
+
+    fetchBySelect.addEventListener('change', function() {
+        if (this.value === 'pan') {
+            idLabel.textContent = 'PAN Number';
+            numberInput.placeholder = 'ABCDE1234F';
+            numberInput.maxLength = 10;
+        } else {
+            idLabel.textContent = 'Aadhaar Number';
+            numberInput.placeholder = '123456789012';
+            numberInput.maxLength = 12;
+        }
+    });
+
+    let lastReportData = null;
+
+    function toggleJsonView() {
+        const box = document.getElementById('rawJsonBox');
+        box.style.display = box.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function downloadOverallJson() {
+        if (!lastReportData) {
+            alert('No report data available to export.');
+            return;
+        }
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(lastReportData, null, 2));
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", `credit_report_${lastReportData.orderid || 'overall'}.json`);
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+    }
+
+    function downloadReportPdf() {
+        if (!lastReportData) {
+            alert('No report data available to convert to PDF.');
+            return;
+        }
+        const element = document.getElementById('reportSection');
+        const orderId = lastReportData.orderid || (lastReportData.data ? lastReportData.data.orderid : 'REPORT');
+        const opt = {
+            margin:       8,
+            filename:     `Credit_Report_${orderId}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+        if (window.html2pdf) {
+            html2pdf().set(opt).from(element).save();
+        } else {
+            window.print();
+        }
+    }
+
+    function convertJsonFileToPdf(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const jsonObj = JSON.parse(e.target.result);
+                renderPDFReport(jsonObj, { name: jsonObj.name || '', mobile: jsonObj.mobile || '', fetch_by: jsonObj.fetch_by || 'pan', number: jsonObj.number || '' });
+                reportSection.scrollIntoView({ behavior: 'smooth' });
+                setTimeout(() => {
+                    downloadReportPdf();
+                }, 600);
+            } catch (err) {
+                alert('Invalid JSON file format: ' + err.message);
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const formData = {
+            name: document.getElementById('name').value.trim(),
+            mobile: document.getElementById('mobile').value.trim(),
+            fetch_by: document.getElementById('fetch_by').value,
+            number: document.getElementById('number').value.trim(),
+            orderid: document.getElementById('orderid').value.trim()
+        };
+
+        spinner.style.display = 'block';
+        btnText.textContent = 'Fetching Report...';
+        btnSubmit.disabled = true;
+
+        try {
+            const response = await fetch('api.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+
+            const data = await response.json();
+            if (data.status === 'error' || data.success === false) {
+                alert('Credit Bureau API Error: ' + (data.message || 'Failed to fetch report.'));
+                actionsBar.style.display = 'none';
+                reportSection.classList.remove('active');
+            } else {
+                renderPDFReport(data, formData);
+            }
+
+        } catch (err) {
+            alert("Error fetching credit report: " + err.message);
+        } finally {
+            spinner.style.display = 'none';
+            btnText.textContent = 'Fetch Credit Report';
+            btnSubmit.disabled = false;
+        }
+    });
+
+    function renderPDFReport(res, reqData) {
+        lastReportData = res;
+        actionsBar.style.display = 'flex';
+        reportSection.classList.add('active');
+        document.getElementById('rawJsonBox').textContent = JSON.stringify(res, null, 2);
+
+        const dataObj = res.data || res;
+        const ccr = dataObj.credit_report || {};
+        const cirDataLst = ccr.CCRResponse && ccr.CCRResponse.CIRReportDataLst ? ccr.CCRResponse.CIRReportDataLst[0] : {};
+        const cirData = cirDataLst.CIRReportData || {};
+        const contactInfo = cirData.IDAndContactInfo || {};
+        const personalInfo = contactInfo.PersonalInfo || {};
+
+        document.getElementById('rptDate').textContent = (ccr.InquiryResponseHeader && ccr.InquiryResponseHeader.Date) || new Date().toISOString().split('T')[0];
+        document.getElementById('rptOrderNo').textContent = (ccr.InquiryResponseHeader && ccr.InquiryResponseHeader.ReportOrderNO) || 'N/A';
+        document.getElementById('rptTxId').textContent = res.orderid || reqData.orderid || 'TXN' + Date.now();
+
+        const score = dataObj.credit_score || res.credit_score || 'N/A';
+        const rptScoreEl = document.getElementById('rptScore');
+        const rptBadgeEl = document.getElementById('rptBadge');
+        rptScoreEl.textContent = score;
+
+        if (score !== 'N/A' && !isNaN(score)) {
+            const sc = parseInt(score);
+            if (sc >= 750) { rptBadgeEl.textContent = 'EXCELLENT'; rptBadgeEl.className = 'badge badge-excellent'; }
+            else if (sc >= 700) { rptBadgeEl.textContent = 'GOOD'; rptBadgeEl.className = 'badge badge-good'; }
+            else if (sc >= 650) { rptBadgeEl.textContent = 'FAIR'; rptBadgeEl.className = 'badge badge-fair'; }
+            else { rptBadgeEl.textContent = 'POOR'; rptBadgeEl.className = 'badge badge-poor'; }
+        } else {
+            rptBadgeEl.textContent = 'RECEIVED';
+            rptBadgeEl.className = 'badge badge-good';
+        }
+
+        const fullName = (personalInfo.Name && personalInfo.Name.FullName) || dataObj.name || reqData.name || '-';
+        document.getElementById('infoName').textContent = fullName;
+        document.getElementById('infoDOB').textContent = personalInfo.DateOfBirth || '-';
+        document.getElementById('infoGenderAge').textContent = (personalInfo.Gender || '-') + ' / ' + ((personalInfo.Age && personalInfo.Age.Age) ? personalInfo.Age.Age + ' yrs' : '-');
+        
+        let pan = '-';
+        if (contactInfo.IdentityInfo && contactInfo.IdentityInfo.PANId && contactInfo.IdentityInfo.PANId.length > 0) {
+            pan = contactInfo.IdentityInfo.PANId[0].IdNumber;
+        } else if (reqData.fetch_by === 'pan') {
+            pan = reqData.number;
+        }
+        document.getElementById('infoPAN').textContent = pan;
+        document.getElementById('infoMobile').textContent = dataObj.mobile || reqData.mobile || '-';
+
+        let email = '-';
+        if (contactInfo.EmailAddressInfo && contactInfo.EmailAddressInfo.length > 0) {
+            email = contactInfo.EmailAddressInfo[0].EmailAddress;
+        }
+        document.getElementById('infoEmail').textContent = email;
+
+        let address = '-';
+        if (contactInfo.AddressInfo && contactInfo.AddressInfo.length > 0) {
+            address = contactInfo.AddressInfo[0].Address + ' - ' + (contactInfo.AddressInfo[0].Postal || '');
+        }
+        document.getElementById('infoAddress').textContent = address;
+
+        const accounts = cirData.RetailAccountDetails || [];
+        document.getElementById('statTotalTrades').textContent = accounts.length;
+
+        let openCount = 0;
+        let delinquentCount = 0;
+
+        const tbody = document.getElementById('accountsTableBody');
+        tbody.innerHTML = '';
+
+        if (accounts.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">No trade lines or account details found.</td></tr>';
+        } else {
+            accounts.forEach((acc, idx) => {
+                if (acc.Open === 'Yes') openCount++;
+                if (acc.PastDueAmount && parseInt(acc.PastDueAmount) > 0) delinquentCount++;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${idx + 1}</td>
+                    <td><strong>${acc.Institution || '-'}</strong><br><span style="font-size:0.75rem; color:#64748b;">Acc: ${acc.AccountNumber || '-'}</span></td>
+                    <td>${acc.AccountType || '-'}</td>
+                    <td>₹${acc.SanctionAmount || '0'}</td>
+                    <td>₹${acc.Balance || '0'}</td>
+                    <td style="color:${parseInt(acc.PastDueAmount || 0) > 0 ? '#ef4444' : 'inherit'}; font-weight:${parseInt(acc.PastDueAmount || 0) > 0 ? '700' : 'normal'}">₹${acc.PastDueAmount || '0'}</td>
+                    <td>${acc.DateOpened || '-'}</td>
+                    <td><span class="badge ${acc.Open === 'Yes' ? 'badge-good' : 'badge-fair'}">${acc.AccountStatus || (acc.Open === 'Yes' ? 'Open' : 'Closed')}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        document.getElementById('statOpenTrades').textContent = cirData.OtherKeyInd ? (cirData.OtherKeyInd.NumberOfOpenTrades || openCount) : openCount;
+        document.getElementById('statDelinquent').textContent = cirData.RecentActivities ? (cirData.RecentActivities.AccountsDeliquent || delinquentCount) : delinquentCount;
+        document.getElementById('statInquiries').textContent = cirData.RecentActivities ? (cirData.RecentActivities.TotalInquiries || '0') : '0';
+    }
+</script>
+
+</body>
+</html>

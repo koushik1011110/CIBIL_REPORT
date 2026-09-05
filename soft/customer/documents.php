@@ -1,0 +1,1 @@
+<?php require_once __DIR__.'/../includes/layout.php';role('customer');start(ucwords(str_replace('-',' ','documents')));?><div class="card"><h3><?=ucwords(str_replace('-',' ','documents'))?></h3><p class="muted">Customer portal module connected to PHP/MySQL. Records will be populated from the finance, EMI, payment and document tables.</p></div><?php render_end();
