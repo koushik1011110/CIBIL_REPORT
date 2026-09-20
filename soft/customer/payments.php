@@ -55,11 +55,12 @@ start('My Payment History');
                 <th style="padding: 12px;">Remarks</th>
                 <th style="padding: 12px;">Amount Paid</th>
                 <th style="padding: 12px;">Status</th>
+                <th style="padding: 12px; text-align: right;">Receipt</th>
             </tr>
         </thead>
         <tbody>
             <?php if(empty($payments)): ?>
-                <tr><td colspan="8" style="text-align: center; padding: 20px;">No payment receipts recorded yet.</td></tr>
+                <tr><td colspan="9" style="text-align: center; padding: 20px;">No payment receipts recorded yet.</td></tr>
             <?php else: ?>
                 <?php foreach($payments as $idx => $r): ?>
                     <tr style="border-bottom: 1px solid var(--border-color);">
@@ -71,6 +72,11 @@ start('My Payment History');
                         <td style="padding: 12px;"><?=e($r['remarks'] ?: 'EMI Payment')?></td>
                         <td style="padding: 12px;"><strong style="color:var(--success);"><?=money($r['amount'])?></strong></td>
                         <td style="padding: 12px;"><span class="badge badge-success">SUCCESS</span></td>
+                        <td style="padding: 12px; text-align: right;">
+                            <a href="<?=url('/view-document.php?type=payment_receipt&payment_id='.$r['id'])?>" target="_blank" class="btn" style="padding: 4px 10px; font-size: 0.75rem; background: var(--success);" title="View / Print Receipt">
+                                🧾 Receipt
+                            </a>
+                        </td>
                     </tr>
                 <?php endforeach; ?>
             <?php endif; ?>

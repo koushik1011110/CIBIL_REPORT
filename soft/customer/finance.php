@@ -110,6 +110,7 @@ start('My Store Finance Loans');
                             <div style="display: flex; gap: 6px; flex-direction: column;">
                                 <a class="btn" style="padding: 4px 8px; font-size: 0.75rem; background: var(--primary);" href="<?=url('/customer/emi-schedule.php?app_id='.$r['id'])?>">View EMI Schedule</a>
                                 <a class="btn" style="padding: 4px 8px; font-size: 0.75rem; background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: #fff;" href="<?=url('/loan-agreement.php?id='.$r['id'])?>" target="_blank">📜 Loan Agreement</a>
+                                <a class="btn" style="padding: 4px 8px; font-size: 0.75rem; background: rgba(59,130,246,0.15); color: #60a5fa; border: 1px solid rgba(59,130,246,0.3);" href="<?=url('/customer/documents.php')?>">📄 All Documents</a>
                                 <?php if ($isLoanFullyPaid): ?>
                                     <a class="btn" style="padding: 6px 10px; font-size: 0.78rem; background: linear-gradient(135deg, #059669, #10b981); color: #fff; font-weight: 800;" href="<?=url('/loan-noc.php?id='.$r['id'])?>" target="_blank">🎓 Download NOC Certificate</a>
                                 <?php else: ?>

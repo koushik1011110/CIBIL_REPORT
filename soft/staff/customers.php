@@ -43,6 +43,7 @@ start('Customers');
                         <td style="padding:12px;"><?=e($r['credit_score'] ?: '-')?></td>
                         <td style="padding:12px;">
                             <a class="btn" style="padding:4px 10px; font-size:0.8rem; background:var(--primary);" href="customer-edit.php?id=<?=$r['id']?>">✏️ Edit</a>
+                            <a class="btn" style="padding:4px 10px; font-size:0.8rem; background:rgba(59,130,246,0.15); color:#60a5fa; border:1px solid rgba(59,130,246,0.3); margin-left:4px;" href="<?=url('/shop/documents.php?customer_id='.$r['id'])?>">📄 Docs</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>

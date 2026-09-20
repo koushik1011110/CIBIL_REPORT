@@ -130,6 +130,9 @@ start('Finance Applications');
                                      <a href="<?=url('/loan-agreement.php?id='.$r['id'])?>" target="_blank" class="btn" style="padding: 5px 10px; font-size: 0.75rem; background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: #fff;">
                                          📜 Loan Agreement
                                      </a>
+                                     <a href="<?=url('/shop/documents.php?finance_id='.$r['id'])?>" class="btn" style="padding: 5px 10px; font-size: 0.75rem; background: #0f172a; color: #38bdf8; border: 1px solid #0284c7;" title="View & Generate all 11 Loan Documents">
+                                         📄 Documents
+                                     </a>
                                      <?php if ($isNocUnlocked): ?>
                                          <a href="<?=url('/loan-noc.php?id='.$r['id'])?>" target="_blank" class="btn" style="padding: 5px 10px; font-size: 0.75rem; background: linear-gradient(135deg, #059669, #10b981); color: #fff;">
                                              🎓 NOC Certificate

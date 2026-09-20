@@ -141,11 +141,12 @@ start('EMI Collections & Manual Payment');
                     <th style="padding: 12px;">Method</th>
                     <th style="padding: 12px;">Ref No</th>
                     <th style="padding: 12px;">Amount</th>
+                    <th style="padding: 12px; text-align: right;">Receipt</th>
                 </tr>
             </thead>
             <tbody>
                 <?php if(empty($rows)): ?>
-                    <tr><td colspan="8" style="text-align: center; padding: 20px;">No payments collected yet.</td></tr>
+                    <tr><td colspan="9" style="text-align: center; padding: 20px;">No payments collected yet.</td></tr>
                 <?php else: ?>
                     <?php foreach($rows as $idx => $r): ?>
                         <?php
@@ -160,6 +161,11 @@ start('EMI Collections & Manual Payment');
                             <td style="padding: 12px;"><span class="badge badge-success"><?=e($r['payment_method'])?></span></td>
                             <td style="padding: 12px;"><code><?=e($r['reference_no'] ?: '-')?></code></td>
                             <td style="padding: 12px;"><strong style="color:var(--success);"><?=money($r['amount'])?></strong></td>
+                            <td style="padding: 12px; text-align: right;">
+                                <a href="<?=url('/view-document.php?type=payment_receipt&payment_id='.$r['id'])?>" target="_blank" class="btn" style="padding: 4px 10px; font-size: 0.75rem; background: var(--success);" title="View / Print Receipt">
+                                    🧾 Receipt
+                                </a>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                 <?php endif; ?>

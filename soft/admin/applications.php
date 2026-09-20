@@ -109,16 +109,19 @@ start('All Finance Applications (Admin)');
                              ?>
                                  <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
                                      <span style="font-size: 0.78rem; color: var(--success); font-weight: 800; display: block; width: 100%;"><?=$isNocUnlocked ? '✓ Closed / 100% Paid' : '✓ Active / Approved'?></span>
-                                     <a href="<?=url('/loan-agreement.php?id='.$r['id'])?>" target="_blank" class="btn" style="padding: 5px 10px; font-size: 0.75rem; background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: #fff;">
-                                         📜 Loan Agreement
-                                     </a>
-                                     <?php if ($isNocUnlocked): ?>
-                                         <a href="<?=url('/loan-noc.php?id='.$r['id'])?>" target="_blank" class="btn" style="padding: 5px 10px; font-size: 0.75rem; background: linear-gradient(135deg, #059669, #10b981); color: #fff;">
-                                             🎓 NOC Certificate
-                                         </a>
-                                     <?php else: ?>
-                                         <span class="badge badge-warning" style="font-size: 0.72rem;" title="NOC Certificate unlocks automatically after paying all dues">🔒 NOC Locked</span>
-                                     <?php endif; ?>
+                                      <a href="<?=url('/loan-agreement.php?id='.$r['id'])?>" target="_blank" class="btn" style="padding: 5px 10px; font-size: 0.75rem; background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: #fff;">
+                                          📜 Loan Agreement
+                                      </a>
+                                      <a href="<?=url('/admin/documents.php?finance_id='.$r['id'])?>" class="btn" style="padding: 5px 10px; font-size: 0.75rem; background: #0f172a; color: #38bdf8; border: 1px solid #0284c7;" title="View & Generate all 11 Loan Documents">
+                                          📄 Documents
+                                      </a>
+                                      <?php if ($isNocUnlocked): ?>
+                                          <a href="<?=url('/loan-noc.php?id='.$r['id'])?>" target="_blank" class="btn" style="padding: 5px 10px; font-size: 0.75rem; background: linear-gradient(135deg, #059669, #10b981); color: #fff;">
+                                              🎓 NOC Certificate
+                                          </a>
+                                      <?php else: ?>
+                                          <span class="badge badge-warning" style="font-size: 0.72rem;" title="NOC Certificate unlocks automatically after paying all dues">🔒 NOC Locked</span>
+                                      <?php endif; ?>
                                      <a href="<?=url('/application-process.php?id='.$r['id'])?>" class="btn" style="padding: 5px 8px; font-size: 0.75rem; background: rgba(255,255,255,0.06); color: var(--text-muted); border: 1px solid var(--border-color);">
                                          👁️ View KYC
                                      </a>

@@ -40,7 +40,17 @@ $shopLogoUrl = (!empty($app['shop_logo']) && file_exists(__DIR__ . '/uploads/log
     ? url('/uploads/logos/' . $app['shop_logo'])
     : url('/public/assets/images/logo.png');
 
+require_once __DIR__ . '/includes/document_engine.php';
+
+$companyStamp = get_setting('company_stamp_signature', '');
+$companyStampUrl = (!empty($companyStamp) && file_exists(__DIR__ . '/uploads/signatures/' . $companyStamp))
+    ? url('/uploads/signatures/' . $companyStamp)
+    : '';
+$companySignName = get_setting('company_signatory_name', 'Wazid Hoque');
+$companySignTitle = get_setting('company_signatory_title', 'Managing Director');
+
 $agreementNo = 'AGR-GO4FIN-' . date('Y', strtotime($app['created_at'])) . '-' . str_pad($app['id'], 5, '0', STR_PAD_LEFT);
+record_document_history('loan_agreement', $app['id'], $app['customer_id'], $agreementNo, 'uploads/documents/' . $agreementNo . '.pdf', 'Loan Agreement / Finance Agreement');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -82,6 +92,7 @@ $agreementNo = 'AGR-GO4FIN-' . date('Y', strtotime($app['created_at'])) . '-' . 
 <div class="no-print">
     <a href="javascript:history.back()" class="btn-back">← Back to Applications</a>
     <button onclick="window.print()" class="btn-print">🖨️ Print / Save PDF Agreement</button>
+    <a href="<?=url('/download-document.php?type=loan_agreement&id='.$app['id'])?>" class="btn-print" style="background:#059669; text-decoration:none; display:inline-block; margin-left:8px;">⬇️ Download PDF</a>
 </div>
 
 <div class="page">
@@ -249,13 +260,20 @@ $agreementNo = 'AGR-GO4FIN-' . date('Y', strtotime($app['created_at'])) . '-' . 
         </div>
 
         <div class="sign-box">
-            <div style="font-size: 11px; font-weight: 800; color: #0f172a;">GO4 FINANCE AUTHORIZED SIGN</div>
-            <div style="margin: 4px 0;">
-                <div style="border: 2px solid #2563eb; color: #2563eb; display: inline-block; padding: 2px 6px; border-radius: 50%; font-size: 9px; font-weight: 800; transform: rotate(-8deg);">
-                    GO4FIN SEAL
-                </div>
+            <div style="font-size: 11px; font-weight: 800; color: #0f172a;">FOR GO4 FINANCE PVT LTD</div>
+            <div style="margin: 4px 0; min-height: 42px; display: flex; align-items: center; justify-content: center;">
+                <?php if (!empty($companyStampUrl)): ?>
+                    <img src="<?=e($companyStampUrl)?>" alt="Official Stamp & Signature" style="max-height: 46px; max-width: 140px; object-fit: contain;">
+                <?php else: ?>
+                    <div style="border: 2px solid #2563eb; color: #2563eb; display: inline-block; padding: 2px 6px; border-radius: 50%; font-size: 9px; font-weight: 800; transform: rotate(-8deg);">
+                        GO4FIN SEAL
+                    </div>
+                <?php endif; ?>
             </div>
-            <div style="font-size: 10px; color: #64748b; font-weight: 700; border-top: 1px dashed #94a3b8; padding-top: 4px;">Authorized Signatory & Seal</div>
+            <div style="font-size: 10px; color: #0f172a; font-weight: 800; border-top: 1px dashed #94a3b8; padding-top: 4px;">
+                <?=e($companySignName)?><br>
+                <span style="font-size: 9px; color: #64748b; font-weight: normal;"><?=e($companySignTitle)?></span>
+            </div>
         </div>
     </div>
 

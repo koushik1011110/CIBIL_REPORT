@@ -41,16 +41,39 @@ start('Super Admin Dashboard');
 ?>
 
 <!-- WELCOME BANNER & QUICK ACTIONS -->
-<div class="card" style="background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95)); border: 1px solid var(--border-accent); margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; padding: 24px;">
+<div class="card" style="background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95)); border: 1px solid var(--border-accent); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; padding: 24px;">
     <div>
         <span class="badge badge-info" style="margin-bottom: 6px;">GO4FIN ENTERPRISE ERP</span>
         <h2 style="font-size: 1.4rem; font-weight: 800; color: #fff; margin-top: 4px;">Go4 Finance Control Center</h2>
         <p class="muted" style="margin-top: 2px;">Master admin overview of merchant stores, loan disbursements, and system EMI collections</p>
     </div>
     <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <a href="menu.php" class="btn" style="background: linear-gradient(135deg, var(--primary), #8b5cf6); color: #fff; font-size: 0.85rem; font-weight: 700; box-shadow: 0 4px 14px rgba(59,130,246,0.3);"><i data-lucide="layout-grid"></i> ⚡ All Menus Hub</a>
         <a href="credit-check.php" class="btn" style="background: var(--primary); font-size: 0.85rem;"><i data-lucide="shield-check"></i> Credit Check</a>
         <a href="shops.php" class="btn" style="background: var(--secondary); font-size: 0.85rem;"><i data-lucide="store"></i> Manage Shops</a>
         <a href="settings.php" class="btn" style="background: rgba(255,255,255,0.1); border: 1px solid var(--border-color); font-size: 0.85rem;"><i data-lucide="sliders"></i> Settings</a>
+    </div>
+</div>
+
+<!-- QUICK STRUCTURED MODULE NAVIGATION BAR -->
+<div class="card" style="margin-bottom: 24px; padding: 14px 18px; background: rgba(15, 23, 42, 0.75); border: 1px solid var(--border-color); border-radius: 10px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+        <div style="font-size: 0.8rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 0.5px;">
+            <i data-lucide="compass" style="width: 15px; height: 15px; color: var(--primary);"></i> Structured Quick Navigation
+        </div>
+        <a href="menu.php" style="font-size: 0.8rem; font-weight: 700; color: var(--primary); text-decoration: none;">View All 27+ Modules →</a>
+    </div>
+    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+        <a href="pos.php" class="btn" style="padding: 6px 11px; font-size: 0.78rem; background: rgba(16,185,129,0.12); color: #10b981; border: 1px solid rgba(16,185,129,0.3);"><i data-lucide="shopping-cart"></i> POS Terminal</a>
+        <a href="applications.php" class="btn" style="padding: 6px 11px; font-size: 0.78rem; background: rgba(245,158,11,0.12); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3);"><i data-lucide="file-text"></i> Loan Apps</a>
+        <a href="customers.php" class="btn" style="padding: 6px 11px; font-size: 0.78rem; background: rgba(139,92,246,0.12); color: #8b5cf6; border: 1px solid rgba(139,92,246,0.3);"><i data-lucide="users"></i> Customers</a>
+        <a href="collections.php" class="btn" style="padding: 6px 11px; font-size: 0.78rem; background: rgba(16,185,129,0.12); color: #10b981; border: 1px solid rgba(16,185,129,0.3);"><i data-lucide="badge-percent"></i> Collections</a>
+        <a href="documents.php" class="btn" style="padding: 6px 11px; font-size: 0.78rem; background: rgba(59,130,246,0.12); color: var(--primary); border: 1px solid rgba(59,130,246,0.3);"><i data-lucide="file-check"></i> Documents</a>
+        <a href="document-templates.php" class="btn" style="padding: 6px 11px; font-size: 0.78rem; background: rgba(245,158,11,0.12); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3);"><i data-lucide="file-cog"></i> Stamp & Templates</a>
+        <a href="reports.php" class="btn" style="padding: 6px 11px; font-size: 0.78rem; background: rgba(16,185,129,0.12); color: #10b981; border: 1px solid rgba(16,185,129,0.3);"><i data-lucide="bar-chart-3"></i> Reports & GST</a>
+        <a href="website-leads.php" class="btn" style="padding: 6px 11px; font-size: 0.78rem; background: rgba(236,72,153,0.12); color: #ec4899; border: 1px solid rgba(236,72,153,0.3);"><i data-lucide="inbox"></i> Leads</a>
+        <a href="cms-hero.php" class="btn" style="padding: 6px 11px; font-size: 0.78rem; background: rgba(59,130,246,0.12); color: var(--primary); border: 1px solid rgba(59,130,246,0.3);"><i data-lucide="globe"></i> CMS Builder</a>
+        <a href="users.php" class="btn" style="padding: 6px 11px; font-size: 0.78rem; background: rgba(255,255,255,0.06); color: var(--text-main); border: 1px solid var(--border-color);"><i data-lucide="user-check"></i> Users</a>
     </div>
 </div>
 

@@ -62,7 +62,17 @@ $paidStmt->execute([$id]);
 $totalEmiPaid = floatval($paidStmt->fetchColumn() ?: 0);
 $grandTotalPaid = $app['down_payment'] + $totalEmiPaid;
 
+require_once __DIR__ . '/includes/document_engine.php';
+
+$companyStamp = get_setting('company_stamp_signature', '');
+$companyStampUrl = (!empty($companyStamp) && file_exists(__DIR__ . '/uploads/signatures/' . $companyStamp))
+    ? url('/uploads/signatures/' . $companyStamp)
+    : '';
+$companySignName = get_setting('company_signatory_name', 'Wazid Hoque');
+$companySignTitle = get_setting('company_signatory_title', 'Managing Director');
+
 $nocNo = 'NOC-GO4FIN-' . date('Y') . '-' . str_pad($app['id'], 5, '0', STR_PAD_LEFT);
+record_document_history('noc_certificate', $app['id'], $app['customer_id'], $nocNo, 'uploads/documents/' . $nocNo . '.pdf', 'NOC / No-Due Certificate');
 
 $shopLogoUrl = (!empty($app['shop_logo']) && file_exists(__DIR__ . '/uploads/logos/' . $app['shop_logo']))
     ? url('/uploads/logos/' . $app['shop_logo'])
@@ -105,6 +115,7 @@ $shopLogoUrl = (!empty($app['shop_logo']) && file_exists(__DIR__ . '/uploads/log
 <div class="no-print">
     <a href="javascript:history.back()" class="btn-back">← Back to Applications</a>
     <button onclick="window.print()" class="btn-print">🖨️ Print NOC Certificate (PDF)</button>
+    <a href="<?=url('/download-document.php?type=noc_certificate&id='.$app['id'])?>" class="btn-print" style="background:#2563eb; text-decoration:none; display:inline-block; margin-left:8px;">⬇️ Download PDF</a>
 </div>
 
 <div class="cert-container">
@@ -186,11 +197,18 @@ $shopLogoUrl = (!empty($app['shop_logo']) && file_exists(__DIR__ . '/uploads/log
         </div>
 
         <div class="sign-area">
-            <div style="height: 35px; display: flex; align-items: center; justify-content: center; font-style: italic; color: #1e3a8a; font-weight: 800;">
-                Wazid Hoque
+            <div style="min-height: 40px; display: flex; align-items: center; justify-content: center;">
+                <?php if (!empty($companyStampUrl)): ?>
+                    <img src="<?=e($companyStampUrl)?>" alt="Official Stamp & Signature" style="max-height: 48px; max-width: 140px; object-fit: contain;">
+                <?php else: ?>
+                    <div style="font-style: italic; color: #1e3a8a; font-weight: 800; font-size: 13px;">
+                        <?=e($companySignName)?>
+                    </div>
+                <?php endif; ?>
             </div>
-            Authorized Signatory<br>
-            <span style="font-size: 10px; color: #64748b; font-weight: normal;">GO4 Finance Private Limited</span>
+            <strong><?=e($companySignName)?></strong><br>
+            <span style="font-size: 11px; color: #475569; font-weight: 600;"><?=e($companySignTitle)?></span><br>
+            <span style="font-size: 10px; color: #64748b; font-weight: normal;">FOR GO4 FINANCE PVT LTD</span>
         </div>
     </div>
 

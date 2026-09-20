@@ -47,10 +47,10 @@ function db()
     return $p;
 }
 
-function get_setting($key, $default = '')
+function get_setting($key, $default = '', $reload = false)
 {
     static $cache = null;
-    if ($cache === null) {
+    if ($cache === null || $reload) {
         $cache = [];
         try {
             $p = db();
@@ -68,6 +68,7 @@ function set_setting($key, $value)
     $p = db();
     $stmt = $p->prepare("INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)");
     $stmt->execute([$key, $value]);
+    get_setting($key, '', true);
 }
 
 function log_audit($action, $module, $description, $userId = null)
