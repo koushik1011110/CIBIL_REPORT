@@ -341,10 +341,19 @@ function get_loan_document_data($financeId, $customerId = 0, $paymentId = 0) {
 
     // Default dates if no schedule
     if (empty($data['first_emi_date'])) {
-        $data['first_emi_date'] = date('d M Y', strtotime($app['created_at'] . ' +1 month'));
+        $cDate = new DateTime($app['created_at'] ?? 'now');
+        $cDay = (int)$cDate->format('j');
+        $startOff = ($cDay > 20) ? 2 : 1;
+        $target = (clone $cDate)->modify('first day of this month')->modify("+{$startOff} month");
+        $data['first_emi_date'] = date('d M Y', strtotime($target->format('Y-m-04')));
     }
     if (empty($data['last_emi_date'])) {
-        $data['last_emi_date'] = date('d M Y', strtotime($app['created_at'] . ' +' . max(1, $data['tenure']) . ' month'));
+        $cDate = new DateTime($app['created_at'] ?? 'now');
+        $cDay = (int)$cDate->format('j');
+        $startOff = ($cDay > 20) ? 2 : 1;
+        $endOff = $startOff + max(1, (int)$data['tenure']) - 1;
+        $target = (clone $cDate)->modify('first day of this month')->modify("+{$endOff} month");
+        $data['last_emi_date'] = date('d M Y', strtotime($target->format('Y-m-04')));
     }
 
     // Total Amount Received (Down payment + EMIs)

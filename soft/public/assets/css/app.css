@@ -38,18 +38,18 @@ body.light-theme {
     --bg-main: #f8fafc;
     --bg-surface: #ffffff;
     --bg-card: #ffffff;
-    --bg-card-hover: #f1f5f9;
-    --border-color: rgba(0, 0, 0, 0.12);
-    --border-accent: rgba(59, 130, 246, 0.4);
+    --bg-card-hover: #f8fafc;
+    --border-color: #e2e8f0;
+    --border-accent: #cbd5e1;
     --text-main: #0f172a;
     --text-muted: #64748b;
     color: #0f172a;
     background-color: #f8fafc;
-    background-image: radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.08) 0px, transparent 50%);
+    background-image: none;
 }
 body.light-theme .card, body.light-theme aside, body.light-theme header.navbar {
     background: #ffffff !important;
-    border-color: rgba(0, 0, 0, 0.1) !important;
+    border-color: #e2e8f0 !important;
     color: #0f172a !important;
 }
 body.light-theme h1, body.light-theme h2, body.light-theme h3, body.light-theme h4, body.light-theme h5, body.light-theme strong, body.light-theme label {
@@ -65,18 +65,19 @@ body.light-theme aside nav a {
     color: #475569 !important;
 }
 body.light-theme aside nav a:hover, body.light-theme aside nav a.active {
-    background: rgba(59, 130, 246, 0.1) !important;
-    color: var(--primary) !important;
+    background: #eff6ff !important;
+    color: #1d4ed8 !important;
 }
 body.light-theme table tr td, body.light-theme table tr th {
-    color: #0f172a !important;
+    color: #1e293b !important;
     border-color: #e2e8f0 !important;
 }
-body.light-theme input, body.light-theme select, body.light-theme textarea {
+body.light-theme input, body.light-theme textarea {
     background: #ffffff !important;
     color: #0f172a !important;
-    border-color: rgba(0, 0, 0, 0.18) !important;
+    border-color: #cbd5e1 !important;
 }
+
 
 
 * {
@@ -598,70 +599,178 @@ section {
     }
 }
 
-/* LIGHT THEME OVERRIDES */
+/* ==========================================================================
+   FORM SELECTS - UNIVERSAL CLEAN ARROW FIX (LIGHT & DARK)
+   ========================================================================== */
+select, .form-select {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    background-color: #ffffff !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: calc(100% - 14px) 50% !important;
+    background-size: 15px 15px !important;
+    padding: 10px 42px 10px 14px !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+    color: #0f172a !important;
+    font-size: 0.88rem !important;
+    font-weight: 500 !important;
+    outline: none !important;
+    cursor: pointer !important;
+    line-height: normal !important;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+body:not(.light-theme) select,
+body:not(.light-theme) .form-select {
+    background-color: rgba(15, 23, 42, 0.85) !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: calc(100% - 14px) 50% !important;
+    background-size: 15px 15px !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-main) !important;
+}
+
+select:focus, .form-select:focus,
+body.light-theme select:focus, body.light-theme .form-select:focus {
+    border-color: #2563eb !important;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12) !important;
+}
+
+select option {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    padding: 8px 12px !important;
+}
+
+body:not(.light-theme) select option {
+    background: #0f172a !important;
+    color: #f8fafc !important;
+}
+
+/* ==========================================================================
+   CLEAN & SIMPLE LIGHT THEME SYSTEM (ALL PAGES)
+   ========================================================================== */
 body.light-theme {
     --bg-main: #f8fafc;
     --bg-surface: #ffffff;
     --bg-card: #ffffff;
-    --bg-card-hover: #f1f5f9;
+    --bg-card-hover: #f8fafc;
     --border-color: #e2e8f0;
-    --border-accent: rgba(59, 130, 246, 0.4);
+    --border-accent: #cbd5e1;
     --text-main: #0f172a;
-    --text-muted: #475569;
-    --text-dark: #f8fafc;
-    color: #0f172a !important;
+    --text-muted: #64748b;
+    --text-dark: #0f172a;
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+    color: #1e293b !important;
     background-color: #f8fafc !important;
-    background-image: radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.05) 0px, transparent 50%) !important;
+    background-image: none !important;
 }
 
+/* Navbar */
 body.light-theme header.navbar {
     background: #ffffff !important;
     border-bottom: 1px solid #e2e8f0 !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.04) !important;
 }
 
+/* Sidebar */
 body.light-theme aside {
     background: #ffffff !important;
     border-right: 1px solid #e2e8f0 !important;
+    box-shadow: none !important;
 }
 
 body.light-theme aside nav a {
-    color: #334155 !important;
+    color: #475569 !important;
+    font-weight: 500 !important;
 }
 
-body.light-theme aside nav a:hover,
+body.light-theme aside nav a:hover {
+    background: #f1f5f9 !important;
+    color: #0f172a !important;
+    transform: none !important;
+}
+
 body.light-theme aside nav a.active {
-    background: rgba(59, 130, 246, 0.1) !important;
-    color: #2563eb !important;
+    background: #eff6ff !important;
+    color: #1d4ed8 !important;
+    border: 1px solid #bfdbfe !important;
+    font-weight: 600 !important;
 }
 
+body.light-theme aside nav a.active::before {
+    background: #2563eb !important;
+    box-shadow: none !important;
+}
+
+/* Cards & Containers - Clean, flat, simple */
 body.light-theme .card,
 body.light-theme .login-card,
-body.light-theme .loader-card {
+body.light-theme .loader-card,
+body.light-theme .form {
     background: #ffffff !important;
     border: 1px solid #e2e8f0 !important;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08) !important;
-    color: #0f172a !important;
+    border-radius: 10px !important;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04) !important;
+    color: #1e293b !important;
+    backdrop-filter: none !important;
 }
 
+/* Typography Hierarchy */
 body.light-theme h1, 
 body.light-theme h2, 
 body.light-theme h3, 
 body.light-theme h4, 
 body.light-theme h5, 
-body.light-theme h6, 
-body.light-theme strong, 
-body.light-theme label,
-body.light-theme .brand-name {
+body.light-theme h6 {
     color: #0f172a !important;
+    font-weight: 700 !important;
 }
 
-body.light-theme input,
-body.light-theme select,
+body.light-theme strong, 
+body.light-theme b {
+    color: #0f172a !important;
+    font-weight: 600 !important;
+}
+
+body.light-theme label,
+body.light-theme .field label {
+    color: #475569 !important;
+    font-weight: 600 !important;
+    font-size: 0.8rem !important;
+    letter-spacing: 0.025em !important;
+}
+
+body.light-theme .muted,
+body.light-theme small.muted,
+body.light-theme p.muted,
+body.light-theme span.muted,
+body.light-theme .text-muted {
+    color: #64748b !important;
+}
+
+/* Form Inputs */
+body.light-theme input:not([type="checkbox"]):not([type="radio"]),
 body.light-theme textarea {
-    background: #f8fafc !important;
+    background: #ffffff !important;
     color: #0f172a !important;
     border: 1px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+    padding: 10px 14px !important;
+    font-size: 0.9rem !important;
+    box-shadow: none !important;
+}
+
+body.light-theme input:focus,
+body.light-theme textarea:focus {
+    border-color: #2563eb !important;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12) !important;
+    outline: none !important;
 }
 
 body.light-theme input::placeholder,
@@ -669,212 +778,203 @@ body.light-theme textarea::placeholder {
     color: #94a3b8 !important;
 }
 
-body.light-theme table tr {
-    border-bottom-color: #e2e8f0 !important;
+/* Clean Tables */
+body.light-theme .table,
+body.light-theme table {
+    background: #ffffff !important;
+    border-collapse: collapse !important;
 }
 
-body.light-theme table tr td {
-    color: #1e293b !important;
-}
-
-body.light-theme table th {
-    background: #f1f5f9 !important;
+body.light-theme table th,
+body.light-theme .table th {
+    background: #f8fafc !important;
     color: #475569 !important;
+    font-weight: 600 !important;
+    font-size: 0.75rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.04em !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    padding: 12px 16px !important;
 }
 
-body.light-theme table tr:hover td {
+body.light-theme table td,
+body.light-theme .table td {
+    color: #1e293b !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    padding: 12px 16px !important;
+    font-size: 0.86rem !important;
+}
+
+body.light-theme table tr:hover td,
+body.light-theme .table tr:hover td {
     background: #f8fafc !important;
 }
 
-body.light-theme .user-profile-btn {
+/* Buttons - Solid, Clean, Modern */
+body.light-theme .btn,
+body.light-theme .btn-primary {
+    background: #2563eb !important;
+    color: #ffffff !important;
+    border: 1px solid #1d4ed8 !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+    transition: all 0.15s ease !important;
+}
+
+body.light-theme .btn:hover,
+body.light-theme .btn-primary:hover {
+    background: #1d4ed8 !important;
+    transform: none !important;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1) !important;
+}
+
+body.light-theme .btn * {
+    color: #ffffff !important;
+}
+
+/* Clean Metrics & Stat Cards */
+body.light-theme .metric {
+    color: #0f172a !important;
+    font-size: 1.75rem !important;
+    font-weight: 700 !important;
+}
+
+body.light-theme .score {
+    color: #2563eb !important;
+    background: none !important;
+    -webkit-text-fill-color: #2563eb !important;
+}
+
+/* Soft Modern Badges */
+body.light-theme .badge,
+.badge {
+    border-radius: 6px !important;
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    padding: 4px 10px !important;
+    letter-spacing: 0.02em !important;
+}
+
+body.light-theme .badge-success,
+.badge-success {
+    background: #ecfdf5 !important;
+    color: #047857 !important;
+    border: 1px solid #a7f3d0 !important;
+}
+
+body.light-theme .badge-warning,
+.badge-warning {
+    background: #fffbeb !important;
+    color: #b45309 !important;
+    border: 1px solid #fde68a !important;
+}
+
+body.light-theme .badge-danger,
+.badge-danger {
+    background: #fef2f2 !important;
+    color: #b91c1c !important;
+    border: 1px solid #fecaca !important;
+}
+
+body.light-theme .badge-primary,
+body.light-theme .badge-info,
+.badge-primary,
+.badge-info {
+    background: #eff6ff !important;
+    color: #1d4ed8 !important;
+    border: 1px solid #bfdbfe !important;
+}
+
+/* Overrides for Legacy Dark Inline Styles across all pages */
+body.light-theme [style*="background: rgba(15, 23, 42"],
+body.light-theme [style*="background:rgba(15, 23, 42"],
+body.light-theme [style*="background: rgba(15,23,42"],
+body.light-theme [style*="background:rgba(15,23,42"],
+body.light-theme [style*="background: rgba(30, 41, 59"],
+body.light-theme [style*="background:rgba(30, 41, 59"],
+body.light-theme [style*="background: rgba(30,41,59"],
+body.light-theme [style*="background:rgba(30,41,59"],
+body.light-theme [style*="background: #1e293b"],
+body.light-theme [style*="background:#1e293b"],
+body.light-theme [style*="background: #0f172a"],
+body.light-theme [style*="background:#0f172a"],
+body.light-theme [style*="background: linear-gradient(135deg, rgba(30"],
+body.light-theme [style*="background:linear-gradient(135deg, rgba(30"],
+body.light-theme .emi,
+body.light-theme pre,
+body.light-theme #rawJsonBox,
+body.light-theme .json-box,
+body.light-theme .doc-action-card,
+body.light-theme .bulk-card {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #1e293b !important;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04) !important;
+}
+
+body.light-theme select,
+body.light-theme select[style*="background"] {
+    background-color: #ffffff !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: calc(100% - 14px) 50% !important;
+    background-size: 15px 15px !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #0f172a !important;
+}
+
+
+body.light-theme [style*="color: #fff"]:not(.btn):not(.btn *):not(.badge):not(.badge *),
+body.light-theme [style*="color:#fff"]:not(.btn):not(.btn *):not(.badge):not(.badge *),
+body.light-theme [style*="color: #ffffff"]:not(.btn):not(.btn *):not(.badge):not(.badge *),
+body.light-theme [style*="color:#ffffff"]:not(.btn):not(.btn *):not(.badge):not(.badge *),
+body.light-theme [style*="color: #f8fafc"]:not(.btn):not(.btn *):not(.badge):not(.badge *),
+body.light-theme [style*="color:#f8fafc"]:not(.btn):not(.btn *):not(.badge):not(.badge *) {
+    color: #0f172a !important;
+}
+
+body.light-theme code {
     background: #f1f5f9 !important;
-    border-color: #cbd5e1 !important;
+    color: #0f172a !important;
+    border: 1px solid #e2e8f0 !important;
+    padding: 2px 6px !important;
+    border-radius: 4px !important;
+}
+
+/* User Profile Button */
+body.light-theme .user-profile-btn {
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
 }
 
 body.light-theme .user-name {
     color: #0f172a !important;
+    font-weight: 600 !important;
 }
 
 body.light-theme .user-role-title {
     color: #64748b !important;
 }
 
-body.light-theme .muted,
-body.light-theme small.muted,
-body.light-theme p.muted {
-    color: #64748b !important;
-}
-
-body.light-theme code {
-    background: #e2e8f0 !important;
-    color: #1e293b !important;
-}
-
-body.light-theme,
-body.light-theme p,
-body.light-theme span,
-body.light-theme h1,
-body.light-theme h2,
-body.light-theme h3,
-body.light-theme h4,
-body.light-theme h5,
-body.light-theme h6,
-body.light-theme div,
-body.light-theme label,
-body.light-theme strong,
-body.light-theme b,
-body.light-theme td,
-body.light-theme th,
-body.light-theme li,
-body.light-theme a,
-body.light-theme input,
-body.light-theme select,
-body.light-theme textarea,
-body.light-theme option,
-body.light-theme .muted,
-body.light-theme small,
-body.light-theme code,
-body.light-theme [style*="color"] {
-    color: #000000 !important;
-}
-
-body.light-theme [style*="background: #1e293b"],
-body.light-theme [style*="background:#1e293b"],
-body.light-theme [style*="background: #0f172a"],
-body.light-theme [style*="background:#0f172a"],
-body.light-theme [style*="background: rgba(15"],
-body.light-theme [style*="background:rgba(15"],
-body.light-theme [style*="background: rgba(30"],
-body.light-theme [style*="background:rgba(30"],
-body.light-theme #customerDropdownList,
-body.light-theme #rawJsonBox,
-body.light-theme .json-box,
-body.light-theme .emi,
-body.light-theme pre {
+/* Dropdown list */
+body.light-theme #customerDropdownList {
     background: #ffffff !important;
-    border-color: #cbd5e1 !important;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08) !important;
 }
 
 body.light-theme .customer-select-item {
-    border-bottom-color: #e2e8f0 !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    color: #1e293b !important;
 }
 
 body.light-theme .customer-select-item:hover {
-    background: #f1f5f9 !important;
+    background: #f8fafc !important;
+    color: #2563eb !important;
 }
-
-/* Custom Styled Form Selects */
-select, .form-select {
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    background-color: rgba(15, 23, 42, 0.65);
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-    background-size: 16px;
-    padding: 10px 38px 10px 14px;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-sm);
-    color: var(--text-main);
-    font-size: 0.88rem;
-    font-weight: 500;
-    outline: none;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-select:hover, .form-select:hover {
-    border-color: rgba(59, 130, 246, 0.5);
-}
-
-select:focus, .form-select:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px var(--primary-glow);
-}
-
-body.light-theme select, body.light-theme .form-select {
-    background-color: #ffffff !important;
-    border-color: #cbd5e1 !important;
-    color: #0f172a !important;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
-}
-
-body.light-theme select:focus, body.light-theme .form-select:focus {
-    border-color: #2563eb !important;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
-}
-
-/* Floating Customer / Search Dropdown */
-#customerDropdownList {
-    background: #0f172a !important;
-    border: 1px solid rgba(59, 130, 246, 0.4) !important;
-    border-radius: 10px !important;
-    box-shadow: 0 14px 35px rgba(0, 0, 0, 0.6) !important;
-}
-
-.customer-select-item {
-    padding: 11px 16px !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-    cursor: pointer !important;
-    transition: all 0.15s ease !important;
-}
-
-.customer-select-item:hover {
-    background: rgba(59, 130, 246, 0.15) !important;
-}
-
-body.light-theme .btn-primary,
-body.light-theme .btn-primary *,
-body.light-theme .btn-danger,
-body.light-theme .btn-danger *,
-body.light-theme .btn-success,
-body.light-theme .btn-success *,
-body.light-theme .btn-cta.btn-primary,
-body.light-theme .btn-cta.btn-primary *,
-body.light-theme .brand-badge-logo,
-body.light-theme .brand-badge-logo *,
-body.light-theme .step-badge,
-body.light-theme .step-badge *,
-body.light-theme .wa-float,
-body.light-theme .wa-float * {
-    color: #ffffff !important;
-}
-
-/* BADGE COLOR OVERRIDES FOR LIGHT & DARK MODE */
-.badge-success { background: rgba(16, 185, 129, 0.18) !important; color: #10b981 !important; border: 1px solid rgba(16, 185, 129, 0.35) !important; }
-.badge-warning { background: rgba(245, 158, 11, 0.18) !important; color: #f59e0b !important; border: 1px solid rgba(245, 158, 11, 0.35) !important; }
-.badge-danger { background: rgba(239, 68, 68, 0.18) !important; color: #ef4444 !important; border: 1px solid rgba(239, 68, 68, 0.35) !important; }
-.badge-primary { background: rgba(59, 130, 246, 0.18) !important; color: #3b82f6 !important; border: 1px solid rgba(59, 130, 246, 0.35) !important; }
-
-body.light-theme .badge-success,
-body.light-theme .badge-success * {
-    background: #e6f4ea !important;
-    color: #137333 !important;
-    border: 1px solid #ceead6 !important;
-}
-
-body.light-theme .badge-warning,
-body.light-theme .badge-warning * {
-    background: #fef7e0 !important;
-    color: #b06000 !important;
-    border: 1px solid #feefc3 !important;
-}
-
-body.light-theme .badge-danger,
-body.light-theme .badge-danger * {
-    background: #fce8e6 !important;
-    color: #c5221f !important;
-    border: 1px solid #fad2cf !important;
-}
-
-body.light-theme .badge-primary,
-body.light-theme .badge-primary * {
-    background: #e8f0fe !important;
-    color: #1a73e8 !important;
-    border: 1px solid #d2e3fc !important;
-}/* ==========================================================================
+/* ==========================================================================
    STRUCTURED NAVIGATION, CATEGORY HEADERS & SPOTLIGHT QUICK NAV
    ========================================================================== */
 

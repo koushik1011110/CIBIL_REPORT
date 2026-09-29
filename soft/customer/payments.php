@@ -38,9 +38,14 @@ if ($customerId > 0) {
 start('My Payment History');
 ?>
 
-<div class="card" style="margin-bottom: 24px;">
-    <h3 style="font-size: 1.1rem; font-weight: 800; color: #fff;">My Loan Payment Transactions</h3>
-    <p class="muted" style="margin-top: 4px;">Record of all online PayU gateway and manual cash payments made towards your loan</p>
+<div class="card" style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+    <div>
+        <h3 style="font-size: 1.1rem; font-weight: 800; color: #fff; margin: 0;">My Loan Payment Transactions</h3>
+        <p class="muted" style="margin-top: 4px; font-size: 0.85rem;">Record of all online Cashfree gateway, UPI, Autopay e-mandate, and manual payments made towards your loan</p>
+    </div>
+    <a href="<?=url('/customer/autopay.php')?>" class="btn" style="background: linear-gradient(135deg, #10b981, #059669); color: #fff; font-size: 0.85rem; font-weight: 700; padding: 8px 16px; border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+        <span>⚡</span> Autopay & Mandate Settings →
+    </a>
 </div>
 
 <div class="card" style="padding: 0; overflow-x: auto;">

@@ -305,6 +305,9 @@ start('Store Finance Onboarding Process · App #' . $app['application_no']);
                             <span class="badge-aadhaar-verified" style="display:inline-flex; align-items:center; gap:6px; background:#e6f4ea; color:#137333; border:1px solid #ceead6; padding:6px 14px; border-radius:20px; font-weight:800; font-size:0.82rem;">
                                 🛡️ ✓ Verified by Aadhaar UIDAI <?=!empty($ob['verified_aadhaar_name']) ? '— ' . e($ob['verified_aadhaar_name']) : ''?>
                             </span>
+                            <button type="button" class="btn" onclick="resetAadhaarVerification()" style="padding: 4px 10px; font-size: 0.72rem; background: rgba(239,68,68,0.12); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); border-radius: 14px; margin-left: 8px;">
+                                🔄 Clear / Re-verify
+                            </button>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -533,8 +536,8 @@ function goToStep(stepNum) {
     document.getElementById('navStep' + stepNum).classList.add('active');
     window.scrollTo({ top: 100, behavior: 'smooth' });
 }
-
 let currentAadhaarOrderId = '';
+let currentAadhaarReqId = '';
 
 document.addEventListener('DOMContentLoaded', () => {
     const savedStep = <?= (int)($ob['current_step'] ?? 1) ?>;
@@ -630,6 +633,7 @@ function sendAadhaarOtp() {
         if (data.success) {
             btn.innerHTML = '📲 Resend OTP';
             currentAadhaarOrderId = data.orderid || '';
+            currentAadhaarReqId = data.req_id || data.ReqId || data.orderid || '';
             otpBox.style.display = 'block';
             document.getElementById('aadhaarOtpInput').focus();
             alert('✓ ' + (data.message || 'Aadhaar OTP sent to registered mobile number!'));
@@ -671,6 +675,7 @@ function submitAadhaarOtp() {
     formData.append('aadhaar_no', aadhaarNo);
     formData.append('otp', otp);
     formData.append('orderid', currentAadhaarOrderId);
+    formData.append('req_id', currentAadhaarReqId);
     formData.append('finance_id', '<?=$financeId?>');
     formData.append('customer_id', '<?=$app['customer_id']?>');
 
@@ -684,7 +689,7 @@ function submitAadhaarOtp() {
         btn.innerHTML = '✓ Verify OTP';
         if (data.success) {
             otpBox.style.display = 'none';
-            badgeBox.innerHTML = '<span class="badge-aadhaar-verified" style="display:inline-flex; align-items:center; gap:6px; background:#e6f4ea; color:#137333; border:1px solid #ceead6; padding:6px 14px; border-radius:20px; font-weight:800; font-size:0.82rem; margin-top:4px;">🛡️ ✓ Verified by Aadhaar UIDAI — ' + (data.name || 'Verified Customer') + '</span>';
+            badgeBox.innerHTML = '<span class="badge-aadhaar-verified" style="display:inline-flex; align-items:center; gap:6px; background:#e6f4ea; color:#137333; border:1px solid #ceead6; padding:6px 14px; border-radius:20px; font-weight:800; font-size:0.82rem; margin-top:4px;">🛡️ ✓ Verified by Aadhaar UIDAI — ' + (data.name || 'Verified Customer') + '</span> <button type="button" class="btn" onclick="resetAadhaarVerification()" style="padding: 4px 10px; font-size: 0.72rem; background: rgba(239,68,68,0.12); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); border-radius: 14px; margin-left: 8px;">🔄 Clear / Re-verify</button>';
             alert('✓ Aadhaar Card Verified Successfully by UIDAI!\nHolder Name: ' + (data.name || 'Verified Customer'));
         } else {
             alert(data.message || 'OTP verification failed.');
@@ -694,6 +699,32 @@ function submitAadhaarOtp() {
         btn.disabled = false;
         btn.innerHTML = '✓ Verify OTP';
         alert('Error verifying OTP.');
+    });
+}
+
+function resetAadhaarVerification() {
+    if (!confirm('Are you sure you want to remove the Aadhaar verified status and try fresh?')) return;
+    
+    const formData = new FormData();
+    formData.append('step', 'reset');
+    formData.append('finance_id', '<?=$financeId?>');
+    formData.append('customer_id', '<?=$app['customer_id']?>');
+    
+    fetch('<?=url('/api/verify-aadhaar.php')?>', {
+        method: 'POST',
+        body: formData
+    })
+    .then(r => r.json())
+    .then(data => {
+        document.getElementById('aadhaarVerifyBadge').innerHTML = '';
+        document.getElementById('aadhaarOtpBox').style.display = 'none';
+        document.getElementById('btnVerifyAadhaar').disabled = false;
+        document.getElementById('btnVerifyAadhaar').innerHTML = '📲 Send Aadhaar OTP';
+        document.getElementById('aadhaarInput').value = '';
+        alert('Aadhaar verification status removed. You can now enter a new Aadhaar number and test fresh.');
+    })
+    .catch(err => {
+        alert('Error removing verification.');
     });
 }
 </script>

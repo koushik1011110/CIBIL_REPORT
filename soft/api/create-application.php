@@ -16,6 +16,27 @@ try {
         exit;
     }
 
+    // Verify Customer Credit Score eligibility: Bureau check is MANDATORY and score must be >= 600
+    $cStmt = db()->prepare('SELECT credit_score FROM customers WHERE id = ?');
+    $cStmt->execute([$customerId]);
+    $custScore = $cStmt->fetchColumn();
+
+    if ($custScore === false || $custScore === null || (int)$custScore <= 0) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Loan application blocked: Credit bureau check has not been performed for this customer yet. A verified credit score (minimum 600) is required before submitting a loan application.'
+        ]);
+        exit;
+    }
+
+    if ((int)$custScore < 600) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Loan application rejected: Customer credit score (' . (int)$custScore . ') is below the minimum required limit of 600.'
+        ]);
+        exit;
+    }
+
     $loanAmount = max(0, $productPrice - $downPayment);
 
     // Calculate EMI
@@ -54,28 +75,19 @@ try {
 
     $financeId = (int)db()->lastInsertId();
 
-    // Generate EMI Amortization Schedule
-    $today = new DateTime();
-    for ($i = 1; $i <= $tenure; $i++) {
-        $dueDate = clone $today;
-        $dueDate->modify("+$i month");
-
-        $s = db()->prepare('INSERT INTO emi_schedules (finance_id, installment_no, due_date, principal, interest, amount, status) VALUES (?, ?, ?, ?, ?, ?, "upcoming")');
-        $s->execute([
-            $financeId,
-            $i,
-            $dueDate->format('Y-m-d'),
-            round($loanAmount / $tenure, 2),
-            round($totalInterest / $tenure, 2),
-            $emi
-        ]);
-    }
+    // Generate EMI Amortization Schedule with 20th Day Cutoff Condition:
+    // If loan is taken after 20th of the month -> 1st installment starts in 2 months (e.g. Jan 21+ -> March)
+    // If loan is taken on or before 20th -> 1st installment starts in 1 month (e.g. Jan <=20 -> February)
+    $schedules = generate_emi_schedule($financeId, $loanAmount, $totalInterest, $emi, $tenure);
+    $firstDueDate = $schedules[0]['due_date'] ?? null;
+    $firstDueFormatted = $firstDueDate ? date('d M Y', strtotime($firstDueDate)) : '';
 
     echo json_encode([
         'success' => true,
         'message' => 'Finance application created successfully! Status is Pending until 1st installment/mandate or manual payment.',
         'app_no' => $appNo,
-        'finance_id' => $financeId
+        'finance_id' => $financeId,
+        'first_emi_date' => $firstDueFormatted
     ]);
 
 } catch (Exception $e) {

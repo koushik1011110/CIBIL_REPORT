@@ -225,6 +225,61 @@ start('POS Billing & Sales Terminal');
     .pos-container { grid-template-columns: 1fr; }
 }
 
+/* POS Header Search Card */
+.pos-header-card {
+    margin-bottom: 16px;
+    padding: 16px;
+    border-radius: 14px;
+    background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+body.light-theme .pos-header-card {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Search input with centered icon */
+.pos-search-wrap {
+    flex: 1;
+    position: relative;
+    min-width: 220px;
+}
+.pos-search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    color: var(--primary);
+    pointer-events: none;
+    z-index: 2;
+}
+#posSearch {
+    width: 100%;
+    padding-left: 44px !important;
+    height: 44px;
+    font-size: 0.9rem;
+    border-radius: 10px;
+    background: rgba(15,23,42,0.8);
+    border: 1px solid var(--border-color);
+    color: #fff;
+    box-sizing: border-box;
+}
+body.light-theme #posSearch {
+    background: #f8fafc !important;
+    border: 1.5px solid #cbd5e1 !important;
+    color: #0f172a !important;
+    padding-left: 44px !important;
+}
+body.light-theme #posSearch:focus {
+    background: #ffffff !important;
+    border-color: #2563eb !important;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
+}
+
+/* Category Filter Badges */
 .cat-filter-btn {
     padding: 6px 14px;
     border-radius: 20px;
@@ -236,13 +291,34 @@ start('POS Billing & Sales Terminal');
     cursor: pointer;
     transition: all 0.2s ease;
 }
-.cat-filter-btn:hover, .cat-filter-btn.active {
-    background: var(--primary);
+.cat-filter-btn:hover {
+    background: rgba(255,255,255,0.12);
     color: #fff;
-    border-color: var(--primary);
+}
+.cat-filter-btn.active {
+    background: var(--primary) !important;
+    color: #fff !important;
+    border-color: var(--primary) !important;
     box-shadow: 0 4px 12px var(--primary-glow);
 }
+body.light-theme .cat-filter-btn {
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    color: #475569;
+}
+body.light-theme .cat-filter-btn:hover {
+    background: #e2e8f0;
+    color: #0f172a;
+    border-color: #cbd5e1;
+}
+body.light-theme .cat-filter-btn.active {
+    background: #2563eb !important;
+    border-color: #2563eb !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+}
 
+/* Product Cards */
 .pos-prod-card {
     background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -272,7 +348,89 @@ start('POS Billing & Sales Terminal');
 .pos-prod-card:hover::before {
     opacity: 1;
 }
+body.light-theme .pos-prod-card {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+body.light-theme .pos-prod-card:hover {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 10px 24px rgba(37, 99, 235, 0.12), 0 0 0 1px rgba(59, 130, 246, 0.2) !important;
+    transform: translateY(-3px);
+}
+.pos-prod-title {
+    font-size: 0.92rem;
+    font-weight: 800;
+    color: #fff;
+    margin: 0 0 6px 0;
+    line-height: 1.35;
+}
+body.light-theme .pos-prod-title {
+    color: #0f172a !important;
+}
+.pos-brand-tag {
+    font-size: 0.72rem;
+    color: var(--primary);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+body.light-theme .pos-brand-tag {
+    color: #2563eb !important;
+}
+.pos-badge-options {
+    font-size: 0.68rem;
+    background: rgba(59, 130, 246, 0.2);
+    color: #60a5fa;
+    border: 1px solid rgba(59, 130, 246, 0.4);
+    border-radius: 6px;
+    padding: 2px 7px;
+    font-weight: 700;
+}
+body.light-theme .pos-badge-options {
+    background: #eff6ff !important;
+    color: #2563eb !important;
+    border: 1px solid #bfdbfe !important;
+}
+.pos-prod-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: 14px;
+    padding-top: 10px;
+    border-top: 1px dashed rgba(255,255,255,0.1);
+}
+body.light-theme .pos-prod-footer {
+    border-top: 1px dashed #e2e8f0;
+}
+.pos-add-btn {
+    margin-top: 4px;
+    padding: 4px 12px;
+    font-size: 0.75rem;
+    background: rgba(59,130,246,0.15);
+    color: var(--primary);
+    border: 1px solid rgba(59,130,246,0.3);
+    border-radius: 6px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.pos-add-btn:hover {
+    background: var(--primary);
+    color: #fff;
+}
+body.light-theme .pos-add-btn {
+    background: #eff6ff;
+    color: #2563eb;
+    border: 1px solid #bfdbfe;
+}
+body.light-theme .pos-add-btn:hover {
+    background: #2563eb;
+    color: #ffffff;
+    border-color: #2563eb;
+}
 
+/* Cart Container */
 .cart-card-container {
     background: linear-gradient(145deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.98));
     border: 1px solid rgba(255, 255, 255, 0.12);
@@ -281,6 +439,36 @@ start('POS Billing & Sales Terminal');
     position: sticky;
     top: 80px;
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+}
+body.light-theme .cart-card-container {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06) !important;
+}
+
+.cart-section-title {
+    font-weight: 800;
+    font-size: 0.88rem;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+body.light-theme .cart-section-title {
+    color: #1e40af !important;
+}
+
+/* Cart Table & Rows */
+.pos-table-scroll {
+    max-height: 220px;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background: rgba(15,23,42,0.8);
+}
+body.light-theme .pos-table-scroll {
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
 }
 
 .cart-table th {
@@ -291,10 +479,27 @@ start('POS Billing & Sales Terminal');
     letter-spacing: 0.5px;
     padding: 10px 8px;
 }
+body.light-theme .cart-table th {
+    background: #f1f5f9 !important;
+    color: #475569 !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+}
 .cart-table td {
     padding: 10px 8px;
     font-size: 0.83rem;
     vertical-align: middle;
+}
+body.light-theme .cart-table td {
+    color: #1e293b !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+}
+
+.cart-item-name {
+    color: #fff;
+    font-weight: 700;
+}
+body.light-theme .cart-item-name {
+    color: #0f172a !important;
 }
 
 .qty-btn {
@@ -310,22 +515,85 @@ start('POS Billing & Sales Terminal');
     align-items: center;
     justify-content: center;
     line-height: 1;
+    transition: all 0.15s ease;
 }
 .qty-btn:hover {
     background: var(--primary);
     border-color: var(--primary);
 }
-
-.tax-badge {
-    background: rgba(16, 185, 129, 0.15);
-    color: #10b981;
-    border: 1px solid rgba(16, 185, 129, 0.3);
-    padding: 2px 6px;
-    border-radius: 6px;
-    font-size: 0.72rem;
-    font-weight: 800;
+body.light-theme .qty-btn {
+    background: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #0f172a !important;
+}
+body.light-theme .qty-btn:hover {
+    background: #2563eb !important;
+    border-color: #2563eb !important;
+    color: #ffffff !important;
 }
 
+.cart-qty-input {
+    width: 34px;
+    padding: 2px;
+    text-align: center;
+    height: 24px;
+    font-size: 0.8rem;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    background: rgba(0,0,0,0.3);
+    color: #fff;
+}
+body.light-theme .cart-qty-input {
+    background: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #0f172a !important;
+    padding: 2px !important;
+}
+
+/* POS Summary Box */
+.pos-summary-box {
+    background: linear-gradient(145deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.95));
+    padding: 14px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    margin-bottom: 16px;
+    font-size: 0.85rem;
+}
+body.light-theme .pos-summary-box {
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+}
+.pos-total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 10px;
+    border-top: 1px solid var(--border-color);
+    font-size: 1.05rem;
+    color: #fff;
+}
+body.light-theme .pos-total-row {
+    color: #0f172a !important;
+    border-top: 1px solid #e2e8f0 !important;
+}
+body.light-theme #lblSubtotal {
+    color: #0f172a !important;
+}
+body.light-theme #lblGrandTotal {
+    color: #059669 !important;
+}
+body.light-theme #discountInput {
+    background: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #0f172a !important;
+}
+body.light-theme #custQuickSelect {
+    background: #f8fafc !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #0f172a !important;
+}
+
+/* Payment Method Radios */
 .pay-radio-box {
     background: rgba(255,255,255,0.04);
     border: 1px solid var(--border-color);
@@ -336,11 +604,83 @@ start('POS Billing & Sales Terminal');
     font-size: 0.78rem;
     font-weight: 700;
     transition: all 0.2s ease;
+    user-select: none;
 }
 .pay-radio-box:hover, .pay-radio-box.active {
     background: rgba(59, 130, 246, 0.15);
     border-color: var(--primary);
     color: #fff;
+}
+body.light-theme .pay-radio-box {
+    background: #f1f5f9;
+    border: 1.5px solid #e2e8f0;
+    color: #475569;
+}
+body.light-theme .pay-radio-box:hover {
+    background: #e2e8f0;
+    color: #0f172a;
+}
+body.light-theme .pay-radio-box.active {
+    background: #eff6ff !important;
+    border-color: #2563eb !important;
+    color: #1d4ed8 !important;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15);
+}
+
+/* Modals Light Theme */
+body.light-theme .pos-modal-card {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.15) !important;
+    color: #0f172a !important;
+}
+body.light-theme .pos-modal-title {
+    color: #0f172a !important;
+}
+.pos-variant-btn {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    text-align: left;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+.pos-variant-btn:hover {
+    border-color: var(--primary);
+    background: rgba(59,130,246,0.15);
+}
+.pos-variant-name {
+    color: #fff;
+}
+body.light-theme .pos-variant-btn {
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #0f172a !important;
+}
+body.light-theme .pos-variant-btn:hover {
+    background: #eff6ff !important;
+    border-color: #2563eb !important;
+}
+body.light-theme .pos-variant-name {
+    color: #0f172a !important;
+}
+.pos-modal-btn-cancel {
+    background: rgba(255,255,255,0.1);
+    color: var(--text-muted);
+}
+body.light-theme .pos-modal-btn-cancel {
+    background: #f1f5f9 !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #475569 !important;
+}
+body.light-theme .pos-modal-btn-cancel:hover {
+    background: #e2e8f0 !important;
+    color: #0f172a !important;
 }
 </style>
 
@@ -355,11 +695,11 @@ start('POS Billing & Sales Terminal');
     <!-- LEFT PANEL: SEARCH, CATEGORIES & PRODUCT GRID -->
     <div>
         <!-- SEARCH & CUSTOM PRODUCT HEADER -->
-        <div class="card" style="margin-bottom: 16px; padding: 16px; background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));">
+        <div class="card pos-header-card">
             <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 12px;">
-                <div style="flex: 1; position: relative; min-width: 220px;">
-                    <i data-lucide="search" style="position: absolute; left: 14px; top: 12px; width: 18px; color: var(--primary);"></i>
-                    <input type="text" id="posSearch" placeholder="Search by Product Name, SKU, or Brand..." onkeyup="filterProducts()" style="width: 100%; padding-left: 42px; height: 44px; font-size: 0.9rem; border-radius: 10px; background: rgba(15,23,42,0.8);">
+                <div class="pos-search-wrap">
+                    <i data-lucide="search" class="pos-search-icon"></i>
+                    <input type="text" id="posSearch" placeholder="Search by Product Name, SKU, or Brand..." onkeyup="filterProducts()">
                 </div>
                 <button type="button" class="btn" style="background: linear-gradient(135deg, var(--primary), #2563eb); color: #fff; height: 44px; padding: 0 16px; border-radius: 10px; font-weight: 700;" onclick="openCustomProductModal()">
                     + Add Custom Item
@@ -394,26 +734,26 @@ start('POS Billing & Sales Terminal');
                 <div class="pos-prod-card" data-category="<?=e(strtolower($prod['category'] ?: 'mobile'))?>" data-name="<?=e(strtolower($prod['name'] . ' ' . $prod['brand'] . ' ' . $prod['sku']))?>" onclick="handlePosProductClick(<?=htmlspecialchars(json_encode($prodJson))?>, <?=htmlspecialchars(json_encode($pVariants))?>)">
                     <div>
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                            <span style="font-size: 0.72rem; color: var(--primary); font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;"><?=e($prod['brand'] ?: 'General')?></span>
+                            <span class="pos-brand-tag"><?=e($prod['brand'] ?: 'General')?></span>
                             <?php if (!empty($pVariants)): ?>
-                                <span class="badge" style="font-size: 0.68rem; background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.4);">
+                                <span class="badge pos-badge-options">
                                     🏷️ <?=count($pVariants)?> Options
                                 </span>
                             <?php endif; ?>
                         </div>
-                        <h4 style="font-size: 0.92rem; font-weight: 800; color: #fff; margin: 0 0 6px 0; line-height: 1.3;"><?=e($prod['name'])?></h4>
-                        <div style="font-size: 0.74rem; color: var(--text-muted);">HSN: <?=e($prod['hsn_code'] ?: '8517')?> | SKU: <?=e($prod['sku'] ?: '-')?></div>
+                        <h4 class="pos-prod-title"><?=e($prod['name'])?></h4>
+                        <div class="muted" style="font-size: 0.74rem;">HSN: <?=e($prod['hsn_code'] ?: '8517')?> | SKU: <?=e($prod['sku'] ?: '-')?></div>
                     </div>
-                    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 14px; padding-top: 10px; border-top: 1px dashed rgba(255,255,255,0.1);">
+                    <div class="pos-prod-footer">
                         <div>
-                            <div style="font-size: 0.7rem; color: var(--text-muted);"><?=!empty($pVariants)?'Starts from':'Price'?></div>
+                            <div class="muted" style="font-size: 0.7rem;"><?=!empty($pVariants)?'Starts from':'Price'?></div>
                             <strong style="color: #10b981; font-size: 1.1rem; font-weight: 800;"><?=money($prod['selling_price'])?></strong>
                         </div>
                         <div style="text-align: right;">
                             <span style="font-size: 0.72rem; display: block; font-weight: 700; color: <?=$prod['stock']>0?'#10b981':'#ef4444'?>;">
                                 <?=$prod['stock']>0 ? 'Stock: ' . intval($prod['stock']) : 'Out of Stock'?>
                             </span>
-                            <button type="button" style="margin-top: 4px; padding: 4px 10px; font-size: 0.75rem; background: rgba(59,130,246,0.15); color: var(--primary); border: 1px solid rgba(59,130,246,0.3); border-radius: 6px; font-weight: 800;">+ Add</button>
+                            <button type="button" class="pos-add-btn">+ Add</button>
                         </div>
                     </div>
                 </div>
@@ -431,7 +771,7 @@ start('POS Billing & Sales Terminal');
             <!-- CUSTOMER DETAILS -->
             <div style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border-color);">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <label style="font-weight: 800; font-size: 0.88rem; color: var(--primary); display: flex; align-items: center; gap: 6px;">
+                    <label class="cart-section-title">
                         <span>👤 Customer Information</span>
                     </label>
                     <select id="custQuickSelect" onchange="selectCustomer(this)" style="font-size: 0.75rem; padding: 4px 8px; width: 140px; border-radius: 6px;">
@@ -451,14 +791,14 @@ start('POS Billing & Sales Terminal');
             <!-- CART ITEMS TABLE -->
             <div style="margin-bottom: 16px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                    <label style="font-weight: 800; font-size: 0.88rem; display: flex; align-items: center; gap: 6px;">
+                    <label class="cart-section-title" style="color: inherit;">
                         <span>🛒 Billing Cart Items</span>
-                        <span id="cartCountBadge" style="background: var(--primary); color: #fff; padding: 2px 8px; border-radius: 10px; font-size: 0.72rem;">0 Items</span>
+                        <span id="cartCountBadge" style="background: var(--primary); color: #fff; padding: 2px 8px; border-radius: 10px; font-size: 0.72rem; font-weight: 700;">0 Items</span>
                     </label>
                     <button type="button" onclick="clearCart()" style="background: none; border: none; color: var(--danger); font-size: 0.78rem; cursor: pointer; font-weight: 800;">Clear All</button>
                 </div>
 
-                <div style="max-height: 220px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 10px; background: rgba(15,23,42,0.8);">
+                <div class="pos-table-scroll">
                     <table class="table cart-table" style="width: 100%; border-collapse: collapse;">
                         <thead>
                             <tr>
@@ -477,7 +817,7 @@ start('POS Billing & Sales Terminal');
             </div>
 
             <!-- BILLING SUMMARY -->
-            <div style="background: linear-gradient(145deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.95)); padding: 14px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 16px; font-size: 0.85rem;">
+            <div class="pos-summary-box">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
                     <span class="muted">Subtotal:</span>
                     <strong id="lblSubtotal">₹0.00</strong>
@@ -488,7 +828,7 @@ start('POS Billing & Sales Terminal');
                     <input type="number" name="discount" id="discountInput" value="0" min="0" step="any" oninput="renderCart()" style="width: 95px; text-align: right; height: 32px; font-size: 0.88rem; border-radius: 6px;">
                 </div>
 
-                <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid var(--border-color); font-size: 1.1rem; color: #fff;">
+                <div class="pos-total-row">
                     <strong>Grand Total Payable:</strong>
                     <strong style="color: #10b981; font-size: 1.3rem; font-weight: 800;" id="lblGrandTotal">₹0.00</strong>
                 </div>
@@ -519,7 +859,7 @@ start('POS Billing & Sales Terminal');
                 </div>
             <?php endif; ?>
 
-            <button type="submit" class="btn" id="btnSubmitPosSale" style="width: 100%; padding: 14px; font-size: 1.05rem; font-weight: 800; background: <?=$isPosActivated?'linear-gradient(135deg, #059669, #10b981)':'linear-gradient(135deg, #64748b, #475569)'?>; border-radius: 10px; box-shadow: 0 6px 20px rgba(16,185,129,0.3);">
+            <button type="submit" class="btn" id="btnSubmitPosSale" style="width: 100%; padding: 14px; font-size: 1.05rem; font-weight: 800; background: <?=$isPosActivated?'linear-gradient(135deg, #059669, #10b981)':'linear-gradient(135deg, #64748b, #475569)'?>; border-radius: 10px; box-shadow: 0 6px 20px rgba(16,185,129,0.3); color: #fff;">
                 🧾 Complete Sale & Print Invoice →
             </button>
         </form>
@@ -528,8 +868,8 @@ start('POS Billing & Sales Terminal');
 
 <!-- MODAL FOR CUSTOM ITEM -->
 <div id="customItemModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); align-items: center; justify-content: center; z-index: 9999;">
-    <div class="card" style="width: 380px; max-width: 90%; padding: 22px; border-radius: 14px;">
-        <h4 style="margin-bottom: 16px; font-weight: 800; font-size: 1.05rem; color: var(--primary);">+ Add Non-Inventory / Custom Item</h4>
+    <div class="card pos-modal-card" style="width: 380px; max-width: 90%; padding: 22px; border-radius: 14px;">
+        <h4 class="pos-modal-title" style="margin-bottom: 16px; font-weight: 800; font-size: 1.05rem; color: var(--primary);">+ Add Non-Inventory / Custom Item</h4>
         <div style="display: flex; flex-direction: column; gap: 12px;">
             <div>
                 <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Item Description *</label>
@@ -544,23 +884,22 @@ start('POS Billing & Sales Terminal');
                 <input type="number" id="custItemPrice" placeholder="e.g. 299" step="any">
             </div>
         </div>
-        </div>
         <div style="display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end;">
-            <button type="button" class="btn" style="background: rgba(255,255,255,0.1);" onclick="closeCustomProductModal()">Cancel</button>
-            <button type="button" class="btn" style="background: var(--primary);" onclick="addCustomItemToCart()">Add to Cart</button>
+            <button type="button" class="btn pos-modal-btn-cancel" onclick="closeCustomProductModal()">Cancel</button>
+            <button type="button" class="btn" style="background: var(--primary); color: #fff;" onclick="addCustomItemToCart()">Add to Cart</button>
         </div>
     </div>
 </div>
 
 <!-- MODAL FOR POS API KEY LICENSE ACTIVATION -->
 <div id="posLicenseModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(6px); align-items: center; justify-content: center; z-index: 10000;">
-    <div class="card" style="width: 440px; max-width: 92%; padding: 24px; border-radius: 16px; border: 1px solid rgba(245,158,11,0.4); background: linear-gradient(145deg, #0f172a, #1e293b); box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
+    <div class="card pos-modal-card" style="width: 440px; max-width: 92%; padding: 24px; border-radius: 16px; border: 1px solid rgba(245,158,11,0.4); box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 14px;">
             <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(245,158,11,0.2); border: 1px solid rgba(245,158,11,0.4); display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
                 ⭐
             </div>
             <div>
-                <h4 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin: 0;">Premium POS Addon Feature</h4>
+                <h4 class="pos-modal-title" style="font-size: 1.05rem; font-weight: 800; margin: 0;">Premium POS Addon Feature</h4>
                 <span style="font-size: 0.75rem; color: #f59e0b; font-weight: 700;">API Key License Verification Required</span>
             </div>
         </div>
@@ -578,7 +917,7 @@ start('POS Billing & Sales Terminal');
         <div id="posApiVerifyMsg" style="display: none; margin-bottom: 14px; padding: 10px; border-radius: 8px; font-size: 0.84rem; font-weight: 700;"></div>
 
         <div style="display: flex; gap: 10px; justify-content: flex-end;">
-            <button type="button" class="btn" style="background: rgba(255,255,255,0.1);" onclick="closePosLicenseModal()">Close</button>
+            <button type="button" class="btn pos-modal-btn-cancel" onclick="closePosLicenseModal()">Close</button>
             <button type="button" class="btn" id="btnVerifyPosKey" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; font-weight: 800;" onclick="submitPosApiKey()">
                 🔑 Verify & Activate API Key
             </button>
@@ -588,10 +927,10 @@ start('POS Billing & Sales Terminal');
 
 <!-- MODAL FOR POS PRODUCT VARIANT SELECTION -->
 <div id="posVariantModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); align-items: center; justify-content: center; z-index: 10000;">
-    <div class="card" style="width: 440px; max-width: 92%; padding: 22px; border-radius: 16px; border: 1px solid var(--primary);">
+    <div class="card pos-modal-card" style="width: 440px; max-width: 92%; padding: 22px; border-radius: 16px; border: 1px solid var(--primary);">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
             <div>
-                <h4 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin: 0;" id="posVariantModalTitle">Select Variant</h4>
+                <h4 class="pos-modal-title" style="font-size: 1.05rem; font-weight: 800; margin: 0;" id="posVariantModalTitle">Select Variant</h4>
                 <p class="muted" style="font-size: 0.78rem; margin-top: 2px;">Choose specification option to add to cart</p>
             </div>
             <button type="button" onclick="closePosVariantModal()" style="background: none; border: none; color: var(--text-muted); font-size: 1.4rem; cursor: pointer;">×</button>
@@ -622,16 +961,13 @@ function openPosVariantModal(prod, variants) {
     variants.forEach(v => {
         const btn = document.createElement('button');
         btn.type = 'button';
-        btn.className = 'btn';
-        btn.style.cssText = 'width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); border-radius: 10px; text-align: left; transition: all 0.2s ease;';
-        btn.onmouseover = function() { this.style.borderColor = 'var(--primary)'; this.style.background = 'rgba(59,130,246,0.15)'; };
-        btn.onmouseout = function() { this.style.borderColor = 'var(--border-color)'; this.style.background = 'rgba(255,255,255,0.05)'; };
+        btn.className = 'btn pos-variant-btn';
         
         const vPriceFormatted = parseFloat(v.price).toLocaleString('en-IN', {minimumFractionDigits:2});
         
         btn.innerHTML = `
             <div>
-                <strong style="color: #fff; font-size: 0.9rem; display: block;">${v.variant_name}</strong>
+                <strong class="pos-variant-name" style="font-size: 0.9rem; display: block;">${v.variant_name}</strong>
                 <span class="muted" style="font-size: 0.74rem;">SKU: ${v.sku || prod.hsn} | Stock: ${v.stock}</span>
             </div>
             <strong style="color: #10b981; font-size: 1rem;">₹${vPriceFormatted}</strong>
@@ -764,15 +1100,15 @@ function renderCart() {
 
         html += '<tr style="border-bottom: 1px solid var(--border-color);">' +
             '<td>' +
-                '<strong style="color:#fff;">' + (item.name || '') + '</strong><br>' +
+                '<strong class="cart-item-name">' + (item.name || '') + '</strong><br>' +
                 '<span class="muted" style="font-size:0.7rem;">HSN: ' + (item.hsn || '8517') + '</span>' +
             '</td>' +
             '<td style="text-align: center;">' +
                 '<div style="display: inline-flex; align-items: center; gap: 4px;">' +
                     '<button type="button" class="qty-btn" onclick="updateCartQty(' + index + ', -1)">-</button>' +
-                    '<input type="number" value="' + item.qty + '" min="1" onchange="setCartQtyInput(' + index + ', this.value)" style="width: 32px; padding: 2px; text-align: center; height: 24px; font-size: 0.8rem; border-radius: 4px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.3); color: #fff;">' +
+                    '<input type="number" class="cart-qty-input" value="' + item.qty + '" min="1" onchange="setCartQtyInput(' + index + ', this.value)">' +
                     '<button type="button" class="qty-btn" onclick="updateCartQty(' + index + ', 1)">+</button>' +
-                '</div>' +
+                </div>' +
             '</td>' +
             '<td>₹' + item.price.toFixed(2) + '</td>' +
             '<td style="text-align: right; font-weight: 800; color: #10b981;">₹' + itemTotal.toFixed(2) + '</td>' +

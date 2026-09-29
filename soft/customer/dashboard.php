@@ -249,9 +249,12 @@ $isLoanFullyPaid = ($totalEmis > 0 && $unpaidEmis === 0 && in_array($f['status']
             <h3 style="font-size: 1.2rem; font-weight: 800; color: #fff; margin-top: 6px;">Next EMI Installment #<?=$nextEmi['installment_no']?>: <?=money($nextEmi['amount'])?></h3>
             <p class="muted" style="margin-top: 4px;">Due Date: <strong style="color: #60a5fa;"><?=date('d M Y', strtotime($nextEmi['due_date']))?></strong></p>
         </div>
-        <div>
-            <a href="<?=url('/api/pay-installment.php?finance_id=' . $f['id'] . '&emi_id=' . $nextEmi['id'])?>" class="btn" style="background: linear-gradient(135deg, var(--primary), #1d4ed8); font-size: 0.95rem; padding: 12px 20px;">
-                💳 Pay EMI Online Now via PayU
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <a href="<?=url('/api/pay-installment.php?finance_id=' . $f['id'] . '&emi_id=' . $nextEmi['id'])?>" class="btn" style="background: linear-gradient(135deg, #10b981, #059669); font-size: 0.95rem; padding: 12px 20px; color: #fff; text-decoration: none;">
+                ⚡ Pay EMI Online via Cashfree / UPI
+            </a>
+            <a href="<?=url('/customer/autopay.php?finance_id=' . $f['id'])?>" class="btn" style="background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.4); font-size: 0.95rem; padding: 12px 18px; color: #60a5fa; text-decoration: none;">
+                🔄 Autopay / e-Mandate
             </a>
         </div>
     </div>

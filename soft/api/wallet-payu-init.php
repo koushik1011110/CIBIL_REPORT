@@ -28,11 +28,12 @@ $udf3 = (string)($user['role'] ?? 'admin');
 $udf4 = '';
 $udf5 = '';
 
-// PayU Credentials from settings or constants
-$payuKey  = get_setting('emi_payu_key') ?: PAYU_MERCHANT_KEY;
-$payuSalt = get_setting('emi_payu_salt') ?: PAYU_SALT;
-$payuEnv  = get_setting('emi_payu_env') ?: PAYU_ENV;
-$payuBaseUrl = ($payuEnv === 'production') ? 'https://secure.payu.in/_payment' : 'https://test.payu.in/_payment';
+// Developer Wallet PayU Gateway (Permanently hardcoded in backend - Direct to Developer)
+$payuKey     = PAYU_MERCHANT_KEY;
+$payuSalt    = PAYU_SALT;
+$payuEnv     = PAYU_ENV;
+$payuBaseUrl = PAYU_BASE_URL;
+
 
 // Hash sequence for PayU: key|txnid|amount|productinfo|firstname|email|udf1|udf2|udf3|udf4|udf5||||||salt
 $hashString = $payuKey . '|' . $txnid . '|' . $amountFormatted . '|' . $productinfo . '|' . $firstname . '|' . $email . '|' . $udf1 . '|' . $udf2 . '|' . $udf3 . '|' . $udf4 . '|' . $udf5 . '||||||' . $payuSalt;

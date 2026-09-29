@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 date_default_timezone_set('Asia/Kolkata');
 
 define('DB_HOST', 'localhost');
@@ -7,11 +9,16 @@ define('DB_NAME', 'go4fin');
 define('DB_USER', 'root');
 define('DB_PASS', '');
 
-// PayU Payment Gateway Config
+// ==============================================================================
+// DEVELOPER WALLET PAYU GATEWAY CONFIGURATION
+// All Shop/Staff wallet topups go directly to the Developer account.
+// Keys are permanently configured in backend code and CANNOT be altered by Admin.
+// ==============================================================================
 define('PAYU_MERCHANT_KEY', 'JLFa4D');
 define('PAYU_SALT', 'BdsRuvcWukuapuJTrlAL0McodEVT2DMl');
-define('PAYU_ENV', 'production'); // Change to 'production' for live payments
+define('PAYU_ENV', 'production'); // 'production' or 'test'
 define('PAYU_BASE_URL', PAYU_ENV === 'production' ? 'https://secure.payu.in/_payment' : 'https://test.payu.in/_payment');
+
 
 // Dynamically determine BASE_URL
 $docRoot = str_replace('\\', '/', realpath($_SERVER['DOCUMENT_ROOT'] ?? '') ?: '');
@@ -266,5 +273,72 @@ function approve_finance_application_and_notify($financeId)
     }
 }
 
+/**
+ * Generates EMI Amortization Schedule with 20th Day Cutoff Rule:
+ * - If loan is created on or before the 20th of a month (day <= 20):
+ *   1st installment starts on the 4th of next month (+1 month). E.g., Jan 15 -> 1st EMI on 04 Feb.
+ * - If loan is created AFTER the 20th of a month (day > 20):
+ *   Skip next month, 1st installment starts on the 4th of following month (+2 months). E.g., Jan 25 -> 1st EMI on 04 March.
+ * - Subsequent installments continue on the 4th of every month.
+ *
+ * @param int $financeId
+ * @param float $loanAmount
+ * @param float $totalInterest
+ * @param float $emi
+ * @param int $tenure
+ * @param string|DateTime|null $baseDate
+ * @return array List of generated installments
+ */
+function generate_emi_schedule($financeId, $loanAmount, $totalInterest, $emi, $tenure, $baseDate = null)
+{
+    $p = db();
+    if ($baseDate instanceof DateTime) {
+        $today = clone $baseDate;
+    } elseif (!empty($baseDate)) {
+        $today = new DateTime($baseDate);
+    } else {
+        $today = new DateTime();
+    }
 
+    $dayOfMonth = (int)$today->format('j');
 
+    // Rule: If loan is taken after the 20th, skip next month and start from 2 months later (e.g. Jan 21+ -> March 4th)
+    // If loan is taken on or before 20th, start from next month (e.g. Jan <=20 -> Feb 4th)
+    $startMonthOffset = ($dayOfMonth > 20) ? 2 : 1;
+
+    // Delete existing unpaid/upcoming schedules if regenerating
+    $p->prepare("DELETE FROM emi_schedules WHERE finance_id = ? AND (status = 'upcoming' OR status = 'pending')")->execute([$financeId]);
+
+    $ins = $p->prepare('INSERT INTO emi_schedules (finance_id, installment_no, due_date, principal, interest, amount, status) VALUES (?, ?, ?, ?, ?, ?, "upcoming")');
+
+    $principalPerMonth = round($loanAmount / $tenure, 2);
+    $interestPerMonth = round($totalInterest / $tenure, 2);
+    $schedules = [];
+
+    for ($i = 1; $i <= $tenure; $i++) {
+        $monthOffset = $startMonthOffset + ($i - 1);
+
+        // Always due on the 4th of the target month
+        $target = (clone $today)->modify('first day of this month')->modify("+{$monthOffset} month");
+        $dueDateStr = $target->format('Y-m-04');
+
+        $ins->execute([
+            $financeId,
+            $i,
+            $dueDateStr,
+            $principalPerMonth,
+            $interestPerMonth,
+            $emi
+        ]);
+
+        $schedules[] = [
+            'installment_no' => $i,
+            'due_date'       => $dueDateStr,
+            'principal'      => $principalPerMonth,
+            'interest'       => $interestPerMonth,
+            'amount'         => $emi
+        ];
+    }
+
+    return $schedules;
+}

@@ -71,6 +71,8 @@ start('Credit Check & Product EMI Calculator');
                                  data-name="<?=e($c['name'])?>" 
                                  data-pan="<?=e($c['pan'])?>" 
                                  data-mobile="<?=e($c['mobile'])?>" 
+                                 data-dob="<?=e($c['dob'] ?? '')?>"
+                                 data-address="<?=e($c['address'] ?? '')?>"
                                  data-score="<?=e($c['credit_score'])?>"
                                  data-report='<?=e($c['credit_report_json'] ?? '')?>'
                                  onclick="selectCustomerItem(this)"
@@ -88,7 +90,9 @@ start('Credit Check & Product EMI Calculator');
                                 </div>
                                 <div>
                                     <?php if (!empty($c['credit_score'])): ?>
-                                        <span class="badge badge-success" style="font-size: 0.75rem;">Score: <?=e($c['credit_score'])?></span>
+                                        <span class="badge <?=($c['credit_score'] < 600 ? 'badge-danger' : 'badge-success')?>" style="font-size: 0.75rem;">
+                                            Score: <?=e($c['credit_score'])?> <?=($c['credit_score'] < 600 ? '(Ineligible)' : '')?>
+                                        </span>
                                     <?php else: ?>
                                         <span class="badge" style="background: rgba(255,255,255,0.1); color: #94a3b8; font-size: 0.75rem;">New Check</span>
                                     <?php endif; ?>
@@ -104,8 +108,7 @@ start('Credit Check & Product EMI Calculator');
                 <div class="field">
                     <label>Select Bureau / Report Type</label>
                     <select name="report_type" id="reportTypeSelect">
-                        <option value="equifax_json">Equifax CIBIL Detailed JSON Report</option>
-                        <option value="experian_pdf">Experian Bureau Official PDF Report API</option>
+                        <option value="transunion_pdf" selected>Credit Report Transunion PDF (₹80.00)</option>
                     </select>
                 </div>
                 
@@ -119,9 +122,18 @@ start('Credit Check & Product EMI Calculator');
                     <input type="text" id="dispPan" placeholder="Select customer..." readonly>
                 </div>
 
+                <div class="field">
+                    <label>Customer Gender *</label>
+                    <select id="custGender" style="background: var(--input-bg); color: #fff; width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color);">
+                        <option value="male" selected>male</option>
+                        <option value="female">female</option>
+                    </select>
+                </div>
+
+
                 <div class="field full">
                     <label style="display:flex; align-items:center; gap:8px; cursor:pointer; text-transform:none; font-weight:normal; color:var(--text-muted);">
-                        <input type="checkbox" id="consentCheck" required> Customer explicit consent obtained for credit bureau inquiry
+                        <input type="checkbox" id="consentCheck" checked required> Customer explicit consent obtained for credit bureau inquiry (consent=Y)
                     </label>
                 </div>
 
@@ -224,6 +236,20 @@ start('Credit Check & Product EMI Calculator');
         <pre class="json-box" id="rawJsonBox" style="display:none; background:#0f172a; color:#38bdf8; padding:16px; border-radius:8px; max-height:400px; overflow:auto; font-family:monospace; font-size:0.8rem; margin-top:20px; white-space:pre-wrap; word-break:break-all; border:1px solid var(--border-color);"></pre>
     </div>
 
+    <!-- LOW CREDIT SCORE INELIGIBLE WARNING CARD -->
+    <div class="card" id="lowScoreIneligibleAlert" style="display: none; margin-top: 24px; background: rgba(239, 68, 68, 0.08); border: 2px solid var(--danger); text-align: center; padding: 32px 20px; border-radius: 16px;">
+        <div style="font-size: 3rem; margin-bottom: 12px;">🚫</div>
+        <h3 style="color: var(--danger); font-size: 1.35rem; font-weight: 800; margin-bottom: 8px;">
+            Loan Application Submission Blocked (Credit Score Below 600)
+        </h3>
+        <p style="color: #cbd5e1; font-size: 0.95rem; max-width: 650px; margin: 0 auto 16px auto; line-height: 1.6;">
+            Customer credit score is <strong style="color: #f87171; font-size: 1.25rem;" id="ineligibleScoreText">---</strong>. As per financing policy, loan applications cannot be created or submitted for credit scores under <strong>600</strong>.
+        </p>
+        <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(239, 68, 68, 0.2); color: #fca5a5; padding: 8px 20px; border-radius: 20px; font-weight: 700; font-size: 0.85rem; border: 1px solid rgba(239, 68, 68, 0.4);">
+            🔒 Ineligible for Store Financing
+        </div>
+    </div>
+
     <!-- PRODUCT EMI CALCULATOR CARD -->
     <div class="card" id="emiCalcCard" style="display: block; margin-top: 24px;">
         <h3 style="font-size: 1.1rem; font-weight: 800; color: #fff; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
@@ -304,6 +330,30 @@ start('Credit Check & Product EMI Calculator');
     let currentStep = 1;
     let reportAvailable = false;
 
+    function updateEligibilityView() {
+        const emiCard = document.getElementById('emiCalcCard');
+        const lowAlert = document.getElementById('lowScoreIneligibleAlert');
+        const scoreText = document.getElementById('ineligibleScoreText');
+        const nextBtn = document.getElementById('btnNextToStep2');
+
+        if (selectedScore < 600) {
+            if (emiCard) emiCard.style.display = 'none';
+            if (lowAlert) lowAlert.style.display = 'block';
+            if (scoreText) scoreText.textContent = selectedScore;
+            if (nextBtn) {
+                nextBtn.innerHTML = 'Next Step: View Bureau Report (Score ' + selectedScore + ' < 600: Ineligible) ➔';
+                nextBtn.style.background = 'linear-gradient(135deg, #ef4444, #b91c1c)';
+            }
+        } else {
+            if (emiCard) emiCard.style.display = 'block';
+            if (lowAlert) lowAlert.style.display = 'none';
+            if (nextBtn) {
+                nextBtn.innerHTML = 'Next Step: View Bureau Report & EMI ➔';
+                nextBtn.style.background = 'linear-gradient(135deg, var(--accent), #059669)';
+            }
+        }
+    }
+
     function switchStep(stepNum) {
         if (stepNum === 2 && !selectedCustomerId && !reportAvailable) {
             alert('Please select a customer or fetch a credit bureau report first.');
@@ -320,6 +370,7 @@ start('Credit Check & Product EMI Calculator');
         } else {
             step1.style.display = 'none';
             step2.style.display = 'block';
+            updateEligibilityView();
         }
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -352,7 +403,8 @@ start('Credit Check & Product EMI Calculator');
         document.getElementById('customerSearchInput').value = `${el.dataset.name} (PAN: ${el.dataset.pan} | Mobile: ${el.dataset.mobile})`;
         document.getElementById('dispPan').value = el.dataset.pan || '';
         document.getElementById('dispMobile').value = el.dataset.mobile || '';
-        selectedScore = parseInt(el.dataset.score) || 746;
+
+        selectedScore = (el.dataset.score && parseInt(el.dataset.score) > 0) ? parseInt(el.dataset.score) : 746;
         document.getElementById('custSelectCheck').style.display = 'block';
         document.getElementById('customerDropdownList').style.display = 'none';
 
@@ -385,6 +437,7 @@ start('Credit Check & Product EMI Calculator');
             if (btn) btn.innerHTML = '<i data-lucide="shield-check"></i> ⚡ Fetch Credit Bureau Score & Report';
             if (nextBtn) nextBtn.style.display = 'none';
         }
+        updateEligibilityView();
     }
 
     function clearCustomerSelection() {
@@ -419,14 +472,18 @@ start('Credit Check & Product EMI Calculator');
             return;
         }
 
+        const reportType = document.getElementById('reportTypeSelect').value;
+
         const btn = document.getElementById('btnFetchReport');
         btn.disabled = true;
-        btn.innerHTML = 'Fetching Credit Bureau Report...';
+        btn.innerHTML = 'Connecting to Bureau API...';
 
         try {
             const formData = new FormData();
             formData.append('customer_id', selectedCustomerId);
-            formData.append('report_type', document.getElementById('reportTypeSelect').value);
+            formData.append('report_type', 'transunion_pdf');
+            formData.append('gender', document.getElementById('custGender') ? document.getElementById('custGender').value : 'male');
+            formData.append('consent', 'Y');
 
             const res = await fetch('<?=url('/api/credit-check.php')?>', {
                 method: 'POST',
@@ -540,7 +597,15 @@ start('Credit Check & Product EMI Calculator');
 
     function renderCreditReport(data) {
         currentOverallJson = data.overall_json || data.report || data.data || data;
-        selectedScore = data.score || data.credit_score || (data.data ? data.data.credit_score : 746) || 746;
+        if (data.score !== undefined && data.score !== null) {
+            selectedScore = parseInt(data.score);
+        } else if (data.credit_score !== undefined && data.credit_score !== null) {
+            selectedScore = parseInt(data.credit_score);
+        } else if (data.data && data.data.credit_score !== undefined && data.data.credit_score !== null) {
+            selectedScore = parseInt(data.data.credit_score);
+        } else {
+            selectedScore = 746;
+        }
 
         currentPdfUrl = data.pdf_url || 
                         (data.data ? (data.data.report_url || data.data.pdf_url) : null) || 
@@ -571,10 +636,18 @@ start('Credit Check & Product EMI Calculator');
         } else if (selectedScore >= 700) {
             badge.textContent = 'STANDARD RISK';
             badge.className = 'badge badge-info';
-        } else {
-            badge.textContent = 'HIGHER RISK';
+        } else if (selectedScore >= 600) {
+            badge.textContent = 'MODERATE RISK';
             badge.className = 'badge badge-warning';
+        } else if (selectedScore <= 0) {
+            badge.textContent = 'NEW TO CREDIT / NO HISTORY (' + selectedScore + ')';
+            badge.className = 'badge badge-warning';
+        } else {
+            badge.textContent = 'CRITICAL RISK (SCORE < 600 - INELIGIBLE)';
+            badge.className = 'badge badge-danger';
         }
+
+        updateEligibilityView();
 
         const jsonBox = document.getElementById('rawJsonBox');
         if (jsonBox) {
@@ -711,10 +784,18 @@ start('Credit Check & Product EMI Calculator');
                 recalculateEMI();
             };
 
+            // 20th Cutoff Condition: loans created after 20th skip next month, start on 4th of following month
+            const now = new Date();
+            const curDay = now.getDate();
+            const startOffset = (curDay > 20) ? 2 : 1;
+            const firstEmiDate = new Date(now.getFullYear(), now.getMonth() + startOffset, 4);
+            const firstEmiMonth = firstEmiDate.toLocaleString('en-IN', { month: 'short', year: 'numeric' });
+
             card.innerHTML = `
                 <div style="font-weight: 800; color: #fff;">${months} Months EMI</div>
                 <strong>₹${emi.toLocaleString('en-IN')}<span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">/mo</span></strong>
                 <div style="font-size: 0.75rem; color: var(--text-muted);">Interest: ₹${totalInterest.toLocaleString('en-IN')} | Total: ₹${totalPayable.toLocaleString('en-IN')}</div>
+                <div style="font-size: 0.72rem; color: #60a5fa; margin-top: 4px;">📅 1st EMI: <strong>04 ${firstEmiMonth}</strong> ${curDay > 20 ? '<span style="color:#f59e0b; font-size:0.68rem;">(Post-20th cycle)</span>' : ''}</div>
             `;
             grid.appendChild(card);
         });
@@ -723,6 +804,11 @@ start('Credit Check & Product EMI Calculator');
     async function submitFinanceApplication() {
         if (!selectedCustomerId) {
             alert('Mandatory: Please select a customer.');
+            return;
+        }
+
+        if (selectedScore < 600) {
+            alert('Application Blocked: Customer credit score (' + selectedScore + ') is below 600. Loan application cannot be submitted.');
             return;
         }
 
@@ -753,7 +839,7 @@ start('Credit Check & Product EMI Calculator');
 
             const data = await res.json();
             if (data.success) {
-                alert('Success! Finance Application Created: ' + data.app_no);
+                alert('Success! Finance Application Created: ' + data.app_no + (data.first_emi_date ? '\n1st Installment Due: ' + data.first_emi_date : ''));
                 window.location.href = 'applications.php';
             } else {
                 alert('Error: ' + data.message);

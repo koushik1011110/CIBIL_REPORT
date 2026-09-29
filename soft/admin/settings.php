@@ -27,19 +27,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 // Handle Settings Save POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && (!isset($_POST['action']) || $_POST['action'] !== 'test_smtp_email')) {
     $settings = [
-        'theme_mode'          => $_POST['theme_mode'] ?? 'light',
-        'emi_payu_key'        => trim($_POST['emi_payu_key'] ?? ''),
-        'emi_payu_salt'       => trim($_POST['emi_payu_salt'] ?? ''),
-        'emi_payu_env'        => $_POST['emi_payu_env'] ?? 'production',
-        'pos_addon_activated' => $_POST['pos_addon_activated'] ?? '0',
-        'pos_addon_api_key'   => trim($_POST['pos_addon_api_key'] ?? ''),
-        'smtp_host'           => trim($_POST['smtp_host'] ?? ''),
-        'smtp_port'           => trim($_POST['smtp_port'] ?? '587'),
-        'smtp_encryption'     => $_POST['smtp_encryption'] ?? 'tls',
-        'smtp_username'       => trim($_POST['smtp_username'] ?? ''),
-        'smtp_password'       => trim($_POST['smtp_password'] ?? ''),
-        'smtp_from_email'     => trim($_POST['smtp_from_email'] ?? ''),
-        'smtp_from_name'      => trim($_POST['smtp_from_name'] ?? '')
+        'theme_mode'             => $_POST['theme_mode'] ?? 'light',
+        'emi_active_gateway'     => $_POST['emi_active_gateway'] ?? 'cashfree',
+        'emi_cashfree_app_id'    => trim($_POST['emi_cashfree_app_id'] ?? ''),
+        'emi_cashfree_secret_key'=> trim($_POST['emi_cashfree_secret_key'] ?? ''),
+        'emi_cashfree_env'       => $_POST['emi_cashfree_env'] ?? 'sandbox',
+        'emi_payu_key'           => trim($_POST['emi_payu_key'] ?? ''),
+        'emi_payu_salt'          => trim($_POST['emi_payu_salt'] ?? ''),
+        'emi_payu_env'           => $_POST['emi_payu_env'] ?? 'production',
+        'pos_addon_activated'    => $_POST['pos_addon_activated'] ?? '0',
+        'pos_addon_api_key'      => trim($_POST['pos_addon_api_key'] ?? ''),
+        'smtp_host'              => trim($_POST['smtp_host'] ?? ''),
+        'smtp_port'              => trim($_POST['smtp_port'] ?? '587'),
+        'smtp_encryption'        => $_POST['smtp_encryption'] ?? 'tls',
+        'smtp_username'          => trim($_POST['smtp_username'] ?? ''),
+        'smtp_password'          => trim($_POST['smtp_password'] ?? ''),
+        'smtp_from_email'        => trim($_POST['smtp_from_email'] ?? ''),
+        'smtp_from_name'         => trim($_POST['smtp_from_name'] ?? '')
     ];
 
     foreach ($settings as $key => $val) {
@@ -47,18 +51,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (!isset($_POST['action']) || $_POST
         $stmt->execute([$key, $val]);
     }
 
-    log_audit('Settings Update', 'Settings', 'Updated system settings, EMI gateway credentials, and SMTP email setup.', u()['id']);
+    log_audit('Settings Update', 'Settings', 'Updated system settings, Cashfree EMI gateway credentials, and SMTP email setup.', u()['id']);
 
     header('Location: settings.php?msg=saved');
     exit;
 }
 
-$themeMode    = get_setting('theme_mode', 'light');
-$emiPayuKey   = get_setting('emi_payu_key', PAYU_MERCHANT_KEY);
-$emiPayuSalt  = get_setting('emi_payu_salt', PAYU_SALT);
-$emiPayuEnv   = get_setting('emi_payu_env', PAYU_ENV);
-$posActivated = get_setting('pos_addon_activated', '0');
-$posApiKey    = get_setting('pos_addon_api_key', '');
+$themeMode          = get_setting('theme_mode', 'light');
+$emiActiveGateway   = get_setting('emi_active_gateway', 'cashfree');
+$emiCashfreeAppId   = get_setting('emi_cashfree_app_id', '');
+$emiCashfreeSecret  = get_setting('emi_cashfree_secret_key', '');
+$emiCashfreeEnv     = get_setting('emi_cashfree_env', 'sandbox');
+$emiPayuKey         = get_setting('emi_payu_key', '');
+$emiPayuSalt        = get_setting('emi_payu_salt', '');
+$emiPayuEnv         = get_setting('emi_payu_env', 'production');
+$posActivated       = get_setting('pos_addon_activated', '0');
+$posApiKey          = get_setting('pos_addon_api_key', '');
+
 
 $smtpHost     = get_setting('smtp_host', '');
 $smtpPort     = get_setting('smtp_port', '587');
@@ -138,30 +147,82 @@ start('System Settings & Gateway Config');
             </div>
         </div>
 
-        <!-- PAYU GATEWAY CARD -->
-        <div class="card">
-            <h3 style="font-size: 1.1rem; font-weight: 800; color: #fff; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
-                <i data-lucide="credit-card" style="color: var(--success);"></i> PayU Payment Gateway Credentials
-            </h3>
+        <!-- CUSTOMER EMI REPAYMENT CASHFREE GATEWAY CARD -->
+        <div class="card" style="border: 1px solid rgba(16, 185, 129, 0.4); background: rgba(16, 185, 129, 0.03);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <h3 style="font-size: 1.1rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px;">
+                    <i data-lucide="zap" style="color: #10b981;"></i> Customer EMI Gateway (Cashfree)
+                </h3>
+                <span class="badge badge-success" style="font-size: 0.72rem; padding: 4px 8px; letter-spacing: 0.5px;">RECOMMENDED</span>
+            </div>
+            <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 16px; line-height: 1.4;">
+                Configure <strong>Cashfree Payments</strong> for collecting <strong>Customer Loan EMI Repayments</strong>, down payments, and foreclosures directly into your merchant account via UPI, QR, NetBanking, and Cards.
+            </p>
 
             <div class="field" style="margin-bottom: 14px;">
-                <label>PayU Merchant Key</label>
-                <input name="emi_payu_key" value="<?=e($emiPayuKey)?>" placeholder="Enter PayU Key" required style="width: 100%; padding: 10px;">
-            </div>
-
-            <div class="field" style="margin-bottom: 14px;">
-                <label>PayU Merchant Salt</label>
-                <input name="emi_payu_salt" type="password" value="<?=e($emiPayuSalt)?>" placeholder="Enter PayU Salt" required style="width: 100%; padding: 10px;">
-            </div>
-
-            <div class="field" style="margin-bottom: 16px;">
-                <label>Payment Gateway Environment</label>
-                <select name="emi_payu_env" style="width: 100%; padding: 10px;">
-                    <option value="production" <?=$emiPayuEnv === 'production' ? 'selected' : ''?>>LIVE / Production Mode</option>
-                    <option value="test" <?=$emiPayuEnv === 'test' ? 'selected' : ''?>>TEST / Sandbox Mode</option>
+                <label style="font-weight: 700;">Active Customer EMI Gateway</label>
+                <select name="emi_active_gateway" style="width: 100%; padding: 10px; font-weight: 600;">
+                    <option value="cashfree" <?=$emiActiveGateway === 'cashfree' ? 'selected' : ''?>>⚡ Cashfree Payments (Active)</option>
+                    <option value="payu" <?=$emiActiveGateway === 'payu' ? 'selected' : ''?>>PayU Money Gateway (Fallback)</option>
                 </select>
             </div>
+
+            <div style="padding: 14px; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; margin-bottom: 16px;">
+                <h4 style="font-size: 0.85rem; font-weight: 800; color: #6ee7b7; margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
+                    <i data-lucide="shield" style="width: 15px; height: 15px;"></i> Cashfree PG Credentials (v2023-08-01)
+                </h4>
+
+                <div class="field" style="margin-bottom: 12px;">
+                    <label>Cashfree App ID / Client ID *</label>
+                    <input name="emi_cashfree_app_id" value="<?=e($emiCashfreeAppId)?>" placeholder="e.g. 102938484... or CF_TEST_..." style="width: 100%; padding: 10px; font-family: monospace;">
+                </div>
+
+                <div class="field" style="margin-bottom: 12px;">
+                    <label>Cashfree Secret Key *</label>
+                    <input name="emi_cashfree_secret_key" type="password" value="<?=e($emiCashfreeSecret)?>" placeholder="e.g. cfsk_ma_prod_... or cfsk_ma_test_..." style="width: 100%; padding: 10px; font-family: monospace;">
+                </div>
+
+                <div class="field" style="margin-bottom: 6px;">
+                    <label>Cashfree Environment Mode</label>
+                    <select name="emi_cashfree_env" style="width: 100%; padding: 10px;">
+                        <option value="sandbox" <?=$emiCashfreeEnv === 'sandbox' ? 'selected' : ''?>>🧪 TEST / Sandbox Mode (sandbox.cashfree.com)</option>
+                        <option value="production" <?=$emiCashfreeEnv === 'production' ? 'selected' : ''?>>🚀 LIVE / Production Mode (api.cashfree.com)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Optional PayU Fallback Details -->
+            <details style="margin-bottom: 16px; background: rgba(15, 23, 42, 0.3); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 10px 12px;">
+                <summary style="cursor: pointer; font-size: 0.8rem; font-weight: 700; color: #94a3b8;">
+                    ⚙️ PayU Backup Gateway Settings (Click to expand)
+                </summary>
+                <div style="margin-top: 12px;">
+                    <div class="field" style="margin-bottom: 10px;">
+                        <label style="font-size: 0.78rem;">PayU Merchant Key</label>
+                        <input name="emi_payu_key" value="<?=e($emiPayuKey)?>" placeholder="PayU Key" style="width: 100%; padding: 8px; font-size: 0.82rem;">
+                    </div>
+                    <div class="field" style="margin-bottom: 10px;">
+                        <label style="font-size: 0.78rem;">PayU Salt</label>
+                        <input name="emi_payu_salt" type="password" value="<?=e($emiPayuSalt)?>" placeholder="PayU Salt" style="width: 100%; padding: 8px; font-size: 0.82rem;">
+                    </div>
+                    <div class="field">
+                        <label style="font-size: 0.78rem;">PayU Mode</label>
+                        <select name="emi_payu_env" style="width: 100%; padding: 8px; font-size: 0.82rem;">
+                            <option value="production" <?=$emiPayuEnv === 'production' ? 'selected' : ''?>>LIVE Production</option>
+                            <option value="test" <?=$emiPayuEnv === 'test' ? 'selected' : ''?>>TEST Sandbox</option>
+                        </select>
+                    </div>
+                </div>
+            </details>
+
+            <div style="background: rgba(59, 130, 246, 0.08); border: 1px dashed rgba(59, 130, 246, 0.35); border-radius: 8px; padding: 12px; font-size: 0.8rem; color: #94a3b8; line-height: 1.4;">
+                <strong style="color: #60a5fa; display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+                    <i data-lucide="shield-check" style="width: 15px; height: 15px;"></i> Developer Wallet Gateway Protected
+                </strong>
+                Shop and staff wallet topup payments are routed directly to the <strong>Core Developer Gateway</strong> hardcoded in the backend. Admin cannot modify wallet gateway keys.
+            </div>
         </div>
+
 
         <!-- POS ADDON LICENSE CONFIG CARD -->
         <div class="card" style="border: 1px solid rgba(245,158,11,0.4);">

@@ -18,6 +18,16 @@ function start($title){
                 $badgePendingApps = (int)$p->query("SELECT COUNT(*) FROM finance_applications WHERE shop_id = {$sId} AND status = 'pending'")->fetchColumn();
             }
         }
+
+        // Auto-run daily 3-day WhatsApp EMI reminder check once per day for admin/staff
+        if (in_array($x['role'] ?? '', ['superadmin', 'shop_admin', 'staff'])) {
+            $lastRun = get_setting('last_whatsapp_reminder_cron_date', '');
+            if (empty($lastRun) || date('Y-m-d', strtotime($lastRun)) !== date('Y-m-d')) {
+                require_once __DIR__ . '/whatsapp.php';
+                waba_process_due_reminders(3);
+                set_setting('last_whatsapp_reminder_cron_date', date('Y-m-d H:i:s'));
+            }
+        }
     } catch(Exception $e) {}
 ?>
 <!doctype html>
@@ -484,6 +494,7 @@ function start($title){
 
                     <a href="<?=url('/customer/finance.php')?>" class="<?=$isActive('finance.php')?>"><i data-lucide="wallet"></i> My Store Loans</a>
                     <a href="<?=url('/customer/emi-schedule.php')?>" class="<?=$isActive('emi-schedule.php')?>"><i data-lucide="calendar"></i> EMI Schedule</a>
+                    <a href="<?=url('/customer/autopay.php')?>" class="<?=$isActive('autopay.php')?>"><i data-lucide="repeat"></i> Autopay & Mandate</a>
                     <a href="<?=url('/customer/payments.php')?>" class="<?=$isActive('payments.php')?>"><i data-lucide="credit-card"></i> Payment Receipts</a>
                     <a href="<?=url('/customer/documents.php')?>" class="<?=$isActive('documents.php')?>"><i data-lucide="file-text"></i> My Documents</a>
                     <a href="<?=url('/customer/credit-report.php')?>" class="<?=$isActive('credit-report.php')?>"><i data-lucide="file-spreadsheet"></i> Credit Bureau Report</a>

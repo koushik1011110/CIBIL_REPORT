@@ -22,9 +22,10 @@ $udf5        = $_POST['udf5'] ?? '';
 
 $amountFormatted = sprintf('%.2f', $amount);
 
-// PayU Credentials
-$payuSalt = get_setting('emi_payu_salt') ?: PAYU_SALT;
-$payuEnv  = get_setting('emi_payu_env') ?: PAYU_ENV;
+// Developer Wallet PayU Gateway (Permanently hardcoded in backend - Direct to Developer)
+$payuSalt = PAYU_SALT;
+$payuEnv  = PAYU_ENV;
+
 
 // Reverse Hash sequence for PayU response:
 // salt|status||||||udf5|udf4|udf3|udf2|udf1|email|firstname|productinfo|amount|txnid|key

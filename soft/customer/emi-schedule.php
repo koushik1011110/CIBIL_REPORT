@@ -1,5 +1,6 @@
 <?php 
 require_once __DIR__.'/../includes/layout.php';
+require_once __DIR__.'/../includes/cashfree.php';
 role('customer');
 
 $p = db();
@@ -82,9 +83,22 @@ start('EMI Repayment Schedule');
     </div>
 <?php endif; ?>
 
-<?php if (isset($_GET['msg']) && ($_GET['msg'] === 'success' || $_GET['msg'] === 'paid_success')): ?>
-    <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid var(--success); color: var(--success); padding: 14px 18px; border-radius: 12px; margin-bottom: 20px;">
-        <strong>✓ Payment Successful!</strong> EMI Installment updated to PAID. Thank you for your payment.
+<?php if ((isset($_GET['msg']) && ($_GET['msg'] === 'success' || $_GET['msg'] === 'paid_success')) || (isset($_GET['payment']) && $_GET['payment'] === 'success')): ?>
+    <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid var(--success); color: var(--success); padding: 14px 18px; border-radius: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div>
+            <strong>✓ EMI Payment Successful!</strong> <?=isset($_GET['amount']) ? '₹' . number_format((float)$_GET['amount'], 2) . ' received via Cashfree.' : ''?> Installment marked as PAID.
+        </div>
+        <a href="<?=url('/customer/payments.php')?>" class="btn" style="padding: 6px 14px; font-size: 0.8rem; background: var(--success); color: #fff;">
+            🧾 View Receipts
+        </a>
+    </div>
+<?php elseif (isset($_GET['payment']) && $_GET['payment'] === 'failed'): ?>
+    <div style="background: rgba(239, 68, 68, 0.15); border: 1px solid var(--danger); color: var(--danger); padding: 14px 18px; border-radius: 12px; margin-bottom: 20px;">
+        ❌ <strong>Payment Cancelled or Incomplete:</strong> The Cashfree transaction was not completed. You can re-attempt anytime.
+    </div>
+<?php elseif (isset($_GET['payment']) && $_GET['payment'] === 'error'): ?>
+    <div style="background: rgba(239, 68, 68, 0.15); border: 1px solid var(--danger); color: var(--danger); padding: 14px 18px; border-radius: 12px; margin-bottom: 20px;">
+        ❌ <strong>Gateway Error:</strong> <?=htmlspecialchars($_GET['err'] ?? 'Unable to verify payment.')?>
     </div>
 <?php endif; ?>
 
@@ -106,6 +120,43 @@ foreach ($emis as $eItem) {
     </div>
     <div>
         <span class="badge badge-info" style="font-size: 0.85rem; padding: 8px 14px;">Total Tenure: <?=e($f['tenure'] ?? 0)?> Months</span>
+    </div>
+</div>
+
+<?php 
+$loanMandate = $f ? get_latest_loan_mandate($f['id']) : null;
+$mandateActive = ($loanMandate && $loanMandate['status'] === 'ACTIVE');
+?>
+
+<div class="card" style="margin-bottom: 20px; background: <?= $mandateActive ? 'linear-gradient(135deg, rgba(16,185,129,0.12), rgba(30,41,59,0.95))' : 'linear-gradient(135deg, rgba(59,130,246,0.12), rgba(30,41,59,0.95))' ?>; border: 1px solid <?= $mandateActive ? 'rgba(16,185,129,0.4)' : 'rgba(59,130,246,0.3)' ?>; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; padding: 18px 22px;">
+    <div style="display: flex; align-items: center; gap: 14px;">
+        <div style="width: 44px; height: 44px; border-radius: 10px; background: <?= $mandateActive ? 'rgba(16,185,129,0.2)' : 'rgba(59,130,246,0.2)' ?>; display: flex; align-items: center; justify-content: center; font-size: 1.3rem;">
+            <?= $mandateActive ? '✅' : '⚡' ?>
+        </div>
+        <div>
+            <h4 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin: 0; display: flex; align-items: center; gap: 8px;">
+                <span><?= $mandateActive ? 'Monthly Autopay Active (e-Mandate Enabled)' : 'Set Up Monthly Autopay / e-Mandate' ?></span>
+                <?php if ($mandateActive): ?>
+                    <span class="badge badge-success" style="font-size: 0.72rem; padding: 2px 8px;">ACTIVE</span>
+                <?php endif; ?>
+            </h4>
+            <p class="muted" style="font-size: 0.82rem; margin-top: 4px; color: #94a3b8;">
+                <?= $mandateActive 
+                    ? 'Your monthly EMI of <strong style="color:#10b981;">' . money($f['emi'] ?? 0) . '</strong> will be automatically debited on your due date via Cashfree.' 
+                    : 'Enable automatic monthly EMI deduction via UPI Autopay / NetBanking so you never miss a due date or incur late fees.' ?>
+            </p>
+        </div>
+    </div>
+    <div>
+        <?php if ($mandateActive): ?>
+            <a href="<?=url('/customer/autopay.php?finance_id=' . $f['id'])?>" class="btn" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #fff; font-size: 0.85rem; padding: 8px 16px; border-radius: 8px; text-decoration: none;">
+                Manage / Cancel Autopay →
+            </a>
+        <?php elseif ($unpaidCount > 0 && $f): ?>
+            <a href="<?=url('/api/setup-mandate.php?finance_id=' . $f['id'])?>" class="btn" style="background: linear-gradient(135deg, #3b82f6, #2563eb); color: #fff; font-weight: 700; padding: 9px 18px; font-size: 0.85rem; border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+                <span>⚡</span> Enable Autopay Now
+            </a>
+        <?php endif; ?>
     </div>
 </div>
 
@@ -166,8 +217,8 @@ foreach ($emis as $eItem) {
                         </td>
                         <td style="padding: 12px;">
                             <?php if (!$isPaid && $f): ?>
-                                <a href="<?=url('/api/pay-installment.php?finance_id=' . $f['id'] . '&emi_id=' . $eItem['id'])?>" class="btn" style="padding: 6px 12px; font-size: 0.8rem; background: linear-gradient(135deg, var(--primary), #1d4ed8);">
-                                    💳 Pay Online via PayU
+                                <a href="<?=url('/api/pay-installment.php?finance_id=' . $f['id'] . '&emi_id=' . $eItem['id'])?>" class="btn" style="padding: 6px 12px; font-size: 0.8rem; background: linear-gradient(135deg, #10b981, #059669); color: #fff;">
+                                    ⚡ Pay via Cashfree / UPI
                                 </a>
                             <?php else: ?>
                                 <span style="color: var(--success); font-weight: 700; font-size: 0.8rem;">✓ Cleared</span>

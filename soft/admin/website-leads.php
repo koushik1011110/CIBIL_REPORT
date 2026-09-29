@@ -61,6 +61,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ]);
             $financeId = $p->lastInsertId();
 
+            // Generate EMI Amortization Schedule with 20th Day Cutoff Condition
+            generate_emi_schedule($financeId, $financeAmount, $totalInt, $emi, $tenure);
+
             // 4. Mark Lead as Converted
             $p->prepare("UPDATE website_leads SET status = 'converted' WHERE id = ?")->execute([$leadId]);
 
