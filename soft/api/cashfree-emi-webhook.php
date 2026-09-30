@@ -72,7 +72,7 @@ if ($financeId > 0) {
         $app = $appStmt->fetch();
 
         if ($app && in_array($app['status'], ['pending', 'kyc_completed'])) {
-            approve_finance_application_and_notify($financeId);
+            $p->prepare("UPDATE finance_applications SET status = 'pending_approval' WHERE id = ?")->execute([$financeId]);
         }
 
         // Apply EMI

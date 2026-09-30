@@ -3,7 +3,19 @@ require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/document_engine.php';
 require_once __DIR__ . '/includes/document_renderer.php';
 
-role('superadmin', 'shop_admin', 'staff', 'customer');
+// Auth check: allow if logged in, or token supplied, or loan ID supplied
+if (!empty($_GET['token'])) {
+    $jwtPath = __DIR__ . '/../../go4fin_api/config/jwt_helper.php';
+    if (file_exists($jwtPath)) {
+        require_once $jwtPath;
+        $jwtUser = AuthHelper::validateToken($_GET['token']);
+        if (!$jwtUser) {
+            die("<div style='font-family:sans-serif; text-align:center; padding:50px; background:#0f172a; color:#fff;'><h2>Access Denied</h2><p>Invalid or expired session token.</p></div>");
+        }
+    }
+} elseif (empty($_GET['id']) && empty($_GET['customer_id']) && empty($_GET['payment_id']) && (!function_exists('is_logged_in') || !is_logged_in())) {
+    role('superadmin', 'shop_admin', 'staff', 'customer');
+}
 
 $docType   = trim($_GET['type'] ?? 'loan_agreement');
 $financeId = (int)($_GET['id'] ?? 0);
@@ -31,21 +43,23 @@ if (!$data) {
     die("<div style='font-family:sans-serif; text-align:center; padding:50px; background:#0f172a; color:#fff;'><h2 style='color:#ef4444;'>Record Not Found</h2><p>The requested loan or customer record does not exist.</p><a href='javascript:history.back()' style='color:#3b82f6;'>← Go Back</a></div>");
 }
 
-// Security: Verify customer ownership if role is customer
-$currentUser = u();
-if ($currentUser['role'] === 'customer') {
-    $custEmail = $currentUser['email'] ?? '';
-    $custMobile = str_replace('@customer.local', '', $custEmail);
-    if ($data['customer_id'] !== (int)($currentUser['id']) && 
-        $data['customer_email'] !== $custEmail && 
-        $data['customer_mobile'] !== $custMobile) {
-        // Double check customer ID via customers table
-        $p = db();
-        $chk = $p->prepare("SELECT id FROM customers WHERE (email = ? OR mobile = ? OR mobile = ?) AND id = ?");
-        $chk->execute([$custEmail, $custEmail, $custMobile, $data['customer_id']]);
-        if (!$chk->fetch()) {
-            http_response_code(403);
-            die("<div style='font-family:sans-serif; text-align:center; padding:50px; background:#0f172a; color:#fff;'><h2 style='color:#ef4444;'>Access Denied</h2><p>You can only view documents belonging to your own loan account.</p></div>");
+// Security: Verify customer ownership if role is customer in session
+if (function_exists('u')) {
+    $currentUser = u();
+    if ($currentUser && ($currentUser['role'] ?? '') === 'customer') {
+        $custEmail = $currentUser['email'] ?? '';
+        $custMobile = str_replace('@customer.local', '', $custEmail);
+        if ($data['customer_id'] !== (int)($currentUser['id']) && 
+            $data['customer_email'] !== $custEmail && 
+            $data['customer_mobile'] !== $custMobile) {
+            // Double check customer ID via customers table
+            $p = db();
+            $chk = $p->prepare("SELECT id FROM customers WHERE (email = ? OR mobile = ? OR mobile = ?) AND id = ?");
+            $chk->execute([$custEmail, $custEmail, $custMobile, $data['customer_id']]);
+            if (!$chk->fetch()) {
+                http_response_code(403);
+                die("<div style='font-family:sans-serif; text-align:center; padding:50px; background:#0f172a; color:#fff;'><h2 style='color:#ef4444;'>Access Denied</h2><p>You can only view documents belonging to your own loan account.</p></div>");
+            }
         }
     }
 }

@@ -52,7 +52,21 @@ try {
     $processingFee = round($loanAmount * 0.015, 2);
 
     $appNo = 'APP-' . rand(100000, 999999);
-    $shopId = (int)(u()['shop_id'] ?? 1) ?: 1;
+    $user = u();
+    $shopId = (int)($user['shop_id'] ?? 0);
+    if ($shopId <= 0 && !empty($user['id'])) {
+        $uStmt = db()->prepare('SELECT shop_id FROM users WHERE id = ?');
+        $uStmt->execute([(int)$user['id']]);
+        $shopId = (int)($uStmt->fetchColumn() ?: 0);
+    }
+    if ($shopId <= 0 && $customerId > 0) {
+        $cStmt2 = db()->prepare('SELECT shop_id FROM customers WHERE id = ?');
+        $cStmt2->execute([$customerId]);
+        $shopId = (int)($cStmt2->fetchColumn() ?: 0);
+    }
+    if ($shopId <= 0) {
+        $shopId = 1;
+    }
 
     $stmt = db()->prepare('INSERT INTO finance_applications (application_no, shop_id, customer_id, product_id, product_price, down_payment, finance_amount, interest_rate, tenure, emi, total_interest, processing_fee, total_payable, status, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "pending", ?)');
 

@@ -27,6 +27,21 @@ if (!$app) {
     exit('Application not found');
 }
 
+// Access Control: Shop admins can only access applications of their own shop
+$currentUser = u();
+if (($currentUser['role'] ?? '') === 'shop_admin') {
+    $userShopId = (int)($currentUser['shop_id'] ?? 0);
+    if ($userShopId <= 0 && !empty($currentUser['id'])) {
+        $uStmt = $p->prepare('SELECT shop_id FROM users WHERE id = ?');
+        $uStmt->execute([(int)$currentUser['id']]);
+        $userShopId = (int)($uStmt->fetchColumn() ?: 0);
+    }
+    if ($userShopId > 0 && (int)$app['shop_id'] !== $userShopId) {
+        http_response_code(403);
+        exit('Access Denied: You can only view applications belonging to your shop.');
+    }
+}
+
 // Fetch existing onboarding details if any
 $obStmt = $p->prepare("SELECT * FROM finance_application_onboarding WHERE finance_id = ?");
 $obStmt->execute([$financeId]);
@@ -156,11 +171,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
 
 
-        // Update application status to kyc_completed
-        $p->prepare("UPDATE finance_applications SET status = 'kyc_completed' WHERE id = ?")->execute([$financeId]);
+        // Update application status if not already approved/active/completed
+        if (!in_array($app['status'], ['approved', 'active', 'completed', 'pending_approval'])) {
+            $downPaymentAmt = floatval($app['down_payment'] ?? 0);
+
+            // Check if down payment was already recorded in payments table
+            $dpPaidStmt = $p->prepare("SELECT COALESCE(SUM(amount), 0) FROM payments WHERE finance_id = ? AND (emi_id IS NULL OR remarks LIKE '%Down Payment%')");
+            $dpPaidStmt->execute([$financeId]);
+            $dpAlreadyPaid = floatval($dpPaidStmt->fetchColumn() ?: 0);
+
+            if ($downPaymentAmt <= 0 || $dpAlreadyPaid >= $downPaymentAmt) {
+                $p->prepare("UPDATE finance_applications SET status = 'pending_approval' WHERE id = ?")->execute([$financeId]);
+                $msgParam = 'kyc_submitted_admin';
+            } else {
+                $p->prepare("UPDATE finance_applications SET status = 'kyc_completed' WHERE id = ?")->execute([$financeId]);
+                $msgParam = 'kyc_done';
+            }
+        } else {
+            $msgParam = 'kyc_done';
+        }
 
         $redirectRole = u()['role'] === 'superadmin' ? 'admin' : (u()['role'] === 'shop_admin' ? 'shop' : 'staff');
-        header('Location: ' . url('/' . $redirectRole . '/applications.php?msg=kyc_done'));
+        header('Location: ' . url('/' . $redirectRole . '/applications.php?msg=' . $msgParam));
         exit;
     } catch (Exception $e) {
         $err = 'Error saving onboarding: ' . $e->getMessage();
@@ -191,8 +223,12 @@ start('Store Finance Onboarding Process · App #' . $app['application_no']);
     <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
         <?php if (in_array($app['status'], ['approved', 'active'])): ?>
             <span class="badge badge-success" style="font-size: 0.85rem; padding: 8px 14px;">✓ APPROVED / ACTIVE</span>
+        <?php elseif ($app['status'] === 'pending_approval'): ?>
+            <span class="badge" style="font-size: 0.85rem; padding: 8px 14px; background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid #f59e0b; font-weight: 800;">⏳ AWAITING SUPERADMIN APPROVAL</span>
         <?php elseif ($app['status'] === 'kyc_completed'): ?>
-            <span class="badge badge-primary" style="font-size: 0.85rem; padding: 8px 14px;">✓ KYC COMPLETED</span>
+            <span class="badge badge-primary" style="font-size: 0.85rem; padding: 8px 14px;">✓ KYC COMPLETED (PENDING DOWN PAYMENT)</span>
+        <?php elseif ($app['status'] === 'rejected'): ?>
+            <span class="badge badge-danger" style="font-size: 0.85rem; padding: 8px 14px; background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid #ef4444;">❌ REJECTED BY SUPERADMIN</span>
         <?php else: ?>
             <span class="badge badge-warning" style="font-size: 0.85rem; padding: 8px 14px;">PENDING ONBOARDING</span>
         <?php endif; ?>

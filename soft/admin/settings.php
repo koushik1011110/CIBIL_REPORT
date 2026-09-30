@@ -37,6 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (!isset($_POST['action']) || $_POST
         'emi_payu_env'           => $_POST['emi_payu_env'] ?? 'production',
         'pos_addon_activated'    => $_POST['pos_addon_activated'] ?? '0',
         'pos_addon_api_key'      => trim($_POST['pos_addon_api_key'] ?? ''),
+        'pos_activation_price'   => trim($_POST['pos_activation_price'] ?? '1999'),
         'smtp_host'              => trim($_POST['smtp_host'] ?? ''),
         'smtp_port'              => trim($_POST['smtp_port'] ?? '587'),
         'smtp_encryption'        => $_POST['smtp_encryption'] ?? 'tls',
@@ -67,6 +68,7 @@ $emiPayuSalt        = get_setting('emi_payu_salt', '');
 $emiPayuEnv         = get_setting('emi_payu_env', 'production');
 $posActivated       = get_setting('pos_addon_activated', '0');
 $posApiKey          = get_setting('pos_addon_api_key', '');
+$posPrice           = get_setting('pos_activation_price', '1999');
 
 
 $smtpHost     = get_setting('smtp_host', '');
@@ -226,22 +228,37 @@ start('System Settings & Gateway Config');
 
         <!-- POS ADDON LICENSE CONFIG CARD -->
         <div class="card" style="border: 1px solid rgba(245,158,11,0.4);">
-            <h3 style="font-size: 1.1rem; font-weight: 800; color: #fff; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
-                <i data-lucide="key" style="color: #f59e0b;"></i> Premium POS Addon License
-            </h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3 style="font-size: 1.1rem; font-weight: 800; color: #fff; margin: 0; display: flex; align-items: center; gap: 8px;">
+                    <i data-lucide="shopping-cart" style="color: #f59e0b;"></i> Store POS Addon & Cashfree Gateway
+                </h3>
+                <span class="badge" style="background: rgba(16,185,129,0.2); color: #10b981; border: 1px solid #10b981; font-weight: 800; font-size: 0.72rem; padding: 2px 8px; border-radius: 6px;">
+                    ⭐ SUPERADMIN FREE
+                </span>
+            </div>
+
+            <div style="background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.3); color: #60a5fa; padding: 12px 14px; border-radius: 10px; font-size: 0.82rem; line-height: 1.5; margin-bottom: 16px;">
+                <strong>⚡ Rule Enforced:</strong> POS Terminal is completely <strong>FREE for Superadmin</strong>. For store/merchant accounts, POS remains locked until they pay online via Cashfree Payment Gateway.
+            </div>
 
             <div class="field" style="margin-bottom: 16px;">
-                <label>POS Addon Status</label>
+                <label>Shop POS Activation Price (₹)</label>
+                <input type="number" step="any" name="pos_activation_price" value="<?=e($posPrice)?>" placeholder="1999" style="width: 100%; padding: 10px; font-weight: 700; font-size: 1rem; color: #10b981;">
+                <small class="muted" style="margin-top: 4px; display: block;">Price in INR charged to stores when unlocking POS via Cashfree (Default: ₹1999).</small>
+            </div>
+
+            <div class="field" style="margin-bottom: 16px;">
+                <label>Global POS Addon Override (Fallback)</label>
                 <select name="pos_addon_activated" style="width: 100%; padding: 10px;">
-                    <option value="0" <?=$posActivated === '0' ? 'selected' : ''?>>🔒 Deactivated (Requires Developer API Verification)</option>
-                    <option value="1" <?=$posActivated === '1' ? 'selected' : ''?>>✅ Activated (POS Billing & GST Enabled)</option>
+                    <option value="0" <?=$posActivated === '0' ? 'selected' : ''?>>🔒 Per-Store Locking Enforced (Requires ₹1999 payment)</option>
+                    <option value="1" <?=$posActivated === '1' ? 'selected' : ''?>>✅ Globally Active (All stores allowed)</option>
                 </select>
             </div>
 
             <div class="field" style="margin-bottom: 16px;">
-                <label>POS License / API Key</label>
+                <label>Offline Developer License Key</label>
                 <input name="pos_addon_api_key" value="<?=e($posApiKey)?>" placeholder="e.g. KKWEBMART-PREMIUIM-ADDON-2022" style="width: 100%; padding: 10px; font-weight: 700;">
-                <small class="muted" style="margin-top: 4px; display: block;">Enter Developer POS API Key for activation.</small>
+                <small class="muted" style="margin-top: 4px; display: block;">Developer manual offline bypass key.</small>
             </div>
         </div>
 

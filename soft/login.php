@@ -14,7 +14,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $s->execute([$loginInput, $loginInput]);
         $x = $s->fetch();
 
-        // 2. If not found in users, search by customer email or mobile or PAN
+        // 1.5 If not found in users, search in shops table by email or phone or name
+        if (!$x) {
+            $cleanInput = ltrim($loginInput, '0');
+            $withZero = '0' . $cleanInput;
+            $shStmt = $p->prepare('SELECT * FROM shops WHERE (email = ? OR phone = ? OR phone = ? OR phone = ? OR name = ?) AND status = "active" LIMIT 1');
+            $shStmt->execute([$loginInput, $loginInput, $cleanInput, $withZero, $loginInput]);
+            $shopFound = $shStmt->fetch();
+
+            if ($shopFound) {
+                // Find existing shop_admin user for this shop
+                $uStmt = $p->prepare('SELECT * FROM users WHERE shop_id = ? AND role = "shop_admin" LIMIT 1');
+                $uStmt->execute([$shopFound['id']]);
+                $x = $uStmt->fetch();
+
+                if (!$x && !empty($shopFound['email'])) {
+                    $uStmt2 = $p->prepare('SELECT * FROM users WHERE email = ? LIMIT 1');
+                    $uStmt2->execute([$shopFound['email']]);
+                    $x = $uStmt2->fetch();
+                    if ($x) {
+                        $p->prepare('UPDATE users SET shop_id = ?, role = "shop_admin" WHERE id = ?')->execute([$shopFound['id'], $x['id']]);
+                        $x['shop_id'] = $shopFound['id'];
+                        $x['role'] = 'shop_admin';
+                    }
+                }
+
+                if (!$x) {
+                    $adminEmail = !empty($shopFound['email']) ? $shopFound['email'] : ('shop' . $shopFound['id'] . '@store.local');
+                    $h = password_hash($pass ?: '123456', PASSWORD_DEFAULT);
+                    $ins = $p->prepare('INSERT INTO users (shop_id, name, email, password, role, status) VALUES (?, ?, ?, ?, "shop_admin", "active")');
+                    $ins->execute([$shopFound['id'], $shopFound['name'], $adminEmail, $h]);
+                    $userId = (int)$p->lastInsertId();
+                    $x = [
+                        'id' => $userId,
+                        'shop_id' => $shopFound['id'],
+                        'name' => $shopFound['name'],
+                        'email' => $adminEmail,
+                        'password' => $h,
+                        'role' => 'shop_admin',
+                        'status' => 'active'
+                    ];
+                }
+            }
+        }
+
+        // 2. If not found in users or shops, search by customer email or mobile or PAN
         if (!$x) {
             $cStmt = $p->prepare('SELECT * FROM customers WHERE email=? OR mobile=? OR pan=? LIMIT 1');
             $cStmt->execute([$loginInput, $loginInput, $loginInput]);

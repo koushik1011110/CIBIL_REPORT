@@ -7,9 +7,22 @@ $p = db();
 $u = u();
 $shopId = (int)($u['shop_id'] ?? 0);
 
+$isSuperAdmin = ($u['role'] === 'superadmin');
+
+// If superadmin, allow switching shop via query param ?shop_id=...
+if ($isSuperAdmin && isset($_GET['shop_id']) && (int)$_GET['shop_id'] > 0) {
+    $shopId = (int)$_GET['shop_id'];
+}
+
 // If superadmin has no shop_id, fallback to first active shop or 1
-if ($shopId === 0 && $u['role'] === 'superadmin') {
+if ($shopId === 0 && $isSuperAdmin) {
     $shopId = (int)($p->query("SELECT id FROM shops ORDER BY id ASC LIMIT 1")->fetchColumn() ?: 1);
+}
+
+// Fetch all shops for superadmin dropdown selector
+$allShops = [];
+if ($isSuperAdmin) {
+    $allShops = $p->query("SELECT id, name FROM shops ORDER BY id ASC")->fetchAll();
 }
 
 // Fetch shop details for POS
@@ -20,11 +33,15 @@ $shop = $shopStmt->fetch() ?: ['name' => 'Demo Store', 'gstin' => '', 'address' 
 $msg = '';
 $err = '';
 
-// Check POS Addon License Activation State
-$isPosActivated = (get_setting('pos_addon_activated', '0') === '1');
+// Check POS Addon License Activation State:
+// 1. SUPERADMIN IS ALWAYS FREE & UNLOCKED!
+// 2. Shop accounts are locked unless shops.pos_active == 1
+$isPosActivated = is_pos_unlocked($shopId, $u);
+$posPrice = floatval(get_setting('pos_activation_price', '1999'));
+if ($posPrice <= 0) $posPrice = 1999.00;
 
 // Handle POS API Key Verification (AJAX / Form)
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'verify_pos_api_key') {
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && isset($_POST['action']) && $_POST['action'] === 'verify_pos_api_key') {
     header('Content-Type: application/json');
     $apiKey = trim($_POST['pos_api_key'] ?? '');
     
@@ -36,26 +53,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
     
     if (strtoupper($apiKey) !== strtoupper($validLicenseCode)) {
-        echo json_encode(['success' => false, 'message' => '❌ Invalid POS API Key! Code does not match. Contact to developer for activate this feature.']);
+        echo json_encode(['success' => false, 'message' => '❌ Invalid POS API Key! Code does not match. Please pay online via Cashfree to activate this feature.']);
         exit;
     }
     
-    // Save setting permanently in database
+    // Save setting permanently for this shop
+    activate_shop_pos($shopId, 'LICENSE_CODE', $validLicenseCode);
     set_setting('pos_addon_activated', '1');
     set_setting('pos_addon_api_key', $validLicenseCode);
     
     echo json_encode([
         'success' => true, 
-        'message' => '✓ POS Premium Addon Verified & Activated Successfully!'
+        'message' => '✓ POS Premium Addon Verified & Activated Successfully for this Store!'
     ]);
     exit;
 }
 
 // Process POS Sale Submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'create_pos_sale') {
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && isset($_POST['action']) && $_POST['action'] === 'create_pos_sale') {
     try {
         if (!$isPosActivated) {
-            throw new Exception("POS Premium Addon is not activated. Please verify POS API Key to enable GST billing.");
+            throw new Exception("POS Billing Terminal is locked for this shop. Please complete payment of ₹" . number_format($posPrice, 0) . " via Cashfree to unlock POS billing.");
         }
 
         $customerName   = trim($_POST['customer_name'] ?? 'Walk-in Customer');
@@ -211,10 +229,14 @@ $custStmt = $p->prepare("SELECT id, name, mobile, gstin FROM customers WHERE sho
 $custStmt->execute([$shopId]);
 $recentCustomers = $custStmt->fetchAll();
 
-start('POS Billing & Sales Terminal');
+start('POS Terminal');
 ?>
 
 <style>
+/* Remove page header on POS billing terminal */
+.page-header {
+    display: none !important;
+}
 .pos-container {
     display: grid;
     grid-template-columns: 1fr 460px;
@@ -682,6 +704,115 @@ body.light-theme .pos-modal-btn-cancel:hover {
     background: #e2e8f0 !important;
     color: #0f172a !important;
 }
+
+/* POS Locked State Styles */
+.pos-locked-card {
+    background: linear-gradient(145deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.98));
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    border-radius: 20px;
+    padding: 38px 30px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 35px rgba(245, 158, 11, 0.1);
+    max-width: 900px;
+    margin: 0 auto 30px auto;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+body.light-theme .pos-locked-card {
+    background: #ffffff !important;
+    border: 1px solid #fed7aa !important;
+    box-shadow: 0 15px 40px rgba(245, 158, 11, 0.08), 0 4px 12px rgba(0,0,0,0.04) !important;
+}
+.pos-locked-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #f59e0b, #ef4444, #10b981);
+}
+.pos-badge-locked {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(245, 158, 11, 0.15);
+    border: 1px solid rgba(245, 158, 11, 0.4);
+    color: #f59e0b;
+    font-size: 0.8rem;
+    font-weight: 800;
+    padding: 6px 14px;
+    border-radius: 9999px;
+    margin-bottom: 16px;
+    letter-spacing: 0.5px;
+}
+body.light-theme .pos-badge-locked {
+    background: #fffbeb !important;
+    color: #d97706 !important;
+    border-color: #fde68a !important;
+}
+.pos-price-pill {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    display: inline-block;
+    padding: 16px 32px;
+    border-radius: 16px;
+    margin: 18px 0;
+}
+body.light-theme .pos-price-pill {
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+}
+.pos-features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin: 26px 0;
+    text-align: left;
+}
+.pos-feature-item {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+body.light-theme .pos-feature-item {
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+}
+.pos-feature-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+    flex-shrink: 0;
+}
+.btn-unlock-pos {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px 36px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #ffffff !important;
+    text-decoration: none;
+    border-radius: 14px;
+    font-size: 1.1rem;
+    font-weight: 800;
+    box-shadow: 0 12px 25px -4px rgba(16, 185, 129, 0.4), 0 0 20px rgba(16, 185, 129, 0.2);
+    transition: all 0.25s ease;
+    border: none;
+    cursor: pointer;
+}
+.btn-unlock-pos:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 32px -4px rgba(16, 185, 129, 0.5), 0 0 30px rgba(16, 185, 129, 0.3);
+    background: linear-gradient(135deg, #059669, #047857);
+}
 </style>
 
 <?php if ($err): ?>
@@ -689,6 +820,120 @@ body.light-theme .pos-modal-btn-cancel:hover {
         ❌ <?=e($err)?>
     </div>
 <?php endif; ?>
+
+<?php if (isset($_GET['activated']) && $_GET['activated'] == 1): ?>
+    <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid var(--success); color: var(--success); padding: 14px 20px; border-radius: 12px; margin-bottom: 22px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <i data-lucide="check-circle" style="width: 22px; height: 22px; color: #10b981;"></i>
+            <div>
+                <strong style="font-size: 1rem;">🎉 POS Terminal Unlocked & Activated Successfully!</strong>
+                <div style="font-size: 0.82rem; color: #94a3b8; margin-top: 2px;">Your payment of ₹1,999 has been verified via Cashfree. You now have lifetime access to POS GST Billing.</div>
+            </div>
+        </div>
+        <span class="badge" style="background: #10b981; color: #fff; font-weight: 800; padding: 4px 10px; border-radius: 6px;">LIFETIME ACTIVE</span>
+    </div>
+<?php endif; ?>
+
+<?php if (!$isPosActivated): ?>
+    <!-- LOCKED SCREEN FOR SHOP ACCOUNTS -->
+    <div class="pos-locked-card">
+        <div class="pos-badge-locked">
+            🔒 STORE TERMINAL LOCKED • PREMIUM ADDON
+        </div>
+        
+        <h2 style="font-size: 1.75rem; font-weight: 800; color: #fff; margin-bottom: 8px;">
+            Unlock POS Billing & GST Invoicing Terminal
+        </h2>
+        <p style="color: #94a3b8; font-size: 0.95rem; max-width: 680px; margin: 0 auto; line-height: 1.6;">
+            POS Terminal is locked for <strong><?=e($shop['name'])?></strong>. Activate instant retail billing, GST invoicing, barcode scanning, and thermal printing by completing the one-time activation.
+        </p>
+
+        <div class="pos-price-pill">
+            <div style="font-size: 0.78rem; font-weight: 800; color: #10b981; text-transform: uppercase; letter-spacing: 1px;">One-Time Store License</div>
+            <div style="font-size: 2.8rem; font-weight: 800; color: #fff; margin: 4px 0; letter-spacing: -1px;">
+                <span style="color: #10b981;">₹</span><?=number_format($posPrice, 0)?>
+            </div>
+            <div style="font-size: 0.78rem; color: #94a3b8;">Lifetime Unlimited Access • Instant Cashfree Activation • No Monthly Renewal</div>
+        </div>
+
+        <!-- FEATURES GRID -->
+        <div class="pos-features-grid">
+            <div class="pos-feature-item">
+                <div class="pos-feature-icon" style="background: rgba(59,130,246,0.15); color: #3b82f6;">🧾</div>
+                <div>
+                    <strong style="color: #fff; font-size: 0.92rem; display: block;">GST & Retail Tax Invoices</strong>
+                    <span class="muted" style="font-size: 0.78rem; line-height: 1.4; display: block; margin-top: 2px;">Generate legal invoices with intra-state (CGST+SGST) and inter-state (IGST) tax calculation.</span>
+                </div>
+            </div>
+            <div class="pos-feature-item">
+                <div class="pos-feature-icon" style="background: rgba(16,185,129,0.15); color: #10b981;">🖨️</div>
+                <div>
+                    <strong style="color: #fff; font-size: 0.92rem; display: block;">Thermal Receipt Printing</strong>
+                    <span class="muted" style="font-size: 0.78rem; line-height: 1.4; display: block; margin-top: 2px;">1-Click auto-print formatted for standard 80mm and 58mm thermal POS roll printers.</span>
+                </div>
+            </div>
+            <div class="pos-feature-item">
+                <div class="pos-feature-icon" style="background: rgba(245,158,11,0.15); color: #f59e0b;">🔍</div>
+                <div>
+                    <strong style="color: #fff; font-size: 0.92rem; display: block;">Barcode & SKU Fast Search</strong>
+                    <span class="muted" style="font-size: 0.78rem; line-height: 1.4; display: block; margin-top: 2px;">Blazing fast live search by barcode scanner, SKU, model or product brand.</span>
+                </div>
+            </div>
+            <div class="pos-feature-item">
+                <div class="pos-feature-icon" style="background: rgba(168,85,247,0.15); color: #a855f7;">📦</div>
+                <div>
+                    <strong style="color: #fff; font-size: 0.92rem; display: block;">Live Stock Inventory Sync</strong>
+                    <span class="muted" style="font-size: 0.78rem; line-height: 1.4; display: block; margin-top: 2px;">Automatically decrements store stock on every invoice generated to prevent overselling.</span>
+                </div>
+            </div>
+            <div class="pos-feature-item">
+                <div class="pos-feature-icon" style="background: rgba(236,72,153,0.15); color: #ec4899;">👥</div>
+                <div>
+                    <strong style="color: #fff; font-size: 0.92rem; display: block;">Customer Purchase Records</strong>
+                    <span class="muted" style="font-size: 0.78rem; line-height: 1.4; display: block; margin-top: 2px;">Stores walk-in customers or links with registered profiles for easy repeat billing.</span>
+                </div>
+            </div>
+            <div class="pos-feature-item">
+                <div class="pos-feature-icon" style="background: rgba(6,182,212,0.15); color: #06b6d4;">⚡</div>
+                <div>
+                    <strong style="color: #fff; font-size: 0.92rem; display: block;">Instant Gateway Clearance</strong>
+                    <span class="muted" style="font-size: 0.78rem; line-height: 1.4; display: block; margin-top: 2px;">Clear payment via Cashfree and POS terminal activates automatically in real-time.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- STORE DETAILS CONFIRMATION -->
+        <div style="background: rgba(15,23,42,0.5); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 12px 18px; margin: 18px auto; max-width: 500px; display: flex; justify-content: space-around; font-size: 0.8rem;">
+            <div><span class="muted">Store:</span> <strong><?=e($shop['name'])?></strong></div>
+            <div><span class="muted">Phone:</span> <strong><?=e($shop['phone'] ?: 'N/A')?></strong></div>
+            <div><span class="muted">Price:</span> <strong style="color: #10b981;">₹<?=number_format($posPrice, 0)?></strong></div>
+        </div>
+
+        <!-- PRIMARY CASHFREE ACTION CTA -->
+        <div style="margin-top: 24px;">
+            <a href="<?=url('/api/pay-pos-activation.php')?>" class="btn-unlock-pos">
+                <i data-lucide="zap" style="width: 22px; height: 22px;"></i>
+                Pay ₹<?=number_format($posPrice, 0)?> via Cashfree & Unlock POS Instantly →
+            </a>
+        </div>
+
+        <!-- SECURITY TRUST BADGES -->
+        <div style="margin-top: 22px; display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap; font-size: 0.78rem; color: #94a3b8;">
+            <span style="display: flex; align-items: center; gap: 5px;">
+                <i data-lucide="shield-check" style="width: 15px; height: 15px; color: #10b981;"></i> 100% Secure via Cashfree Payments
+            </span>
+            <span>•</span>
+            <span>UPI (PhonePe, Google Pay, Paytm)</span>
+            <span>•</span>
+            <span>Debit / Credit Cards & NetBanking</span>
+        </div>
+
+        <div style="margin-top: 24px; padding-top: 18px; border-top: 1px dashed rgba(255,255,255,0.1); font-size: 0.8rem; color: #64748b;">
+            Have an offline developer license code? 
+            <a href="javascript:void(0)" onclick="openPosLicenseModal()" style="color: #f59e0b; font-weight: 700; text-decoration: underline;">Click here to enter API Key</a>
+        </div>
+    </div>
+<?php else: ?>
 
 <div class="pos-container">
     
@@ -865,6 +1110,7 @@ body.light-theme .pos-modal-btn-cancel:hover {
         </form>
     </div>
 </div>
+<?php endif; /* End isPosActivated conditional check */ ?>
 
 <!-- MODAL FOR CUSTOM ITEM -->
 <div id="customItemModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); align-items: center; justify-content: center; z-index: 9999;">
@@ -1223,17 +1469,20 @@ function submitPosApiKey() {
     });
 }
 
-document.getElementById('posForm').addEventListener('submit', function(e) {
-    if (!isPosActivated) {
-        e.preventDefault();
-        openPosLicenseModal();
-        return false;
-    }
-    if (cart.length === 0) {
-        e.preventDefault();
-        alert('Please add at least one item to the cart before completing the sale.');
-    }
-});
+const posFormEl = document.getElementById('posForm');
+if (posFormEl) {
+    posFormEl.addEventListener('submit', function(e) {
+        if (!isPosActivated) {
+            e.preventDefault();
+            openPosLicenseModal();
+            return false;
+        }
+        if (cart.length === 0) {
+            e.preventDefault();
+            alert('Please add at least one item to the cart before completing the sale.');
+        }
+    });
+}
 </script>
 
 <?php render_end(); ?>

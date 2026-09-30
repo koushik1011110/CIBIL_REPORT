@@ -2,8 +2,15 @@
 require_once __DIR__.'/../includes/layout.php';
 role('shop_admin');
 
-$p = db();
-$sid = (int)(u()['shop_id'] ?: 1);
+$user = u();
+$userId = (int)($user['id'] ?? 0);
+$sid = (int)($user['shop_id'] ?? 0);
+
+if ($sid <= 0 && $userId > 0) {
+    $uStmt = $p->prepare('SELECT shop_id FROM users WHERE id = ?');
+    $uStmt->execute([$userId]);
+    $sid = (int)($uStmt->fetchColumn() ?: 0);
+}
 
 // Fetch Unpaid EMI Installments for Dropdown grouped by Customer
 $emiStmt = $p->prepare('

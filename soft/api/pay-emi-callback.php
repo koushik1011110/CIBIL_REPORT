@@ -27,8 +27,14 @@ $db = db();
 
 if (strtolower($status) === 'success' && $isHashValid && !empty($txnid) && $financeId > 0) {
     try {
-        // Approve Finance Application and dispatch customer login credentials email
-        approve_finance_application_and_notify($financeId);
+        // If application was pending or awaiting downpayment, move to superadmin approval queue
+        $appStmt = $db->prepare("SELECT status FROM finance_applications WHERE id = ?");
+        $appStmt->execute([$financeId]);
+        $appCurrentStatus = $appStmt->fetchColumn();
+
+        if (in_array($appCurrentStatus, ['pending', 'kyc_completed'])) {
+            $db->prepare("UPDATE finance_applications SET status = 'pending_approval' WHERE id = ?")->execute([$financeId]);
+        }
 
         // Identify target EMI & Process Payment
         if ($emiId > 0) {

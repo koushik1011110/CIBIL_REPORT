@@ -9,7 +9,8 @@ $totalShops = (int)$p->query('SELECT COUNT(*) FROM shops')->fetchColumn();
 $totalCustomers = (int)$p->query('SELECT COUNT(*) FROM customers')->fetchColumn();
 $totalApps = (int)$p->query('SELECT COUNT(*) FROM finance_applications')->fetchColumn();
 $approvedApps = (int)$p->query('SELECT COUNT(*) FROM finance_applications WHERE status IN ("approved", "active")')->fetchColumn();
-$pendingApps = (int)$p->query('SELECT COUNT(*) FROM finance_applications WHERE status = "pending"')->fetchColumn();
+$pendingApprovalApps = (int)$p->query('SELECT COUNT(*) FROM finance_applications WHERE status = "pending_approval"')->fetchColumn();
+$pendingApps = (int)$p->query('SELECT COUNT(*) FROM finance_applications WHERE status IN ("pending", "kyc_completed")')->fetchColumn();
 
 $totalFinanced = floatval($p->query('SELECT COALESCE(SUM(finance_amount), 0) FROM finance_applications')->fetchColumn());
 $totalPayable = floatval($p->query('SELECT COALESCE(SUM(total_payable), 0) FROM finance_applications')->fetchColumn());
@@ -23,7 +24,7 @@ $appStmt = $p->query('
     JOIN customers c ON c.id = f.customer_id 
     LEFT JOIN shops s ON s.id = f.shop_id 
     LEFT JOIN products p ON p.id = f.product_id 
-    ORDER BY f.id DESC LIMIT 5
+    ORDER BY (CASE WHEN f.status = "pending_approval" THEN 0 ELSE 1 END), f.id DESC LIMIT 5
 ');
 $latestApps = $appStmt->fetchAll();
 
@@ -39,6 +40,21 @@ $topShops = $shopStmt->fetchAll();
 
 start('Super Admin Dashboard');
 ?>
+
+<?php if ($pendingApprovalApps > 0): ?>
+    <div style="background: rgba(245, 158, 11, 0.15); border: 1px solid #f59e0b; color: #f59e0b; padding: 14px 20px; border-radius: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 1.4rem;">⚡</span>
+            <div>
+                <strong style="color: #fff; font-size: 0.95rem;"><?=$pendingApprovalApps?> Loan Application(s) Awaiting Your Approval!</strong>
+                <p style="margin: 2px 0 0 0; font-size: 0.8rem; color: #cbd5e1;">Merchant store applications with completed KYC & downpayment require Superadmin approval to activate.</p>
+            </div>
+        </div>
+        <a href="applications.php?filter=pending_approval" class="btn" style="background: #f59e0b; color: #000; font-weight: 800; padding: 8px 16px; font-size: 0.82rem;">
+            Review & Approve Now →
+        </a>
+    </div>
+<?php endif; ?>
 
 <!-- WELCOME BANNER & QUICK ACTIONS -->
 <div class="card" style="background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95)); border: 1px solid var(--border-accent); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; padding: 24px;">
@@ -115,7 +131,7 @@ start('Super Admin Dashboard');
                 <i data-lucide="file-text" style="width: 22px; height: 22px;"></i>
             </div>
         </div>
-        <small class="muted" style="margin-top: 8px; display: block;"><?=$approvedApps?> Approved | <?=$pendingApps?> Pending</small>
+        <small class="muted" style="margin-top: 8px; display: block;"><?=$approvedApps?> Approved | <strong style="color: #f59e0b;"><?=$pendingApprovalApps?> Awaiting Approval</strong> | <?=$pendingApps?> Onboarding</small>
     </div>
 
     <div class="card" style="border-left: 4px solid var(--success);">
@@ -181,8 +197,14 @@ start('Super Admin Dashboard');
                                 <td style="padding: 10px;">
                                     <?php if($r['status'] === 'approved' || $r['status'] === 'active'): ?>
                                         <span class="badge badge-success" style="font-size:0.7rem;">APPROVED</span>
+                                    <?php elseif($r['status'] === 'pending_approval'): ?>
+                                        <span class="badge" style="background:rgba(245, 158, 11, 0.2); color:#f59e0b; border:1px solid #f59e0b; font-size:0.68rem; font-weight:800;">⚡ AWAITING APPROVAL</span>
+                                    <?php elseif($r['status'] === 'kyc_completed'): ?>
+                                        <span class="badge badge-primary" style="font-size:0.68rem;">KYC DONE</span>
+                                    <?php elseif($r['status'] === 'rejected'): ?>
+                                        <span class="badge badge-danger" style="font-size:0.68rem;">REJECTED</span>
                                     <?php else: ?>
-                                        <span class="badge badge-warning" style="font-size:0.7rem;">PENDING</span>
+                                        <span class="badge badge-warning" style="font-size:0.68rem;">PENDING</span>
                                     <?php endif; ?>
                                 </td>
                             </tr>

@@ -435,7 +435,18 @@ function start($title){
                     </div>
 
                     <a href="<?=$base?>/dashboard.php" class="<?=$isActive('dashboard.php')?>"><i data-lucide="layout-dashboard"></i> Dashboard</a>
-                    <a href="<?=$base?>/pos.php" class="<?=$isActive('pos.php')?>"><i data-lucide="shopping-cart"></i> POS Billing Terminal</a>
+                    <?php 
+                    $isNavPosActive = is_pos_unlocked($x['shop_id'] ?? 0, $x);
+                    ?>
+                    <a href="<?=$base?>/pos.php" class="<?=$isActive('pos.php')?>">
+                        <i data-lucide="<?=$isNavPosActive ? 'shopping-cart' : 'lock'?>"></i>
+                        <span>POS Terminal</span>
+                        <?php if (!$isNavPosActive): ?>
+                            <span class="nav-badge-pill" style="background: rgba(245,158,11,0.2); color: #f59e0b; border: 1px solid rgba(245,158,11,0.4); font-size: 0.65rem; padding: 2px 6px; font-weight: 700;">🔒 ₹1999</span>
+                        <?php else: ?>
+                            <span class="nav-badge-pill" style="background: rgba(16,185,129,0.2); color: #10b981; border: 1px solid rgba(16,185,129,0.4); font-size: 0.65rem; padding: 2px 6px; font-weight: 700;">ACTIVE</span>
+                        <?php endif; ?>
+                    </a>
                     
                     <div class="nav-divider"></div>
                     <div class="nav-category-header"><span>Loans & Customers</span></div>

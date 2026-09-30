@@ -1,6 +1,8 @@
 <?php require_once __DIR__.'/../config/config.php';
 require_once __DIR__.'/onboarding_db_init.php';
 require_once __DIR__.'/document_db_init.php';
+require_once __DIR__.'/pos_db_init.php';
+ensurePosSystemTable();
 function u(){return $_SESSION['user']??null;}
 
 function login($x){$_SESSION['user']=$x;}

@@ -906,7 +906,11 @@ body.light-theme .cc-modal-cancel-btn:hover {
         <h2 class="cc-section-title" style="font-size: 1.35rem;">
             Credit Bureau Assessment & EMI Financing
         </h2>
-        <div>
+        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+            <div class="cc-wallet-pill">
+                <span class="cc-wallet-label"><?=e($walletEntityName)?>:</span>
+                <span class="cc-wallet-val"><?=money($walletBalance)?></span>
+            </div>
             <a href="customer-create.php" class="btn" style="background: var(--primary); color: #fff; font-size: 0.88rem; font-weight: 700; display: inline-flex; align-items: center; gap: 8px;">
                 <i data-lucide="user-plus"></i> + Add Customer
             </a>

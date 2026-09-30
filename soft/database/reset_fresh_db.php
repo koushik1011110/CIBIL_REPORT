@@ -46,6 +46,11 @@ $tablesToEnsure = [
         logo VARCHAR(255) NULL,
         status ENUM('active','inactive') DEFAULT 'active',
         wallet_balance DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+        pos_active TINYINT(1) NOT NULL DEFAULT 0,
+        pos_price DECIMAL(10,2) NOT NULL DEFAULT 1999.00,
+        pos_activated_at DATETIME NULL,
+        pos_order_id VARCHAR(100) NULL,
+        pos_payment_ref VARCHAR(100) NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
 
@@ -253,9 +258,11 @@ $tablesToEnsure = [
         cf_order_id VARCHAR(100) NULL,
         finance_id INT NULL,
         emi_id INT NULL,
+        shop_id INT NULL,
         customer_id INT NULL,
         amount DECIMAL(12,2) NOT NULL,
         gateway VARCHAR(30) DEFAULT 'cashfree',
+        order_type VARCHAR(50) DEFAULT 'EMI',
         payment_session_id VARCHAR(255) NULL,
         status VARCHAR(30) DEFAULT 'PENDING',
         payment_mode VARCHAR(50) NULL,

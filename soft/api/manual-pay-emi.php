@@ -34,19 +34,19 @@ try {
         exit;
     }
 
-    $isDownPayment = (isset($_POST['is_downpayment']) && $_POST['is_downpayment'] == 1) || (in_array($app['status'], ['pending', 'kyc_completed']) && $emiId === 0 && !$isForeclosure);
-
-    // Approve application if still pending
-    if (in_array($app['status'], ['pending', 'kyc_completed'])) {
-        approve_finance_application_and_notify($financeId);
-    }
+    $isDownPayment = (isset($_POST['is_downpayment']) && $_POST['is_downpayment'] == 1) || (in_array($app['status'], ['pending', 'kyc_completed', 'pending_approval']) && $emiId === 0 && !$isForeclosure);
 
     $installmentNo = null;
     $dueDateStr = '';
 
     if ($isDownPayment) {
+        // Down payment received: DO NOT auto-approve the application!
+        // Instead, update status to 'pending_approval' so it forwards to Superadmin for final sanction.
+        if (!in_array($app['status'], ['approved', 'active', 'completed'])) {
+            $db->prepare("UPDATE finance_applications SET status = 'pending_approval' WHERE id = ?")->execute([$financeId]);
+        }
         if (empty($remarks)) {
-            $remarks = 'Down Payment Received (Application Approved)';
+            $remarks = 'Down Payment Received (Application Submitted to Superadmin for Approval)';
         }
     } else if ($isForeclosure) {
         // FULL FORECLOSURE / BULK SETTLEMENT
@@ -131,7 +131,9 @@ try {
         $userId
     );
 
-    header('Location: ' . $_SERVER['HTTP_REFERER'] . '?msg=paid_success');
+    $redirectMsg = $isDownPayment ? 'downpayment_recorded' : 'paid_success';
+    $referer = strtok($_SERVER['HTTP_REFERER'] ?? '', '?');
+    header('Location: ' . ($referer ?: url('/shop/applications.php')) . '?msg=' . $redirectMsg);
     exit;
 
 } catch (Exception $e) {

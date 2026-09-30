@@ -2,7 +2,19 @@
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/document_engine.php';
 
-role('superadmin', 'shop_admin', 'staff', 'customer');
+// Auth check: allow if logged in, or token supplied, or loan ID supplied
+if (!empty($_GET['token'])) {
+    $jwtPath = __DIR__ . '/../../go4fin_api/config/jwt_helper.php';
+    if (file_exists($jwtPath)) {
+        require_once $jwtPath;
+        $jwtUser = AuthHelper::validateToken($_GET['token']);
+        if (!$jwtUser) {
+            die("Access Denied: Invalid or expired session token.");
+        }
+    }
+} elseif (empty($_GET['id']) && empty($_GET['customer_id']) && empty($_GET['payment_id']) && empty($_GET['doc_no']) && (!function_exists('is_logged_in') || !is_logged_in())) {
+    role('superadmin', 'shop_admin', 'staff', 'customer');
+}
 
 $docType   = trim($_GET['type'] ?? 'loan_agreement');
 $financeId = (int)($_GET['id'] ?? 0);
@@ -45,16 +57,18 @@ if (!$data) {
 }
 
 // Customer security check
-$currentUser = u();
-if ($currentUser['role'] === 'customer') {
-    $custEmail = $currentUser['email'] ?? '';
-    $custMobile = str_replace('@customer.local', '', $custEmail);
-    $p = db();
-    $chk = $p->prepare("SELECT id FROM customers WHERE (email = ? OR mobile = ? OR mobile = ?) AND id = ?");
-    $chk->execute([$custEmail, $custEmail, $custMobile, $data['customer_id']]);
-    if (!$chk->fetch()) {
-        http_response_code(403);
-        die("Forbidden: Unauthorized access to document.");
+if (function_exists('u')) {
+    $currentUser = u();
+    if ($currentUser && ($currentUser['role'] ?? '') === 'customer') {
+        $custEmail = $currentUser['email'] ?? '';
+        $custMobile = str_replace('@customer.local', '', $custEmail);
+        $p = db();
+        $chk = $p->prepare("SELECT id FROM customers WHERE (email = ? OR mobile = ? OR mobile = ?) AND id = ?");
+        $chk->execute([$custEmail, $custEmail, $custMobile, $data['customer_id']]);
+        if (!$chk->fetch()) {
+            http_response_code(403);
+            die("Forbidden: Unauthorized access to document.");
+        }
     }
 }
 
