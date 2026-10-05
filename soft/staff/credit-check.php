@@ -292,8 +292,9 @@ start('Credit Check & Product EMI Calculator');
             </div>
 
             <div class="field">
-                <label style="color: #60a5fa; font-weight: 700;">Interest Rate (% p.a.) ✏️</label>
-                <input type="number" step="0.1" min="0" max="100" id="calcRate" value="12.0" oninput="recalculateEMI()" style="color: #10b981; font-weight: 800; border: 1px solid var(--primary);">
+                <label style="color: #60a5fa; font-weight: 700;">Interest Rate (% p.m. / Per Month) ✏️</label>
+                <input type="number" step="0.1" min="0" max="100" id="calcRate" value="2.0" oninput="recalculateEMI()" style="color: #10b981; font-weight: 800; border: 1px solid var(--primary);">
+                <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 3px;">Monthly flat rate (e.g. 1.5% or 2.0% per month)</div>
             </div>
 
             <div class="field">
@@ -760,16 +761,13 @@ start('Credit Check & Product EMI Calculator');
         grid.innerHTML = '';
 
         tenures.forEach(months => {
-            const monthlyRate = (rate / 12) / 100;
-            let emi = 0;
-            if (principal > 0 && monthlyRate > 0) {
-                emi = Math.round((principal * monthlyRate * Math.pow(1 + monthlyRate, months)) / (Math.pow(1 + monthlyRate, months) - 1));
-            } else if (principal > 0) {
-                emi = Math.round(principal / months);
+            // Per month interest calculation
+            let totalInterest = 0;
+            if (principal > 0 && rate > 0) {
+                totalInterest = Math.round((principal * rate * months) / 100);
             }
-
-            const totalPayable = emi * months;
-            const totalInterest = Math.max(0, totalPayable - principal);
+            const totalPayable = principal + totalInterest;
+            const emi = months > 0 ? Math.round(totalPayable / months) : 0;
 
             const card = document.createElement('div');
             card.className = `emi ${selectedTenure === months ? 'selected' : ''}`;

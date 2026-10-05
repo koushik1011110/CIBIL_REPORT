@@ -90,7 +90,7 @@ start('My Store Finance Loans');
                         <td style="padding: 12px;"><?=e($r['product_name'] ?: 'Mobile Product')?></td>
                         <td style="padding: 12px;"><?=money($r['product_price'])?><br><span style="font-size:0.75rem; color:var(--text-muted);">Down: <?=money($r['down_payment'])?></span></td>
                         <td style="padding: 12px;"><strong style="color:var(--primary);"><?=money($r['finance_amount'])?></strong></td>
-                        <td style="padding: 12px;"><strong><?=money($r['emi'])?>/mo</strong><br><span style="font-size:0.75rem; color:var(--text-muted);"><?=e($r['tenure'])?> Mos @ <?=e($r['interest_rate'])?>%</span></td>
+                        <td style="padding: 12px;"><strong><?=money($r['emi'])?>/mo</strong><br><span style="font-size:0.75rem; color:var(--text-muted);"><?=e($r['tenure'])?> Mos @ <?=e($r['interest_rate'])?>% p.m.</span></td>
                         <td style="padding: 12px;"><?=money($r['total_payable'])?></td>
                         <td style="padding: 12px;">
                             <span style="color: var(--success); font-weight: 700;"><?=money($totalPaid)?> Paid</span><br>

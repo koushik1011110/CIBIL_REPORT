@@ -9,7 +9,7 @@ try {
     $productPrice = (float)($_POST['product_price'] ?? 0);
     $downPayment  = (float)($_POST['down_payment'] ?? 0);
     $tenure       = (int)($_POST['tenure'] ?? 6);
-    $interestRate = (float)($_POST['interest_rate'] ?? 12.0);
+    $interestRate = (float)($_POST['interest_rate'] ?? 2.0);
 
     if ($customerId <= 0 || $productPrice <= 0) {
         echo json_encode(['success' => false, 'message' => 'Invalid parameters provided for finance application.']);
@@ -39,16 +39,14 @@ try {
 
     $loanAmount = max(0, $productPrice - $downPayment);
 
-    // Calculate EMI
-    $monthlyRate = ($interestRate / 12) / 100;
-    if ($monthlyRate > 0) {
-        $emi = ($loanAmount * $monthlyRate * pow(1 + $monthlyRate, $tenure)) / (pow(1 + $monthlyRate, $tenure) - 1);
+    // Calculate EMI (Per Month Flat Interest)
+    if ($interestRate > 0) {
+        $totalInterest = round(($loanAmount * $interestRate * $tenure) / 100, 2);
     } else {
-        $emi = $loanAmount / $tenure;
+        $totalInterest = 0;
     }
-    $emi = round($emi, 2);
-    $totalPayable = round($emi * $tenure, 2);
-    $totalInterest = max(0, round($totalPayable - $loanAmount, 2));
+    $totalPayable = round($loanAmount + $totalInterest, 2);
+    $emi = $tenure > 0 ? round($totalPayable / $tenure, 2) : 0;
     $processingFee = round($loanAmount * 0.015, 2);
 
     $appNo = 'APP-' . rand(100000, 999999);

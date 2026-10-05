@@ -107,7 +107,7 @@ start('Finance Applications');
                             <?php endif; ?>
                         </td>
                         <td style="padding: 12px;"><strong style="color:var(--primary);"><?=money($r['finance_amount'])?></strong></td>
-                        <td style="padding: 12px;"><strong><?=money($r['emi'])?>/mo</strong><br><span style="font-size:0.75rem; color:var(--text-muted);"><?=e($r['tenure'])?> Months @ <?=e($r['interest_rate'])?>%</span></td>
+                        <td style="padding: 12px;"><strong><?=money($r['emi'])?>/mo</strong><br><span style="font-size:0.75rem; color:var(--text-muted);"><?=e($r['tenure'])?> Months @ <?=e($r['interest_rate'])?>% p.m.</span></td>
                         <td style="padding: 12px;">
                             <?php if ($r['status'] === 'approved' || $r['status'] === 'active'): ?>
                                 <span class="badge badge-success">APPROVED / ACTIVE</span>
