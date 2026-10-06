@@ -114,7 +114,7 @@ function ensureDocumentTables() {
             [
                 'doc_type' => 'sanction_letter',
                 'title' => 'Loan Sanction Letter',
-                'description' => 'Official credit approval letter outlining sanctioned amount, tenure, interest rate, EMI, and terms of credit.',
+                'description' => 'Official credit approval letter outlining sanctioned amount, tenure, EMI, and terms of credit.',
                 'header_text' => 'GO4 FINANCE PRIVATE LIMITED · CREDIT APPROVAL & SANCTION LETTER',
                 'footer_text' => 'This sanction is valid for 30 days from date of issue and is subject to counter sign and down payment clearance.',
                 'sign_name' => 'Wazid Hoque',
@@ -134,12 +134,12 @@ function ensureDocumentTables() {
             [
                 'doc_type' => 'repayment_schedule',
                 'title' => 'EMI Repayment Schedule',
-                'description' => 'Detailed installment amortization breakdown showing principal, interest, due dates, and status.',
+                'description' => 'Detailed installment repayment breakdown showing installment amounts, due dates, and payment status.',
                 'header_text' => 'GO4 FINANCE PRIVATE LIMITED · MONTHLY INSTALLMENT AMORTIZATION SCHEDULE',
                 'footer_text' => 'Payments made after due date are subject to applicable late penalty charges.',
                 'sign_name' => 'Wahida Begum',
                 'sign_title' => 'Director (Operations)',
-                'content' => 'The amortization table below details the scheduled monthly repayment obligations for Loan Application #{{loan_number}}. Each installment consists of principal repayment and applicable interest calculated for the {{tenure}}-month tenure. Please ensure timely payments via UPI, AutoPay, or at retail counter on or before each specified due date.'
+                'content' => 'The amortization table below details the scheduled monthly repayment obligations for Loan Application #{{loan_number}}. Each installment consists of scheduled monthly repayments calculated for the {{tenure}}-month tenure. Please ensure timely payments via UPI, AutoPay, or at retail counter on or before each specified due date.'
             ],
             [
                 'doc_type' => 'disbursement_letter',
@@ -169,7 +169,7 @@ function ensureDocumentTables() {
                 'footer_text' => 'If you notice any discrepancy in this statement, please contact contact@go4fin.com within 7 days.',
                 'sign_name' => 'Wahida Begum',
                 'sign_title' => 'Accounts & Operations Head',
-                'content' => 'Chronological statement of account for Loan Account #{{loan_number}} covering all financial transactions, charges, interest, and repayments from origination to present date.'
+                'content' => 'Chronological statement of account for Loan Account #{{loan_number}} covering all financial transactions, charges, and repayments from origination to present date.'
             ],
             [
                 'doc_type' => 'outstanding_statement',
@@ -209,7 +209,7 @@ function ensureDocumentTables() {
                 'footer_text' => 'The loan account is permanently closed in GO4 Finance Private Limited records.',
                 'sign_name' => 'Wazid Hoque',
                 'sign_title' => 'Managing Director',
-                'content' => 'This is to formally certify that Loan Account #{{loan_number}} in the name of {{customer_name}} has reached successful maturity and complete repayment. All obligations, interest, and charges have been satisfied in full. The loan account stands officially CLOSED in our registry and credit reporting files.'
+                'content' => 'This is to formally certify that Loan Account #{{loan_number}} in the name of {{customer_name}} has reached successful maturity and complete repayment. All repayment obligations and charges have been satisfied in full. The loan account stands officially CLOSED in our registry and credit reporting files.'
             ]
         ];
 

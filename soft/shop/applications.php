@@ -18,7 +18,7 @@ if ($sid <= 0) {
 } else {
     $q = $p->prepare('
         SELECT f.*, c.name as customer_name, c.mobile as customer_mobile, c.aadhaar_verified as cust_aadhaar_verified,
-               ob.aadhaar_verified as ob_aadhaar_verified, p.name as product_name,
+               ob.aadhaar_verified as ob_aadhaar_verified, COALESCE(f.product_name, p.name) as product_name,
                (SELECT COUNT(*) FROM emi_schedules e WHERE e.finance_id = f.id) as total_emi_count,
                (SELECT COUNT(*) FROM emi_schedules e WHERE e.finance_id = f.id AND e.status != "paid") as unpaid_count,
                (SELECT COALESCE(SUM(amount), 0) FROM payments py WHERE py.finance_id = f.id AND (py.emi_id IS NULL OR py.remarks LIKE "%Down Payment%")) as down_payment_paid
@@ -94,7 +94,14 @@ start('Finance Applications');
                             <?php endif; ?>
                         </td>
 
-                        <td style="padding: 12px;"><?=e($r['product_name'] ?: 'Mobile Product')?></td>
+                        <td style="padding: 12px;">
+                            <strong><?=e($r['product_name'] ?: 'Mobile Product')?></strong>
+                            <?php if (!empty($r['imei_number'])): ?>
+                                <br><span style="display:inline-flex; align-items:center; gap:4px; font-size:0.72rem; color:#0284c7; background:rgba(2,132,199,0.1); border:1px solid rgba(2,132,199,0.25); padding:2px 7px; border-radius:6px; font-weight:700; margin-top:4px; font-family:monospace;">
+                                    📱 IMEI: <?=e($r['imei_number'])?>
+                                </span>
+                            <?php endif; ?>
+                        </td>
                         <td style="padding: 12px;">
                             <?=money($r['product_price'])?><br>
                             <span style="font-size:0.75rem; color:var(--text-muted);">Down: <?=money($r['down_payment'])?></span>
@@ -106,8 +113,18 @@ start('Finance Applications');
                                 <?php endif; ?>
                             <?php endif; ?>
                         </td>
-                        <td style="padding: 12px;"><strong style="color:var(--primary);"><?=money($r['finance_amount'])?></strong></td>
-                        <td style="padding: 12px;"><strong><?=money($r['emi'])?>/mo</strong><br><span style="font-size:0.75rem; color:var(--text-muted);"><?=e($r['tenure'])?> Months @ <?=e($r['interest_rate'])?>% p.m.</span></td>
+                        <td style="padding: 12px;">
+                            <strong style="color:var(--primary);"><?=money($r['finance_amount'])?></strong>
+                            <?php 
+                            $addons = [];
+                            if (floatval($r['processing_fee'] ?? 0) > 0) $addons[] = 'PF: ' . money($r['processing_fee']);
+                            if (floatval($r['insurance_fee'] ?? 0) > 0) $addons[] = 'Ins: ' . money($r['insurance_fee']);
+                            if (!empty($addons)):
+                            ?>
+                                <br><span style="font-size:0.7rem; color:var(--text-muted);">(<?=implode(', ', $addons)?>)</span>
+                            <?php endif; ?>
+                        </td>
+                        <td style="padding: 12px;"><strong><?=money($r['emi'])?>/mo</strong><br><span style="font-size:0.75rem; color:var(--text-muted);"><?=e($r['tenure'])?> Months</span></td>
                         <td style="padding: 12px;">
                             <?php if ($r['status'] === 'approved' || $r['status'] === 'active'): ?>
                                 <span class="badge badge-success">APPROVED / ACTIVE</span>

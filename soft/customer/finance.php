@@ -25,7 +25,7 @@ $customerId = (int)($c['id'] ?? 0);
 $apps = [];
 if ($customerId > 0) {
     $q = $p->prepare('
-        SELECT f.*, p.name as product_name 
+        SELECT f.*, COALESCE(f.product_name, p.name) as product_name 
         FROM finance_applications f 
         LEFT JOIN products p ON p.id = f.product_id 
         WHERE f.customer_id = ? 
@@ -40,7 +40,7 @@ start('My Store Finance Loans');
 
 <div class="card" style="margin-bottom: 24px;">
     <h3 style="font-size: 1.1rem; font-weight: 800; color: #fff;">My Store Loans & Finance Summary</h3>
-    <p class="muted" style="margin-top: 4px;">Overview of your product financing, interest rates, and loan statuses</p>
+    <p class="muted" style="margin-top: 4px;">Overview of your product financing, monthly installments, and loan statuses</p>
 </div>
 
 <div class="card" style="padding: 0; overflow-x: auto;">
@@ -87,10 +87,17 @@ start('My Store Finance Loans');
                     ?>
                     <tr style="border-bottom: 1px solid var(--border-color);">
                         <td style="padding: 12px;"><strong><?=e($r['application_no'])?></strong><br><span style="font-size:0.75rem; color:var(--text-muted);"><?=date('d M Y', strtotime($r['created_at']))?></span></td>
-                        <td style="padding: 12px;"><?=e($r['product_name'] ?: 'Mobile Product')?></td>
+                        <td style="padding: 12px;">
+                            <strong><?=e($r['product_name'] ?: 'Mobile Product')?></strong>
+                            <?php if (!empty($r['imei_number'])): ?>
+                                <br><span style="display:inline-flex; align-items:center; gap:4px; font-size:0.72rem; color:#0284c7; background:rgba(2,132,199,0.1); border:1px solid rgba(2,132,199,0.25); padding:2px 7px; border-radius:6px; font-weight:700; margin-top:4px; font-family:monospace;">
+                                    📱 IMEI: <?=e($r['imei_number'])?>
+                                </span>
+                            <?php endif; ?>
+                        </td>
                         <td style="padding: 12px;"><?=money($r['product_price'])?><br><span style="font-size:0.75rem; color:var(--text-muted);">Down: <?=money($r['down_payment'])?></span></td>
                         <td style="padding: 12px;"><strong style="color:var(--primary);"><?=money($r['finance_amount'])?></strong></td>
-                        <td style="padding: 12px;"><strong><?=money($r['emi'])?>/mo</strong><br><span style="font-size:0.75rem; color:var(--text-muted);"><?=e($r['tenure'])?> Mos @ <?=e($r['interest_rate'])?>% p.m.</span></td>
+                        <td style="padding: 12px;"><strong><?=money($r['emi'])?>/mo</strong><br><span style="font-size:0.75rem; color:var(--text-muted);"><?=e($r['tenure'])?> Months Tenure</span></td>
                         <td style="padding: 12px;"><?=money($r['total_payable'])?></td>
                         <td style="padding: 12px;">
                             <span style="color: var(--success); font-weight: 700;"><?=money($totalPaid)?> Paid</span><br>

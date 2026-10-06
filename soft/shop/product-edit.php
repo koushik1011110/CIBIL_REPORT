@@ -1,14 +1,22 @@
 <?php 
 require_once __DIR__.'/../includes/layout.php';
 require_once __DIR__.'/../includes/onboarding_db_init.php';
-role('shop_admin', 'superadmin', 'staff');
+
+// Only Superadmin can edit products
+if (u()['role'] !== 'superadmin') {
+    header('Location: products.php?err=admin_only');
+    exit;
+}
+role('superadmin');
 
 $p = db();
 $u = u();
 $id = (int)($_GET['id'] ?? 0);
 
+$returnUrl = ($u['role'] === 'superadmin') ? url('/admin/products.php') : 'products.php';
+
 if ($id <= 0) {
-    header('Location: products.php');
+    header("Location: $returnUrl");
     exit;
 }
 
@@ -18,7 +26,7 @@ $stmt->execute([$id]);
 $product = $stmt->fetch();
 
 if (!$product) {
-    header('Location: products.php');
+    header("Location: $returnUrl");
     exit;
 }
 
@@ -39,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $hsnCode      = trim($_POST['hsn_code'] ?? '8517');
         $category     = trim($_POST['category'] ?? 'Mobile');
         $sellingPrice = floatval($_POST['selling_price'] ?? 0);
-        $stock        = (int)($_POST['stock'] ?? 0);
+        $stock        = 0;
         $status       = $_POST['status'] === 'inactive' ? 'inactive' : 'active';
         
         if (empty($name)) {
@@ -49,18 +57,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Process variants
         $variantNames  = $_POST['variant_name'] ?? [];
         $variantPrices = $_POST['variant_price'] ?? [];
-        $variantStocks = $_POST['variant_stock'] ?? [];
         $variantSkus   = $_POST['variant_sku'] ?? [];
 
         $hasVariants = false;
         $validVariants = [];
-        $totalStock = 0;
         $lowestPrice = $sellingPrice;
 
         for ($i = 0; $i < count($variantNames); $i++) {
             $vName = trim($variantNames[$i] ?? '');
             $vPrice = floatval($variantPrices[$i] ?? 0);
-            $vStock = max(0, (int)($variantStocks[$i] ?? 0));
             $vSku   = trim($variantSkus[$i] ?? '') ?: ($sku . '-V' . ($i + 1));
 
             if (!empty($vName) && $vPrice > 0) {
@@ -68,10 +73,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $validVariants[] = [
                     'name'  => $vName,
                     'price' => $vPrice,
-                    'stock' => $vStock,
+                    'stock' => 0,
                     'sku'   => $vSku
                 ];
-                $totalStock += $vStock;
                 if ($lowestPrice == 0 || $vPrice < $lowestPrice) {
                     $lowestPrice = $vPrice;
                 }
@@ -80,7 +84,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($hasVariants) {
             $sellingPrice = $lowestPrice;
-            $stock = $totalStock;
         }
 
         if ($sellingPrice <= 0) {
@@ -110,28 +113,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $v['name'],
                     $v['sku'],
                     $v['price'],
-                    $v['stock'],
+                    0,
                     'active'
                 ]);
             }
         }
         
-        header('Location: products.php?msg=updated');
+        $dest = ($u['role'] === 'superadmin') ? url('/admin/products.php?msg=updated') : 'products.php?msg=updated';
+        header("Location: $dest");
         exit;
     } catch (Exception $ex) {
         $err = $ex->getMessage();
     }
 }
 
-start('Edit Product & Variants');
+start('Edit Master Product');
 ?>
 
 <div class="card" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
     <div>
-        <h3 style="font-size: 1.1rem; font-weight: 800; color: #fff;">✏️ Edit Product Details</h3>
+        <h3 style="font-size: 1.1rem; font-weight: 800; color: #fff;">✏️ Edit Master Product Details (Admin)</h3>
         <p class="muted" style="margin-top: 4px;">Update product metadata and configure RAM/Storage variants with custom pricing</p>
     </div>
-    <a class="btn" style="background: rgba(255,255,255,0.1);" href="products.php">← Back to Products</a>
+    <a class="btn" style="background: rgba(255,255,255,0.1);" href="<?=$returnUrl?>">← Back to Products</a>
 </div>
 
 <?php if ($err): ?>
@@ -185,10 +189,6 @@ start('Edit Product & Variants');
                 <input name="selling_price" id="basePriceInput" type="number" step="0.01" value="<?=e($product['selling_price'])?>" required>
             </div>
             <div class="field">
-                <label>Base Stock Quantity *</label>
-                <input name="stock" id="baseStockInput" type="number" value="<?=e($product['stock'])?>" required>
-            </div>
-            <div class="field">
                 <label>Status</label>
                 <select name="status">
                     <option value="active" <?=$product['status']==='active'?'selected':''?>>Active</option>
@@ -228,9 +228,8 @@ start('Edit Product & Variants');
                 <thead>
                     <tr style="background: rgba(15,23,42,0.8); color: var(--text-muted);">
                         <th style="padding: 10px;">Variant Specification *</th>
-                        <th style="padding: 10px; width: 140px;">Variant Price (₹) *</th>
-                        <th style="padding: 10px; width: 110px;">Stock</th>
-                        <th style="padding: 10px; width: 140px;">Variant SKU</th>
+                        <th style="padding: 10px; width: 180px;">Variant Price (₹) *</th>
+                        <th style="padding: 10px; width: 160px;">Variant SKU</th>
                         <th style="padding: 10px; width: 40px;"></th>
                     </tr>
                 </thead>
@@ -247,14 +246,14 @@ start('Edit Product & Variants');
     <!-- ACTION BUTTONS -->
     <div style="display: flex; gap: 12px;">
         <button type="submit" class="btn" style="padding: 12px 24px; font-size: 0.95rem; font-weight: 800;"><i data-lucide="check"></i> Save Product Changes</button>
-        <a class="btn" style="background: rgba(255,255,255,0.1); padding: 12px 24px;" href="products.php">Cancel</a>
+        <a class="btn" style="background: rgba(255,255,255,0.1); padding: 12px 24px;" href="<?=$returnUrl?>">Cancel</a>
     </div>
 </form>
 
 <script>
 let variantCount = 0;
 
-function addVariantRow(name = '', price = '', stock = 10, sku = '') {
+function addVariantRow(name = '', price = '', sku = '') {
     variantCount++;
     document.getElementById('noVariantsMsg').style.display = 'none';
     const tbody = document.getElementById('variantsTableBody');
@@ -268,9 +267,6 @@ function addVariantRow(name = '', price = '', stock = 10, sku = '') {
         </td>
         <td style="padding: 8px;">
             <input type="number" step="any" name="variant_price[]" value="${price}" placeholder="Price (₹)" required style="height: 38px; font-size: 0.85rem; border-radius: 8px; color: #10b981; font-weight: 700;">
-        </td>
-        <td style="padding: 8px;">
-            <input type="number" name="variant_stock[]" value="${stock}" placeholder="Stock" required style="height: 38px; font-size: 0.85rem; border-radius: 8px;">
         </td>
         <td style="padding: 8px;">
             <input type="text" name="variant_sku[]" value="${escapeHtml(sku)}" placeholder="Auto SKU" style="height: 38px; font-size: 0.82rem; border-radius: 8px;">
@@ -308,7 +304,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const existing = <?=json_encode($existingVariants)?>;
     if (existing && existing.length > 0) {
         existing.forEach(v => {
-            addVariantRow(v.variant_name, v.price, v.stock, v.sku || '');
+            addVariantRow(v.variant_name, v.price, v.sku || '');
         });
     }
 });

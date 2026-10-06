@@ -13,7 +13,7 @@ if ($financeId <= 0) {
 // Fetch application
 $stmt = $p->prepare("
     SELECT f.*, c.name as cust_name, c.mobile as cust_mobile, c.email as cust_email, c.address as cust_address, c.pan as cust_pan, c.dob as cust_dob,
-           p.name as product_name, s.name as shop_name
+           COALESCE(f.product_name, p.name) as product_name, s.name as shop_name
     FROM finance_applications f
     JOIN customers c ON c.id = f.customer_id
     LEFT JOIN products p ON p.id = f.product_id
@@ -232,7 +232,12 @@ start('Store Finance Onboarding Process · App #' . $app['application_no']);
         <?php else: ?>
             <span class="badge badge-warning" style="font-size: 0.85rem; padding: 8px 14px;">PENDING ONBOARDING</span>
         <?php endif; ?>
-        <span class="badge" style="font-size: 0.85rem; padding: 8px 14px; background: rgba(59,130,246,0.1); color: var(--primary); border: 1px solid var(--border-color);">Product: <?=e($app['product_name'] ?: 'Mobile Finance')?> (<?=money($app['finance_amount'])?>)</span>
+        <span class="badge" style="font-size: 0.85rem; padding: 8px 14px; background: rgba(59,130,246,0.1); color: var(--primary); border: 1px solid var(--border-color);">
+            Product: <?=e($app['product_name'] ?: 'Mobile Finance')?> (<?=money($app['finance_amount'])?>)
+            <?php if (!empty($app['imei_number'])): ?>
+                · <span style="font-family: monospace; font-weight: 700; color: #38bdf8;">📱 IMEI: <?=e($app['imei_number'])?></span>
+            <?php endif; ?>
+        </span>
     </div>
 
 </div>
@@ -463,7 +468,18 @@ start('Store Finance Onboarding Process · App #' . $app['application_no']);
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; text-align: center;">
                     <div><span class="muted" style="font-size: 0.75rem;">PRODUCT PRICE</span><div style="font-size: 1.1rem; font-weight: 800;"><?=money($app['product_price'])?></div></div>
                     <div><span class="muted" style="font-size: 0.75rem;">DOWN PAYMENT</span><div style="font-size: 1.1rem; font-weight: 800; color: var(--accent);"><?=money($app['down_payment'])?></div></div>
-                    <div><span class="muted" style="font-size: 0.75rem;">FINANCED AMOUNT</span><div style="font-size: 1.1rem; font-weight: 800; color: var(--primary);"><?=money($app['finance_amount'])?></div></div>
+                    <div>
+                        <span class="muted" style="font-size: 0.75rem;">FINANCED AMOUNT</span>
+                        <div style="font-size: 1.1rem; font-weight: 800; color: var(--primary);"><?=money($app['finance_amount'])?></div>
+                        <?php 
+                        $addons = [];
+                        if (floatval($app['processing_fee'] ?? 0) > 0) $addons[] = 'Proc: ' . money($app['processing_fee']);
+                        if (floatval($app['insurance_fee'] ?? 0) > 0) $addons[] = 'Ins: ' . money($app['insurance_fee']);
+                        if (!empty($addons)):
+                        ?>
+                            <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 2px;">(Incl <?=implode(' + ', $addons)?>)</div>
+                        <?php endif; ?>
+                    </div>
                     <div><span class="muted" style="font-size: 0.75rem;">MONTHLY EMI</span><div style="font-size: 1.1rem; font-weight: 800; color: var(--success);"><?=money($app['emi'])?>/mo</div></div>
                     <div><span class="muted" style="font-size: 0.75rem;">TENURE</span><div style="font-size: 1.1rem; font-weight: 800;"><?=e($app['tenure'])?> Months</div></div>
                 </div>

@@ -143,7 +143,7 @@ function get_loan_document_data($financeId, $customerId = 0, $paymentId = 0) {
                    ob.pan_front, ob.pan_back, ob.aadhaar_front, ob.aadhaar_back,
                    ob.witness_name, ob.witness_mobile, ob.witness_photo, ob.witness_signature,
                    ob.bank_name, ob.account_holder, ob.account_no, ob.ifsc_code, ob.account_type, ob.mandate_mode, ob.mandate_status,
-                   p.name as product_name, p.brand as product_brand, p.model as product_model, p.sku as product_sku, p.selling_price as product_mrp,
+                   COALESCE(f.product_name, p.name) as product_name, p.brand as product_brand, p.model as product_model, p.sku as product_sku, p.selling_price as product_mrp,
                    s.name as shop_name, s.phone as shop_phone, s.email as shop_email, s.address as shop_address, s.gstin as shop_gstin, s.logo as shop_logo
             FROM finance_applications f
             JOIN customers c ON c.id = f.customer_id
@@ -242,6 +242,7 @@ function get_loan_document_data($financeId, $customerId = 0, $paymentId = 0) {
     $data['product_model'] = $app['product_model'] ?: '';
     $data['product_sku']   = $app['product_sku'] ?: 'SKU-' . $app['product_id'];
     $data['product_price'] = floatval($app['product_price']);
+    $data['imei_number']   = $app['imei_number'] ?? '';
 
     $data['shop_name']    = $app['shop_name'] ?: 'Demo Partner Store';
     $data['shop_phone']   = $app['shop_phone'] ?: '+91 60005 47615';
@@ -279,6 +280,7 @@ function get_loan_document_data($financeId, $customerId = 0, $paymentId = 0) {
     $data['emi_amount']      = floatval($app['emi']);
     $data['total_interest']  = floatval($app['total_interest']);
     $data['processing_fee']  = floatval($app['processing_fee']);
+    $data['insurance_fee']   = floatval($app['insurance_fee'] ?? 0);
     $data['total_payable']   = floatval($app['total_payable']);
     if ($data['total_payable'] <= 0) {
         $data['total_payable'] = round($data['emi_amount'] * $data['tenure'], 2);
@@ -409,7 +411,7 @@ function render_template_placeholders($content, $data, $docNo = '') {
         '{{disbursed_amount}}'   => money($data['finance_amount'] ?? 0),
         '{{product_price}}'      => money($data['product_price'] ?? 0),
         '{{down_payment}}'       => money($data['down_payment'] ?? 0),
-        '{{interest_rate}}'      => ($data['interest_rate'] ?? 0) . '%',
+        '{{interest_rate}}'      => '',
         '{{tenure}}'             => ($data['tenure'] ?? 0),
         '{{emi_amount}}'         => money($data['emi_amount'] ?? 0),
         '{{first_emi_date}}'     => $data['first_emi_date'] ?? '',
@@ -417,9 +419,13 @@ function render_template_placeholders($content, $data, $docNo = '') {
         '{{disbursement_date}}'  => date('d M Y', strtotime($data['created_at'] ?? 'now')),
         '{{document_number}}'    => $docNo ?: ($data['document_no'] ?? ''),
         '{{document_date}}'      => date('d M Y'),
+        '{{processing_fee}}'     => money($data['processing_fee'] ?? 0),
+        '{{insurance_fee}}'      => money($data['insurance_fee'] ?? 0),
         '{{outstanding_amount}}' => money($data['total_outstanding_due'] ?? 0),
         '{{total_paid}}'         => money($data['total_paid'] ?? 0),
         '{{product_name}}'       => $data['product_name'] ?? '',
+        '{{imei_number}}'        => $data['imei_number'] ?? '',
+        '{{device_imei}}'        => $data['imei_number'] ?? '',
         '{{shop_name}}'          => $data['shop_name'] ?? '',
         '{{company_name}}'       => $data['company_name'] ?? 'GO4 Finance Private Limited',
         '{{authorized_signatory}}'=> $data['managing_director'] ?? 'Wazid Hoque',
@@ -550,7 +556,7 @@ function generate_pdf_document_file($docType, $data, $paymentId = 0) {
         ['Customer Name:', $data['customer_name'], 'Application No:', $data['application_no']],
         ['Mobile / Phone:', $data['customer_mobile'], 'Loan Amount:', money($data['finance_amount'])],
         ['PAN Card No:', $data['customer_pan'], 'Monthly EMI:', money($data['emi_amount']) . ' / mo'],
-        ['Aadhaar No:', $data['aadhaar_masked'], 'Tenure & Rate:', $data['tenure'] . ' Mos @ ' . $data['interest_rate'] . '%'],
+        ['Aadhaar No:', $data['aadhaar_masked'], 'Repayment Tenure:', $data['tenure'] . ' Months'],
         ['Address:', substr($data['customer_address'], 0, 38), 'Total Payable:', money($data['total_payable'])],
         ['Retail Store:', $data['shop_name'], 'Outstanding:', money($data['total_outstanding_due'])]
     ];
@@ -571,16 +577,14 @@ function generate_pdf_document_file($docType, $data, $paymentId = 0) {
 
     // 4. Document-Specific Content & Tables
     if ($docType === 'repayment_schedule' || $docType === 'loan_agreement') {
-        $headers = ['Inst #', 'Due Date', 'Principal (Rs)', 'Interest (Rs)', 'EMI Amount (Rs)', 'Status'];
-        $widths  = [22, 32, 32, 32, 36, 26];
-        $aligns  = ['C', 'C', 'R', 'R', 'R', 'C'];
+        $headers = ['Inst #', 'Due Date', 'Monthly EMI (Rs)', 'Status'];
+        $widths  = [26, 44, 60, 50];
+        $aligns  = ['C', 'C', 'R', 'C'];
         $rows = [];
         foreach ($data['emis'] as $eItem) {
             $rows[] = [
                 '#' . $eItem['installment_no'],
                 date('d M Y', strtotime($eItem['due_date'])),
-                number_format((float)$eItem['principal'], 2),
-                number_format((float)$eItem['interest'], 2),
                 number_format((float)$eItem['amount'], 2),
                 strtoupper($eItem['status'])
             ];

@@ -15,7 +15,7 @@ $stmt = $p->prepare("
     SELECT f.*, c.name as customer_name, c.mobile as customer_mobile, c.email as customer_email,
            c.pan as customer_pan, c.dob as customer_dob, c.address as customer_address,
            ob.aadhaar_no, ob.aadhaar_verified,
-           p.name as product_name, p.brand as product_brand, p.model as product_model, p.sku as product_sku,
+           COALESCE(f.product_name, p.name) as product_name, p.brand as product_brand, p.model as product_model, p.sku as product_sku,
            s.name as shop_name, s.phone as shop_phone, s.email as shop_email, s.address as shop_address, s.gstin as shop_gstin, s.logo as shop_logo
     FROM finance_applications f
     JOIN customers c ON c.id = f.customer_id
@@ -166,7 +166,15 @@ $shopLogoUrl = (!empty($app['shop_logo']) && file_exists(__DIR__ . '/uploads/log
                 <tr><td class="lbl">Borrower Name:</td><td class="val"><?=e($app['customer_name'])?></td></tr>
                 <tr><td class="lbl">Application No:</td><td class="val"><?=e($app['application_no'])?></td></tr>
                 <tr><td class="lbl">Retail Partner:</td><td class="val"><?=e($app['shop_name'] ?: 'Store')?></td></tr>
-                <tr><td class="lbl">Item Financed:</td><td class="val"><?=e($app['product_name'] ?: 'Electronic Product')?></td></tr>
+                <tr>
+                    <td class="lbl">Item Financed:</td>
+                    <td class="val">
+                        <?=e($app['product_name'] ?: 'Electronic Product')?>
+                        <?php if (!empty($app['imei_number'])): ?>
+                            <br><span style="font-family: monospace; font-size: 11px; color: #0284c7; font-weight: 700;">IMEI: <?=e($app['imei_number'])?></span>
+                        <?php endif; ?>
+                    </td>
+                </tr>
             </table>
         </div>
         <div>

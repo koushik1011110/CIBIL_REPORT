@@ -1,15 +1,13 @@
 <?php 
 require_once __DIR__.'/../includes/layout.php';
 require_once __DIR__.'/../includes/onboarding_db_init.php';
-role('superadmin', 'shop_admin');
+role('superadmin');
 
 $p = db();
-$shops = $p->query('SELECT id, name FROM shops WHERE status="active" ORDER BY name')->fetchAll();
 $err = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
-        $shopId       = (int)($_POST['shop_id'] ?? 1);
         $name         = trim($_POST['name'] ?? '');
         $brand        = trim($_POST['brand'] ?? '');
         $model        = trim($_POST['model'] ?? '');
@@ -17,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $hsnCode      = trim($_POST['hsn_code'] ?? '8517');
         $category     = trim($_POST['category'] ?? 'Mobile');
         $basePrice    = floatval($_POST['selling_price'] ?? 0);
-        $baseStock    = (int)($_POST['stock'] ?? 0);
+        $baseStock    = 0;
         $status       = $_POST['status'] === 'inactive' ? 'inactive' : 'active';
         
         if (empty($name)) {
@@ -27,18 +25,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Process variants if submitted
         $variantNames  = $_POST['variant_name'] ?? [];
         $variantPrices = $_POST['variant_price'] ?? [];
-        $variantStocks = $_POST['variant_stock'] ?? [];
         $variantSkus   = $_POST['variant_sku'] ?? [];
 
         $hasVariants = false;
         $validVariants = [];
-        $totalStock = 0;
         $lowestPrice = $basePrice;
 
         for ($i = 0; $i < count($variantNames); $i++) {
             $vName = trim($variantNames[$i] ?? '');
             $vPrice = floatval($variantPrices[$i] ?? 0);
-            $vStock = max(0, (int)($variantStocks[$i] ?? 0));
             $vSku   = trim($variantSkus[$i] ?? '') ?: ($sku . '-V' . ($i + 1));
 
             if (!empty($vName) && $vPrice > 0) {
@@ -46,10 +41,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $validVariants[] = [
                     'name'  => $vName,
                     'price' => $vPrice,
-                    'stock' => $vStock,
+                    'stock' => 0,
                     'sku'   => $vSku
                 ];
-                $totalStock += $vStock;
                 if ($lowestPrice == 0 || $vPrice < $lowestPrice) {
                     $lowestPrice = $vPrice;
                 }
@@ -58,17 +52,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($hasVariants) {
             $basePrice = $lowestPrice;
-            $baseStock = $totalStock;
         }
 
         if ($basePrice <= 0) {
             throw new Exception("Please specify a valid Selling Price for product or variants.");
         }
 
-        // Insert Base Product
-        $s = $p->prepare('INSERT INTO products (shop_id, name, brand, model, sku, hsn_code, category, selling_price, stock, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+        // Insert Universal Product (Available to ALL shops)
+        $s = $p->prepare('INSERT INTO products (shop_id, name, brand, model, sku, hsn_code, category, selling_price, stock, status) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
         $s->execute([
-            $shopId,
             $name,
             $brand ?: null,
             $model ?: null,
@@ -91,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $v['name'],
                     $v['sku'],
                     $v['price'],
-                    $v['stock'],
+                    0,
                     'active'
                 ]);
             }
@@ -104,13 +96,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-start('Add Product with Variants (Admin)');
+start('Add Universal Product (Admin)');
 ?>
 
 <div class="card" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
     <div>
-        <h3 style="font-size: 1.1rem; font-weight: 800; color: #fff;">📦 Add New Product (Admin)</h3>
-        <p class="muted" style="margin-top: 4px;">Assign shop, create base product and configure Flipkart-style RAM/Storage variants with custom prices</p>
+        <h3 style="font-size: 1.1rem; font-weight: 800; color: #fff;">📦 Add Product (Super Admin)</h3>
+        <p class="muted" style="margin-top: 4px;">Product added here is universally available to all shops automatically for billing & financing</p>
     </div>
     <a class="btn" style="background: rgba(255,255,255,0.1);" href="products.php">← Back to Products</a>
 </div>
@@ -125,17 +117,9 @@ start('Add Product with Variants (Admin)');
     <!-- BASIC PRODUCT DETAILS CARD -->
     <div class="card" style="margin-bottom: 20px;">
         <h4 style="font-size: 1rem; font-weight: 800; color: var(--primary); margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
-            <span>📱 Base Product Details</span>
+            <span>📱 Product Details</span>
         </h4>
         <div class="form-grid">
-            <div class="field">
-                <label>Assign Shop *</label>
-                <select name="shop_id" required style="font-weight: 700;">
-                    <?php foreach($shops as $shop): ?>
-                        <option value="<?=$shop['id']?>"><?=e($shop['name'])?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
             <div class="field">
                 <label>Product Title / Name *</label>
                 <input name="name" placeholder="e.g. Samsung Galaxy A54 5G" required>
@@ -174,10 +158,6 @@ start('Add Product with Variants (Admin)');
                 <input name="selling_price" id="basePriceInput" type="number" step="0.01" placeholder="e.g. 24999" required>
             </div>
             <div class="field">
-                <label>Base Stock Quantity</label>
-                <input name="stock" id="baseStockInput" type="number" value="10" required>
-            </div>
-            <div class="field">
                 <label>Status</label>
                 <select name="status">
                     <option value="active">Active</option>
@@ -193,9 +173,9 @@ start('Add Product with Variants (Admin)');
             <div>
                 <h4 style="font-size: 1.05rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px;">
                     <span>🏷️ Product Variants (RAM / Storage / Color Options)</span>
-                    <span class="badge badge-info" style="font-size: 0.72rem;">Flipkart Style</span>
+                    <span class="badge badge-info" style="font-size: 0.72rem;">Optional</span>
                 </h4>
-                <p class="muted" style="font-size: 0.8rem; margin-top: 2px;">Add different specifications (e.g. 4GB + 128GB, 8GB + 256GB) with individual pricing & stock</p>
+                <p class="muted" style="font-size: 0.8rem; margin-top: 2px;">Add different specifications (e.g. 4GB + 128GB, 8GB + 256GB) with individual pricing</p>
             </div>
             <button type="button" class="btn" style="background: var(--primary); font-size: 0.82rem; padding: 6px 14px;" onclick="addVariantRow()">
                 <i data-lucide="plus"></i> + Add Variant Row
@@ -217,9 +197,8 @@ start('Add Product with Variants (Admin)');
                 <thead>
                     <tr style="background: rgba(15,23,42,0.8); color: var(--text-muted);">
                         <th style="padding: 10px;">Variant Specification *</th>
-                        <th style="padding: 10px; width: 140px;">Variant Price (₹) *</th>
-                        <th style="padding: 10px; width: 110px;">Stock</th>
-                        <th style="padding: 10px; width: 140px;">Variant SKU</th>
+                        <th style="padding: 10px; width: 180px;">Variant Price (₹) *</th>
+                        <th style="padding: 10px; width: 160px;">Variant SKU</th>
                         <th style="padding: 10px; width: 40px;"></th>
                     </tr>
                 </thead>
@@ -243,7 +222,7 @@ start('Add Product with Variants (Admin)');
 <script>
 let variantCount = 0;
 
-function addVariantRow(name = '', price = '', stock = 10, sku = '') {
+function addVariantRow(name = '', price = '', sku = '') {
     variantCount++;
     document.getElementById('noVariantsMsg').style.display = 'none';
     const tbody = document.getElementById('variantsTableBody');
@@ -257,9 +236,6 @@ function addVariantRow(name = '', price = '', stock = 10, sku = '') {
         </td>
         <td style="padding: 8px;">
             <input type="number" step="any" name="variant_price[]" value="${price}" placeholder="Price (₹)" required style="height: 38px; font-size: 0.85rem; border-radius: 8px; color: #10b981; font-weight: 700;">
-        </td>
-        <td style="padding: 8px;">
-            <input type="number" name="variant_stock[]" value="${stock}" placeholder="Stock" required style="height: 38px; font-size: 0.85rem; border-radius: 8px;">
         </td>
         <td style="padding: 8px;">
             <input type="text" name="variant_sku[]" value="${sku}" placeholder="Auto SKU" style="height: 38px; font-size: 0.82rem; border-radius: 8px;">

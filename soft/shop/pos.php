@@ -151,12 +151,6 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && isset($_POST['action']) && 
                 'gst_amount'     => 0.00,
                 'total_amount'   => $itemTotal
             ];
-            
-            // Deduct product stock if product_id exists
-            if ($productId > 0) {
-                $p->prepare("UPDATE products SET stock = GREATEST(0, stock - ?) WHERE id = ? AND shop_id = ?")
-                  ->execute([$qty, $productId, $shopId]);
-            }
         }
         
         $grandTotal = max(0, $subtotal - $discount);
@@ -209,10 +203,8 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && isset($_POST['action']) && 
     }
 }
 
-// Fetch shop products for POS selector
-$productsStmt = $p->prepare("SELECT * FROM products WHERE shop_id = ? AND status = 'active' ORDER BY name ASC");
-$productsStmt->execute([$shopId]);
-$products = $productsStmt->fetchAll();
+// Fetch active products from master catalog for POS selector
+$products = $p->query("SELECT * FROM products WHERE status = 'active' ORDER BY name ASC")->fetchAll();
 
 // Fetch active product variants
 $varsStmt = $p->prepare("SELECT * FROM product_variants WHERE status = 'active' ORDER BY price ASC");
@@ -882,8 +874,8 @@ body.light-theme .pos-feature-item {
             <div class="pos-feature-item">
                 <div class="pos-feature-icon" style="background: rgba(168,85,247,0.15); color: #a855f7;">📦</div>
                 <div>
-                    <strong style="color: #fff; font-size: 0.92rem; display: block;">Live Stock Inventory Sync</strong>
-                    <span class="muted" style="font-size: 0.78rem; line-height: 1.4; display: block; margin-top: 2px;">Automatically decrements store stock on every invoice generated to prevent overselling.</span>
+                    <strong style="color: #fff; font-size: 0.92rem; display: block;">Centralized Product Catalog</strong>
+                    <span class="muted" style="font-size: 0.78rem; line-height: 1.4; display: block; margin-top: 2px;">Select verified products and variants added by Super Admin with instantaneous billing.</span>
                 </div>
             </div>
             <div class="pos-feature-item">
@@ -972,8 +964,7 @@ body.light-theme .pos-feature-item {
                     'name' => $prod['name'],
                     'price' => floatval($prod['selling_price']),
                     'hsn' => $prod['hsn_code'] ?: '8517',
-                    'gst_rate' => 0,
-                    'stock' => intval($prod['stock'])
+                    'gst_rate' => 0
                 ];
             ?>
                 <div class="pos-prod-card" data-category="<?=e(strtolower($prod['category'] ?: 'mobile'))?>" data-name="<?=e(strtolower($prod['name'] . ' ' . $prod['brand'] . ' ' . $prod['sku']))?>" onclick="handlePosProductClick(<?=htmlspecialchars(json_encode($prodJson))?>, <?=htmlspecialchars(json_encode($pVariants))?>)">
@@ -995,9 +986,6 @@ body.light-theme .pos-feature-item {
                             <strong style="color: #10b981; font-size: 1.1rem; font-weight: 800;"><?=money($prod['selling_price'])?></strong>
                         </div>
                         <div style="text-align: right;">
-                            <span style="font-size: 0.72rem; display: block; font-weight: 700; color: <?=$prod['stock']>0?'#10b981':'#ef4444'?>;">
-                                <?=$prod['stock']>0 ? 'Stock: ' . intval($prod['stock']) : 'Out of Stock'?>
-                            </span>
                             <button type="button" class="pos-add-btn">+ Add</button>
                         </div>
                     </div>
@@ -1214,7 +1202,7 @@ function openPosVariantModal(prod, variants) {
         btn.innerHTML = `
             <div>
                 <strong class="pos-variant-name" style="font-size: 0.9rem; display: block;">${v.variant_name}</strong>
-                <span class="muted" style="font-size: 0.74rem;">SKU: ${v.sku || prod.hsn} | Stock: ${v.stock}</span>
+                <span class="muted" style="font-size: 0.74rem;">SKU: ${v.sku || prod.hsn}</span>
             </div>
             <strong style="color: #10b981; font-size: 1rem;">₹${vPriceFormatted}</strong>
         `;
@@ -1225,8 +1213,7 @@ function openPosVariantModal(prod, variants) {
                 name: prod.name + ' (' + v.variant_name + ')',
                 price: parseFloat(v.price),
                 hsn: v.sku || prod.hsn,
-                gst_rate: 0,
-                stock: v.stock
+                gst_rate: 0
             });
             closePosVariantModal();
         };

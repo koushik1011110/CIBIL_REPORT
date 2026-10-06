@@ -77,6 +77,12 @@ function ensureOnboardingTable() {
         try {
             $p->exec("ALTER TABLE finance_applications ADD COLUMN product_name VARCHAR(180) NULL AFTER product_id");
         } catch (Exception $ex) {}
+        try {
+            $p->exec("ALTER TABLE finance_applications ADD COLUMN imei_number VARCHAR(40) NULL AFTER product_name");
+        } catch (Exception $ex) {}
+        try {
+            $p->exec("ALTER TABLE finance_applications ADD COLUMN insurance_fee DECIMAL(10,2) NOT NULL DEFAULT 0.00 AFTER processing_fee");
+        } catch (Exception $ex) {}
 
 
         try {

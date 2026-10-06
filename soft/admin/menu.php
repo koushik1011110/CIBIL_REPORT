@@ -170,8 +170,8 @@ start('Superadmin Control Hub & Menu Directory');
                         <div style="background: rgba(100,116,139,0.15); color: #64748b; width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center;"><i data-lucide="package"></i></div>
                         <span class="badge badge-info" style="font-size: 0.7rem;">Inventory</span>
                     </div>
-                    <h3 style="font-size: 1.05rem; font-weight: 800; margin-bottom: 6px; color: var(--text-main);">Product Catalog</h3>
-                    <p class="muted" style="font-size: 0.83rem; line-height: 1.4;">Financed consumer durable products, brand specifications, pricing models, and stock status.</p>
+                    <h3 style="font-size: 1.05rem; font-weight: 800; margin-bottom: 6px; color: var(--text-main);">Master Product Catalog</h3>
+                    <p class="muted" style="font-size: 0.83rem; line-height: 1.4;">Master products catalog, brand specifications, variants and pricing models available across all stores.</p>
                 </div>
                 <div style="margin-top: 14px; font-size: 0.82rem; font-weight: 700; color: #64748b; display: flex; align-items: center; gap: 4px;">Manage Products →</div>
             </a>

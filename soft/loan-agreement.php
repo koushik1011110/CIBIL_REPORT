@@ -15,7 +15,7 @@ $stmt = $p->prepare("
     SELECT f.*, c.name as customer_name, c.mobile as customer_mobile, c.email as customer_email,
            c.pan as customer_pan, c.dob as customer_dob, c.address as customer_address,
            ob.aadhaar_no, ob.aadhaar_verified, ob.witness_name as ref_name, ob.witness_mobile as ref_mobile,
-           p.name as product_name, p.brand as product_brand, p.model as product_model, p.sku as product_sku,
+           COALESCE(f.product_name, p.name) as product_name, p.brand as product_brand, p.model as product_model, p.sku as product_sku,
            s.name as shop_name, s.phone as shop_phone, s.email as shop_email, s.address as shop_address, s.gstin as shop_gstin, s.logo as shop_logo
     FROM finance_applications f
     JOIN customers c ON c.id = f.customer_id
@@ -160,8 +160,17 @@ record_document_history('loan_agreement', $app['id'], $app['customer_id'], $agre
             <table class="info-table">
                 <tr><td class="lbl">Item Name:</td><td class="val"><?=e($app['product_name'] ?: 'Electronic Item')?></td></tr>
                 <tr><td class="lbl">Brand / Model:</td><td class="val"><?=e($app['product_brand'])?> <?=e($app['product_model'])?></td></tr>
+                <?php if (!empty($app['imei_number'])): ?>
+                <tr><td class="lbl">Device IMEI / SN:</td><td class="val" style="font-family: monospace; font-weight: 700; color: #0284c7;"><?=e($app['imei_number'])?></td></tr>
+                <?php endif; ?>
                 <tr><td class="lbl">Product MRP:</td><td class="val"><?=money($app['product_price'])?></td></tr>
                 <tr><td class="lbl">Down Payment:</td><td class="val" style="color: #059669;"><?=money($app['down_payment'])?> (Paid)</td></tr>
+                <?php if (floatval($app['processing_fee'] ?? 0) > 0): ?>
+                <tr><td class="lbl">Processing Fee:</td><td class="val"><?=money($app['processing_fee'])?></td></tr>
+                <?php endif; ?>
+                <?php if (floatval($app['insurance_fee'] ?? 0) > 0): ?>
+                <tr><td class="lbl">Device Insurance:</td><td class="val"><?=money($app['insurance_fee'])?></td></tr>
+                <?php endif; ?>
             </table>
         </div>
     </div>
@@ -179,8 +188,8 @@ record_document_history('loan_agreement', $app['id'], $app['customer_id'], $agre
                 <div style="font-size: 16px; font-weight: 800; color: #059669;"><?=money($app['emi'])?>/mo</div>
             </div>
             <div style="background:#fff; padding: 10px; border-radius: 6px; border: 1px solid #cbd5e1;">
-                <div style="font-size: 11px; color: #64748b;">Tenure & Rate</div>
-                <div style="font-size: 14px; font-weight: 800; color: #0f172a;"><?=e($app['tenure'])?> Months @ <?=e($app['interest_rate'])?>%</div>
+                <div style="font-size: 11px; color: #64748b;">Repayment Tenure</div>
+                <div style="font-size: 14px; font-weight: 800; color: #0f172a;"><?=e($app['tenure'])?> Months</div>
             </div>
             <div style="background:#fff; padding: 10px; border-radius: 6px; border: 1px solid #cbd5e1;">
                 <div style="font-size: 11px; color: #64748b;">Total Payable</div>
@@ -198,9 +207,7 @@ record_document_history('loan_agreement', $app['id'], $app['customer_id'], $agre
                     <tr>
                         <th>Inst #</th>
                         <th>Due Date</th>
-                        <th>Principal (₹)</th>
-                        <th>Interest (₹)</th>
-                        <th>EMI Amount (₹)</th>
+                        <th>Monthly EMI (₹)</th>
                         <th>Status</th>
                     </tr>
                 </thead>
@@ -209,8 +216,6 @@ record_document_history('loan_agreement', $app['id'], $app['customer_id'], $agre
                         <tr>
                             <td>Installment #<?=$eRow['installment_no']?></td>
                             <td><?=date('d M Y', strtotime($eRow['due_date']))?></td>
-                            <td><?=money($eRow['principal'])?></td>
-                            <td><?=money($eRow['interest'])?></td>
                             <td><strong><?=money($eRow['amount'])?></strong></td>
                             <td>
                                 <?php if ($eRow['status'] === 'paid'): ?>
@@ -232,7 +237,7 @@ record_document_history('loan_agreement', $app['id'], $app['customer_id'], $agre
         <ol class="terms-list">
             <li><strong>Non-Cash Lending Model:</strong> The borrower confirms that this credit is extended solely for the purchase of the specified consumer product from the partner retail store. No cash disbursements are made.</li>
             <li><strong>Repayment Obligation:</strong> Borrower agrees to pay each monthly installment on or before the due date via UPI AutoPay, eNACH mandate, or cash at partner counter.</li>
-            <li><strong>Late Payment & Penal Charges:</strong> Delayed monthly EMIs beyond due date will attract a late penalty fee of ₹100 + interest per month as applicable.</li>
+            <li><strong>Late Payment & Penal Charges:</strong> Delayed monthly EMIs beyond due date will attract a late penalty fee of ₹100 per month as applicable.</li>
             <li><strong>Product Hypothecation:</strong> The financed product remains hypothecated to GO4 Finance Private Limited until all EMIs are cleared 100%.</li>
             <li><strong>e-Sign & Digital Acceptance:</strong> The borrower accepts that digital Aadhaar OTP authentication constitutes valid legal electronic signature under Information Technology Act, 2000.</li>
         </ol>

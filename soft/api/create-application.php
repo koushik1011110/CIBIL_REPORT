@@ -37,7 +37,12 @@ try {
         exit;
     }
 
-    $loanAmount = max(0, $productPrice - $downPayment);
+    // Processing Fee (₹399 default) and Device Insurance (₹599 default)
+    $processingFee = isset($_POST['processing_fee']) ? (float)$_POST['processing_fee'] : 399.00;
+    $insuranceFee  = isset($_POST['insurance_fee']) ? (float)$_POST['insurance_fee'] : 599.00;
+
+    $basePrincipal = max(0, $productPrice - $downPayment);
+    $loanAmount    = $basePrincipal > 0 ? ($basePrincipal + $processingFee + $insuranceFee) : 0;
 
     // Calculate EMI (Per Month Flat Interest)
     if ($interestRate > 0) {
@@ -47,7 +52,14 @@ try {
     }
     $totalPayable = round($loanAmount + $totalInterest, 2);
     $emi = $tenure > 0 ? round($totalPayable / $tenure, 2) : 0;
-    $processingFee = round($loanAmount * 0.015, 2);
+    $productName   = trim($_POST['product_name'] ?? '');
+    $imeiNumber    = trim($_POST['imei_number'] ?? '');
+
+    if (empty($productName) && $productId > 0) {
+        $pStmt = db()->prepare('SELECT name FROM products WHERE id = ?');
+        $pStmt->execute([$productId]);
+        $productName = $pStmt->fetchColumn() ?: '';
+    }
 
     $appNo = 'APP-' . rand(100000, 999999);
     $user = u();
@@ -66,13 +78,15 @@ try {
         $shopId = 1;
     }
 
-    $stmt = db()->prepare('INSERT INTO finance_applications (application_no, shop_id, customer_id, product_id, product_price, down_payment, finance_amount, interest_rate, tenure, emi, total_interest, processing_fee, total_payable, status, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "pending", ?)');
+    $stmt = db()->prepare('INSERT INTO finance_applications (application_no, shop_id, customer_id, product_id, product_name, imei_number, product_price, down_payment, finance_amount, interest_rate, tenure, emi, total_interest, processing_fee, insurance_fee, total_payable, status, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "pending", ?)');
 
     $stmt->execute([
         $appNo,
         $shopId,
         $customerId,
         $productId > 0 ? $productId : null,
+        $productName ?: null,
+        $imeiNumber ?: null,
         $productPrice,
         $downPayment,
         $loanAmount,
@@ -81,6 +95,7 @@ try {
         $emi,
         $totalInterest,
         $processingFee,
+        $insuranceFee,
         $totalPayable,
         u()['id'] ?? null
     ]);
@@ -99,6 +114,8 @@ try {
         'message' => 'Finance application created successfully! Status is Pending until 1st installment/mandate or manual payment.',
         'app_no' => $appNo,
         'finance_id' => $financeId,
+        'product_name' => $productName,
+        'imei_number' => $imeiNumber,
         'first_emi_date' => $firstDueFormatted
     ]);
 

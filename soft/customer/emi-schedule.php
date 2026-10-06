@@ -182,9 +182,7 @@ $mandateActive = ($loanMandate && $loanMandate['status'] === 'ACTIVE');
             <tr style="background: rgba(15,23,42,0.6); color: var(--text-muted);">
                 <th style="padding: 12px;">Installment #</th>
                 <th style="padding: 12px;">Due Date</th>
-                <th style="padding: 12px;">Principal</th>
-                <th style="padding: 12px;">Interest</th>
-                <th style="padding: 12px;">EMI Amount</th>
+                <th style="padding: 12px;">Monthly EMI Amount</th>
                 <th style="padding: 12px;">Paid Amount</th>
                 <th style="padding: 12px;">Status</th>
                 <th style="padding: 12px;">Online Payment Action</th>
@@ -192,7 +190,7 @@ $mandateActive = ($loanMandate && $loanMandate['status'] === 'ACTIVE');
         </thead>
         <tbody>
             <?php if(empty($emis)): ?>
-                <tr><td colspan="8" style="text-align: center; padding: 20px;">No EMI schedules found for your loan.</td></tr>
+                <tr><td colspan="6" style="text-align: center; padding: 20px;">No EMI schedules found for your loan.</td></tr>
             <?php else: ?>
                 <?php foreach($emis as $eItem): ?>
                     <?php
@@ -202,8 +200,6 @@ $mandateActive = ($loanMandate && $loanMandate['status'] === 'ACTIVE');
                     <tr style="border-bottom: 1px solid var(--border-color); background: <?=$isOverdue ? 'rgba(239, 68, 68, 0.05)' : 'transparent'?>">
                         <td style="padding: 12px;"><strong>Installment #<?=$eItem['installment_no']?></strong></td>
                         <td style="padding: 12px;"><strong style="color: <?=$isOverdue ? 'var(--danger)' : '#fff'?>;"><?=date('d M Y', strtotime($eItem['due_date']))?></strong></td>
-                        <td style="padding: 12px;"><?=money($eItem['principal'])?></td>
-                        <td style="padding: 12px;"><?=money($eItem['interest'])?></td>
                         <td style="padding: 12px;"><strong style="color:var(--primary);"><?=money($eItem['amount'])?></strong></td>
                         <td style="padding: 12px;"><?=money($eItem['paid_amount'])?></td>
                         <td style="padding: 12px;">

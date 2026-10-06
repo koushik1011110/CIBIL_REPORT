@@ -58,9 +58,8 @@ $recentChecksStmt = $p->prepare('
 $recentChecksStmt->execute([$shopId, $shopId]);
 $recentChecks = $recentChecksStmt->fetchAll();
 
-// Fetch Products & Variants for EMI Financing
-$prodStmt = $p->prepare('SELECT id, name, brand, category, selling_price, stock FROM products WHERE (shop_id = ? OR shop_id = 1 OR shop_id IS NULL) AND status="active" ORDER BY name ASC');
-$prodStmt->execute([$shopId]);
+// Fetch Products & Variants from Master Catalog for EMI Financing
+$prodStmt = $p->query('SELECT id, name, brand, category, selling_price FROM products WHERE status="active" ORDER BY name ASC');
 $products = $prodStmt->fetchAll();
 
 $varsStmt = $p->query('SELECT id, product_id, variant_name, price, stock FROM product_variants WHERE status="active" ORDER BY price ASC');
@@ -856,6 +855,50 @@ body.light-theme .emi div {
     color: #0f172a !important;
 }
 
+/* Addon Fee Cards Styling (Dual Theme) */
+.addon-fee-card {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1.5px solid rgba(255, 255, 255, 0.08);
+    padding: 12px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    user-select: none;
+}
+.addon-fee-card:hover {
+    border-color: rgba(59, 130, 246, 0.4);
+    background: rgba(30, 41, 59, 0.7);
+}
+.addon-fee-card.active {
+    border-color: rgba(59, 130, 246, 0.6);
+    background: rgba(30, 58, 138, 0.2);
+}
+body.light-theme .addon-container-box {
+    background: #f8fafc !important;
+    border-color: #cbd5e1 !important;
+}
+body.light-theme .addon-fee-card {
+    background: #ffffff !important;
+    border: 1.5px solid #e2e8f0 !important;
+}
+body.light-theme .addon-fee-card:hover {
+    border-color: #93c5fd !important;
+    background: #eff6ff !important;
+}
+body.light-theme .addon-fee-card.active {
+    border-color: #2563eb !important;
+    background: #f0f7ff !important;
+}
+body.light-theme .addon-title-text {
+    color: #0f172a !important;
+}
+body.light-theme .addon-desc-text {
+    color: #64748b !important;
+}
+
 /* Light Theme Safeguard Modal */
 body.light-theme .cc-modal {
     background: #ffffff !important;
@@ -1345,14 +1388,14 @@ body.light-theme .cc-modal-cancel-btn:hover {
 
             <div class="form-grid">
                 <div class="field full">
-                    <label class="cc-label">Select Product from Store Inventory</label>
+                    <label class="cc-label">Select Financed Product from Master Catalog</label>
                     <select id="productSelect" onchange="onProductSelect()" style="font-weight: 600; height: 44px;">
                         <option value="">-- Choose Product --</option>
                         <?php foreach($products as $p): 
                             $pVars = $variantsByProduct[$p['id']] ?? [];
                         ?>
                             <option value="<?=$p['id']?>" data-price="<?=$p['selling_price']?>" data-variants='<?=htmlspecialchars(json_encode($pVars))?>'>
-                                <?=e($p['name'])?> - <?=money($p['selling_price'])?> (Stock: <?=$p['stock']?>) <?=!empty($pVars)?'['.count($pVars).' Variants]':''?>
+                                <?=e($p['name'])?> - <?=money($p['selling_price'])?> <?=!empty($pVars)?'['.count($pVars).' Variants]':''?>
                             </option>
                         <?php endforeach; ?>
                     </select>
@@ -1367,6 +1410,29 @@ body.light-theme .cc-modal-cancel-btn:hover {
                     </select>
                 </div>
 
+                <!-- 📱 Product IMEI / Serial Number Input & Barcode Scanner -->
+                <div class="field full" style="background: rgba(15, 23, 42, 0.7); padding: 14px 16px; border-radius: 12px; border: 1.5px solid rgba(59, 130, 246, 0.35); margin-bottom: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
+                        <label class="cc-label" style="margin: 0; color: #38bdf8; font-weight: 800; display: flex; align-items: center; gap: 6px;">
+                            <span>📱 Product IMEI / Serial Number (Scan & Save on Customer Behalf)</span>
+                        </label>
+                        <div style="display: flex; gap: 6px;">
+                            <button type="button" class="btn btn-sm" onclick="openImeiScannerModal()" style="background: linear-gradient(135deg, #0284c7, #2563eb); color: #fff; padding: 6px 14px; font-size: 0.8rem; font-weight: 700; border-radius: 8px; box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3); display: flex; align-items: center; gap: 6px; border: none; cursor: pointer;">
+                                📷 Scan via Camera / Barcode
+                            </button>
+                            <button type="button" class="btn btn-sm" onclick="clearImeiField()" style="background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); padding: 6px 10px; font-size: 0.8rem; border-radius: 8px; cursor: pointer;" title="Clear">
+                                ✕ Clear
+                            </button>
+                        </div>
+                    </div>
+                    <div style="position: relative;">
+                        <input type="text" id="calcImei" name="imei_number" placeholder="Scan barcode from mobile box or enter 15-digit IMEI..." maxlength="40" style="font-family: monospace; font-size: 1.05rem; font-weight: 700; letter-spacing: 1px; color: #38bdf8; background: #0f172a; border: 1.5px solid #334155; border-radius: 8px; padding: 10px 14px; width: 100%; box-sizing: border-box;" oninput="validateImeiFormat(this.value)">
+                    </div>
+                    <div id="imeiHelperText" style="font-size: 0.73rem; color: #94a3b8; margin-top: 6px; display: flex; align-items: center; gap: 6px;">
+                        <span>ℹ️ Compatible with USB/Bluetooth barcode scanner guns and box barcodes (Code 128 / QR).</span>
+                    </div>
+                </div>
+
                 <div class="field">
                     <label class="cc-label">Product Selling Price (₹)</label>
                     <input type="number" id="calcPrice" value="0" oninput="recalculateEMI()" style="font-weight: 700;">
@@ -1375,6 +1441,45 @@ body.light-theme .cc-modal-cancel-btn:hover {
                 <div class="field">
                     <label class="cc-label">Down Payment Amount (₹)</label>
                     <input type="number" id="calcDown" value="0" oninput="recalculateEMI()" style="font-weight: 700;">
+                </div>
+
+                <!-- 🛡️ Optional Addon Fees (Processing Fee: 399 & Device Insurance: 599) -->
+                <div class="field full addon-container-box" style="background: rgba(30, 41, 59, 0.5); border: 1.5px solid rgba(59, 130, 246, 0.35); border-radius: 12px; padding: 14px 16px; margin: 4px 0 10px 0;">
+                    <div style="font-weight: 800; font-size: 0.9rem; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                        <span class="addon-title-text" style="display: flex; align-items: center; gap: 8px; color: #f8fafc;">
+                            <span>📑 Loan Addons & Protection</span>
+                            <span style="font-size: 0.72rem; background: rgba(59, 130, 246, 0.2); color: #60a5fa; padding: 2px 8px; border-radius: 999px; font-weight: 700;">Auto-Applied</span>
+                        </span>
+                        <span id="addonTotalBadge" style="font-size: 0.82rem; color: #34d399; font-weight: 800; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 3px 10px; border-radius: 20px;">
+                            + ₹998 Total Addons
+                        </span>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px;">
+                        <!-- Processing Fee Checkbox Card -->
+                        <label class="addon-fee-card active" id="cardProcessingFee">
+                            <input type="checkbox" id="checkProcessingFee" checked onchange="onFeeToggle()" style="width: 20px; height: 20px; accent-color: #2563eb; cursor: pointer;">
+                            <div style="flex: 1;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <strong class="addon-title-text" style="color: #f1f5f9; font-size: 0.88rem;">Processing Fee</strong>
+                                    <span style="color: #38bdf8; font-weight: 800; font-size: 0.95rem;">₹399</span>
+                                </div>
+                                <div class="addon-desc-text" style="font-size: 0.72rem; color: #94a3b8; margin-top: 2px;">Standard loan documentation & processing</div>
+                            </div>
+                        </label>
+
+                        <!-- Device Insurance Checkbox Card -->
+                        <label class="addon-fee-card active" id="cardInsuranceFee">
+                            <input type="checkbox" id="checkInsuranceFee" checked onchange="onFeeToggle()" style="width: 20px; height: 20px; accent-color: #10b981; cursor: pointer;">
+                            <div style="flex: 1;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <strong class="addon-title-text" style="color: #f1f5f9; font-size: 0.88rem;">Device Insurance</strong>
+                                    <span style="color: #34d399; font-weight: 800; font-size: 0.95rem;">₹599</span>
+                                </div>
+                                <div class="addon-desc-text" style="font-size: 0.72rem; color: #94a3b8; margin-top: 2px;">Comprehensive protection against accidental damage</div>
+                            </div>
+                        </label>
+                    </div>
                 </div>
 
                 <div class="field">
@@ -1386,6 +1491,18 @@ body.light-theme .cc-modal-cancel-btn:hover {
                 <div class="field">
                     <label class="cc-label">Financed Principal Amount</label>
                     <input type="text" id="calcPrincipal" value="₹0" readonly class="cc-readonly-input" style="color: #0284c7; font-weight: 800;">
+                </div>
+
+                <div class="field">
+                    <label class="cc-label" style="color: #10b981;">Total Interest Amount (₹)</label>
+                    <input type="text" id="calcTotalInterest" value="₹0" readonly class="cc-readonly-input" style="color: #10b981; font-weight: 800; background: rgba(16, 185, 129, 0.08); border: 1.5px solid rgba(16, 185, 129, 0.35);">
+                    <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 3px;" id="calcInterestTenureLabel">For selected tenure</div>
+                </div>
+
+                <div class="field">
+                    <label class="cc-label" style="color: #3b82f6;">Total Repayable Amount (₹)</label>
+                    <input type="text" id="calcTotalPayable" value="₹0" readonly class="cc-readonly-input" style="color: #3b82f6; font-weight: 800; background: rgba(59, 130, 246, 0.08); border: 1.5px solid rgba(59, 130, 246, 0.35);">
+                    <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 3px;">Principal + Interest Total</div>
                 </div>
             </div>
 
@@ -1479,6 +1596,45 @@ body.light-theme .cc-modal-cancel-btn:hover {
     </div>
 </div>
 
+<!-- ========================================================================= -->
+<!-- 📷 MODAL: CAMERA / BARCODE IMEI SCANNER                                    -->
+<!-- ========================================================================= -->
+<div class="cc-modal-backdrop" id="imeiScannerModal" style="display:none;">
+    <div class="cc-modal" style="max-width: 480px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(2, 132, 199, 0.2); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: #38bdf8;">
+                    📷
+                </div>
+                <div>
+                    <h3 style="font-size: 1.1rem; font-weight: 800; margin: 0;">Scan Product IMEI / Barcode</h3>
+                    <p style="font-size: 0.75rem; color: var(--text-muted); margin: 2px 0 0 0;">Point camera at barcode on the mobile box</p>
+                </div>
+            </div>
+            <button type="button" onclick="closeImeiScannerModal()" style="background: rgba(255,255,255,0.08); border: none; color: #94a3b8; width: 32px; height: 32px; border-radius: 8px; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center;">✕</button>
+        </div>
+
+        <!-- Scanner Viewfinder Box -->
+        <div style="position: relative; width: 100%; border-radius: 14px; overflow: hidden; background: #0b1120; border: 2px dashed #0284c7; min-height: 260px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+            <div id="imei-reader-container" style="width: 100%; min-height: 260px;"></div>
+            <div id="scannerStatusText" style="padding: 10px; font-size: 0.8rem; color: #38bdf8; text-align: center; font-weight: 600;">
+                Initializing camera feed...
+            </div>
+        </div>
+
+        <!-- Camera Switcher / Close Controls -->
+        <div style="margin-top: 14px; display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+            <button type="button" class="btn btn-sm" onclick="toggleCameraFacing()" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #e2e8f0; font-size: 0.78rem; padding: 7px 12px; border-radius: 8px; cursor: pointer;">
+                🔄 Flip Camera
+            </button>
+            <button type="button" class="btn btn-sm" onclick="closeImeiScannerModal()" style="background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5; font-size: 0.78rem; padding: 7px 16px; border-radius: 8px; cursor: pointer;">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>
+
+<script src="<?=url('/public/assets/js/html5-qrcode.min.js')?>"></script>
 <script>
     // In-memory Customer Map for quick lookups
     const customersData = <?=json_encode($customers)?>;
@@ -2157,7 +2313,7 @@ body.light-theme .cc-modal-cancel-btn:hover {
                     optEl.value = v.id;
                     optEl.dataset.price = v.price;
                     optEl.dataset.name = v.variant_name;
-                    optEl.textContent = `${v.variant_name} - ₹${parseFloat(v.price).toLocaleString('en-IN')} (Stock: ${v.stock})`;
+                    optEl.textContent = `${v.variant_name} - ₹${parseFloat(v.price).toLocaleString('en-IN')}`;
                     vSelect.appendChild(optEl);
                 });
                 vSelect.selectedIndex = 1;
@@ -2184,13 +2340,74 @@ body.light-theme .cc-modal-cancel-btn:hover {
         }
     }
 
+    function onFeeToggle() {
+        const procCheck = document.getElementById('checkProcessingFee');
+        const insCheck = document.getElementById('checkInsuranceFee');
+        const cardProc = document.getElementById('cardProcessingFee');
+        const cardIns = document.getElementById('cardInsuranceFee');
+
+        if (cardProc && procCheck) {
+            cardProc.classList.toggle('active', procCheck.checked);
+        }
+        if (cardIns && insCheck) {
+            cardIns.classList.toggle('active', insCheck.checked);
+        }
+        recalculateEMI();
+    }
+
     function recalculateEMI() {
         const price = parseFloat(document.getElementById('calcPrice').value) || 0;
         const down = parseFloat(document.getElementById('calcDown').value) || 0;
-        const principal = Math.max(0, price - down);
+        const basePrincipal = Math.max(0, price - down);
 
-        document.getElementById('calcPrincipal').value = '₹' + principal.toLocaleString('en-IN');
+        const procCheck = document.getElementById('checkProcessingFee');
+        const insCheck = document.getElementById('checkInsuranceFee');
+        const procFee = (procCheck && procCheck.checked) ? 399 : 0;
+        const insFee = (insCheck && insCheck.checked) ? 599 : 0;
+        const addonTotal = procFee + insFee;
+
+        const badge = document.getElementById('addonTotalBadge');
+        if (badge) {
+            if (addonTotal > 0) {
+                badge.textContent = `+ ₹${addonTotal.toLocaleString('en-IN')} Total Addons (Proc: ₹${procFee} | Ins: ₹${insFee})`;
+                badge.style.display = 'inline-block';
+            } else {
+                badge.textContent = '₹0 Addons Selected';
+            }
+        }
+
+        // Financed principal includes addons when price is set
+        const principal = basePrincipal > 0 ? (basePrincipal + addonTotal) : 0;
+
+        const calcPrincipalEl = document.getElementById('calcPrincipal');
+        if (calcPrincipalEl) {
+            if (principal > 0 && addonTotal > 0) {
+                calcPrincipalEl.value = `₹${principal.toLocaleString('en-IN')} (Net: ₹${basePrincipal.toLocaleString('en-IN')} + Addons: ₹${addonTotal})`;
+            } else {
+                calcPrincipalEl.value = '₹' + principal.toLocaleString('en-IN');
+            }
+        }
+
         const rate = parseFloat(document.getElementById('calcRate').value) || 0;
+
+        let curSelectedInterest = 0;
+        if (principal > 0 && rate > 0 && selectedTenure > 0) {
+            curSelectedInterest = Math.round((principal * rate * selectedTenure) / 100);
+        }
+        const curSelectedTotal = principal + curSelectedInterest;
+
+        const calcInterestEl = document.getElementById('calcTotalInterest');
+        if (calcInterestEl) {
+            calcInterestEl.value = '₹' + curSelectedInterest.toLocaleString('en-IN');
+        }
+        const calcPayableEl = document.getElementById('calcTotalPayable');
+        if (calcPayableEl) {
+            calcPayableEl.value = '₹' + curSelectedTotal.toLocaleString('en-IN');
+        }
+        const labelTenure = document.getElementById('calcInterestTenureLabel');
+        if (labelTenure) {
+            labelTenure.textContent = `For selected ${selectedTenure} Months tenure (@ ${rate}% p.m.)`;
+        }
 
         const tenures = [3, 6, 9, 12, 18, 24];
         const grid = document.getElementById('emiCardsGrid');
@@ -2225,7 +2442,10 @@ body.light-theme .cc-modal-cancel-btn:hover {
             card.innerHTML = `
                 <div style="font-weight: 800;">${months} Months EMI</div>
                 <strong style="color:#0284c7; font-size:1.3rem;">₹${emi.toLocaleString('en-IN')}<span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">/mo</span></strong>
-                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top:4px;">Interest: ₹${totalInterest.toLocaleString('en-IN')} | Total: ₹${totalPayable.toLocaleString('en-IN')}</div>
+                <div style="font-size: 0.75rem; margin-top:4px;">
+                    <span style="color:#10b981; font-weight: 800;">Interest: ₹${totalInterest.toLocaleString('en-IN')}</span> 
+                    <span style="color:var(--text-muted);">| Total: ₹${totalPayable.toLocaleString('en-IN')}</span>
+                </div>
                 <div style="font-size: 0.72rem; color: #2563eb; margin-top: 6px;">📅 1st EMI: <strong>04 ${firstEmiMonth}</strong> ${curDay > 20 ? '<span style="color:#d97706; font-size:0.68rem;">(Post-20th cycle)</span>' : ''}</div>
             `;
             grid.appendChild(card);
@@ -2261,12 +2481,37 @@ body.light-theme .cc-modal-cancel-btn:hover {
         }
 
         const rate = parseFloat(document.getElementById('calcRate').value) || 0;
+        const imeiInput = document.getElementById('calcImei');
+        const imeiVal = imeiInput ? imeiInput.value.trim() : '';
+
+        const procCheck = document.getElementById('checkProcessingFee');
+        const insCheck = document.getElementById('checkInsuranceFee');
+        const procFee = (procCheck && procCheck.checked) ? 399 : 0;
+        const insFee = (insCheck && insCheck.checked) ? 599 : 0;
+
+        let prodName = '';
+        if (prodSelect.selectedIndex >= 0 && prodSelect.value) {
+            const pText = prodSelect.options[prodSelect.selectedIndex].text.split(' - ')[0].trim();
+            const vSelect = document.getElementById('variantSelect');
+            const vGroup = document.getElementById('variantSelectGroup');
+            if (vGroup && vGroup.style.display !== 'none' && vSelect && vSelect.selectedIndex > 0) {
+                const vOpt = vSelect.options[vSelect.selectedIndex];
+                const vName = vOpt.dataset.name || vOpt.text.split(' - ')[0].trim();
+                prodName = pText + ' (' + vName + ')';
+            } else {
+                prodName = pText;
+            }
+        }
 
         const formData = new FormData();
         formData.append('customer_id', selectedCustomerId);
         formData.append('product_id', prodSelect.value || '');
+        formData.append('product_name', prodName);
+        formData.append('imei_number', imeiVal);
         formData.append('product_price', price);
         formData.append('down_payment', down);
+        formData.append('processing_fee', procFee);
+        formData.append('insurance_fee', insFee);
         formData.append('tenure', selectedTenure);
         formData.append('interest_rate', rate);
 
@@ -2278,7 +2523,7 @@ body.light-theme .cc-modal-cancel-btn:hover {
 
             const data = await res.json();
             if (data.success) {
-                alert('Success! Finance Application Created: ' + data.app_no + (data.first_emi_date ? '\n1st Installment Due: ' + data.first_emi_date : ''));
+                alert('Success! Finance Application Created: ' + data.app_no + (data.first_emi_date ? '\n1st Installment Due: ' + data.first_emi_date : '') + (imeiVal ? '\nIMEI Saved: ' + imeiVal : ''));
                 window.location.href = 'applications.php';
             } else {
                 alert('Error: ' + data.message);
@@ -2287,6 +2532,151 @@ body.light-theme .cc-modal-cancel-btn:hover {
             alert('Submission error: ' + err.message);
         }
     }
+
+    // =========================================================================
+    // 📱 IMEI SCANNER & CAMERA CONTROLS
+    // =========================================================================
+    let html5QrScanner = null;
+    let currentCameraFacing = 'environment';
+
+    async function openImeiScannerModal() {
+        const modal = document.getElementById('imeiScannerModal');
+        if (!modal) return;
+        modal.style.display = 'flex';
+        document.getElementById('scannerStatusText').textContent = 'Requesting camera permissions...';
+
+        if (typeof Html5Qrcode === 'undefined') {
+            document.getElementById('scannerStatusText').textContent = 'Scanner library is loading, please wait...';
+            return;
+        }
+
+        try {
+            if (html5QrScanner) {
+                try { await html5QrScanner.stop(); } catch(e){}
+                html5QrScanner = null;
+            }
+
+            html5QrScanner = new Html5Qrcode("imei-reader-container");
+            const config = {
+                fps: 15,
+                qrbox: { width: 280, height: 160 },
+                aspectRatio: 1.333334
+            };
+
+            await html5QrScanner.start(
+                { facingMode: currentCameraFacing },
+                config,
+                onImeiScanSuccess,
+                onImeiScanFailure
+            );
+            document.getElementById('scannerStatusText').textContent = 'Align IMEI / Barcode inside the rectangular viewfinder';
+        } catch(err) {
+            console.error('Camera start error:', err);
+            document.getElementById('scannerStatusText').innerHTML = '<span style="color:#f87171;">⚠️ Camera access denied or unavailable: ' + (err.message || err) + '</span><br><small style="color:#94a3b8;">You can also enter IMEI manually or scan with a USB barcode gun.</small>';
+        }
+    }
+
+    async function closeImeiScannerModal() {
+        const modal = document.getElementById('imeiScannerModal');
+        if (modal) modal.style.display = 'none';
+        if (html5QrScanner) {
+            try {
+                await html5QrScanner.stop();
+                await html5QrScanner.clear();
+            } catch(e) {}
+            html5QrScanner = null;
+        }
+    }
+
+    function playScanBeep() {
+        try {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.12);
+        } catch(e) {}
+    }
+
+    function cleanImeiText(decodedText) {
+        let raw = (decodedText || '').trim();
+        raw = raw.replace(/^(IMEI\s*1?|IMEI\s*2?|S\/N|SN|SERIAL)\s*[:=\-]?\s*/i, '');
+        raw = raw.replace(/[^a-zA-Z0-9]/g, '');
+        return raw;
+    }
+
+    function onImeiScanSuccess(decodedText) {
+        playScanBeep();
+        const cleaned = cleanImeiText(decodedText);
+        const imeiInput = document.getElementById('calcImei');
+        if (imeiInput) {
+            imeiInput.value = cleaned;
+            validateImeiFormat(cleaned);
+            imeiInput.style.borderColor = '#10b981';
+            setTimeout(() => {
+                imeiInput.style.borderColor = '#334155';
+            }, 1500);
+        }
+        closeImeiScannerModal();
+    }
+
+    function onImeiScanFailure(error) {
+        // Scanning in progress
+    }
+
+    async function toggleCameraFacing() {
+        currentCameraFacing = (currentCameraFacing === 'environment') ? 'user' : 'environment';
+        if (html5QrScanner) {
+            try {
+                await html5QrScanner.stop();
+                html5QrScanner = null;
+            } catch(e){}
+        }
+        openImeiScannerModal();
+    }
+
+    function clearImeiField() {
+        const imeiInput = document.getElementById('calcImei');
+        if (imeiInput) {
+            imeiInput.value = '';
+            validateImeiFormat('');
+        }
+    }
+
+    function validateImeiFormat(val) {
+        const helper = document.getElementById('imeiHelperText');
+        if (!helper) return;
+        const v = (val || '').trim();
+        if (!v) {
+            helper.innerHTML = '<span>ℹ️ Compatible with USB/Bluetooth barcode scanner guns and box barcodes (Code 128 / QR).</span>';
+            helper.style.color = '#94a3b8';
+        } else if (/^\d{15}$/.test(v)) {
+            helper.innerHTML = '<span style="color:#10b981; font-weight:700;">✓ Valid 15-digit Standard IMEI detected</span>';
+        } else if (v.length >= 10 && v.length <= 20) {
+            helper.innerHTML = '<span style="color:#38bdf8; font-weight:600;">✓ Serial / IMEI (' + v.length + ' chars) entered</span>';
+        } else {
+            helper.innerHTML = '<span style="color:#f59e0b;">⚠️ Note: Standard smartphone IMEIs are typically 15 digits (' + v.length + ' chars entered)</span>';
+        }
+    }
+
+    // Enter key safeguard on IMEI input to prevent accidental submit when barcode scanner sends Enter
+    document.addEventListener('DOMContentLoaded', () => {
+        const imeiEl = document.getElementById('calcImei');
+        if (imeiEl) {
+            imeiEl.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    validateImeiFormat(imeiEl.value);
+                    imeiEl.blur();
+                }
+            });
+        }
+    });
 </script>
 
 <?php render_end(); ?>

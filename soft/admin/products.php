@@ -15,16 +15,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 }
 
 $q = $p->query("
-    SELECT p.*, s.name as shop_name,
+    SELECT p.*, 
         (SELECT COUNT(*) FROM product_variants v WHERE v.product_id = p.id) as variant_count,
         (SELECT GROUP_CONCAT(CONCAT(v.variant_name, ' (₹', FORMAT(v.price, 0), ')') SEPARATOR ' | ') FROM product_variants v WHERE v.product_id = p.id) as variant_list
     FROM products p 
-    LEFT JOIN shops s ON s.id=p.shop_id 
     ORDER BY p.id DESC
 ");
 $rows = $q->fetchAll();
 
-start('All Products Catalog (Admin)');
+start('Universal Products Catalog (Admin)');
 ?>
 
 <?php if (isset($_GET['msg'])): ?>
@@ -41,8 +40,8 @@ start('All Products Catalog (Admin)');
 
 <div class="card" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
     <div>
-        <h3 style="font-size: 1.1rem; font-weight: 800; color: #fff;">System Product Inventory</h3>
-        <p class="muted" style="margin-top: 4px;">Super admin oversight & control over all store products and Flipkart-style RAM/Storage variants</p>
+        <h3 style="font-size: 1.1rem; font-weight: 800; color: #fff;">📦 Universal Products Catalog</h3>
+        <p class="muted" style="margin-top: 4px;">Universal products catalog. Every product added here by Super Admin is automatically available for all shops to select.</p>
     </div>
     <a class="btn" href="product-create.php"><i data-lucide="plus-circle"></i> Add New Product</a>
 </div>
@@ -52,23 +51,21 @@ start('All Products Catalog (Admin)');
         <thead>
             <tr style="background: rgba(15,23,42,0.6); color: var(--text-muted);">
                 <th style="padding: 12px;">#</th>
-                <th style="padding: 12px;">Shop</th>
                 <th style="padding: 12px;">Product Name & Variants</th>
                 <th style="padding: 12px;">Brand / Category</th>
+                <th style="padding: 12px;">SKU & HSN</th>
                 <th style="padding: 12px;">Selling Price</th>
-                <th style="padding: 12px;">Stock</th>
                 <th style="padding: 12px;">Status</th>
                 <th style="padding: 12px; text-align: right;">Actions</th>
             </tr>
         </thead>
         <tbody>
             <?php if(empty($rows)): ?>
-                <tr><td colspan="8" style="text-align: center; padding: 20px;" class="muted">No products found in system.</td></tr>
+                <tr><td colspan="7" style="text-align: center; padding: 20px;" class="muted">No products found in system. Click "Add New Product" to create one.</td></tr>
             <?php else: ?>
                 <?php foreach($rows as $idx => $r): ?>
                     <tr style="border-bottom: 1px solid var(--border-color);">
                         <td style="padding: 12px;"><?=$idx + 1?></td>
-                        <td style="padding: 12px;"><strong><?=e($r['shop_name'] ?: 'Demo Store')?></strong></td>
                         <td style="padding: 12px;">
                             <strong><?=e($r['name'])?></strong>
                             <?php if(!empty($r['model'])): ?>
@@ -83,8 +80,8 @@ start('All Products Catalog (Admin)');
                             <?php endif; ?>
                         </td>
                         <td style="padding: 12px;"><?=e($r['brand'] ?: 'General')?><br><span class="badge badge-info"><?=e($r['category'] ?: 'Mobile')?></span></td>
+                        <td style="padding: 12px;"><span style="font-family:monospace;"><?=e($r['sku'])?></span><br><span style="font-size:0.72rem; color:var(--text-muted);">HSN: <?=e($r['hsn_code'] ?: '8517')?></span></td>
                         <td style="padding: 12px;"><strong style="color:var(--primary);"><?=money($r['selling_price'])?></strong></td>
-                        <td style="padding: 12px;"><strong><?=e($r['stock'])?></strong> units</td>
                         <td style="padding: 12px;"><span class="badge <?=$r['status']==='active'?'badge-success':'badge-warning'?>"><?=e($r['status'])?></span></td>
                         <td style="padding: 12px; text-align: right;">
                             <div style="display: flex; gap: 8px; justify-content: flex-end; align-items: center;">

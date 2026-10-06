@@ -675,6 +675,9 @@ start('Advance MIS & Management Reports Package');
                                     <td style="padding: 10px 14px;"><?=e($r['shop_name'] ?: 'Master ERP')?></td>
                                     <td style="padding: 10px 14px;">
                                         <div style="font-weight: 600;"><?=e($r['product_name'])?></div>
+                                        <?php if (!empty($r['imei_number'])): ?>
+                                            <div style="font-size: 0.72rem; color: #0284c7; font-family: monospace; font-weight: 700;">📱 IMEI: <?=e($r['imei_number'])?></div>
+                                        <?php endif; ?>
                                         <div style="font-size: 0.74rem; color: var(--text-muted);"><?=money($r['product_price'])?> (DP: <?=money($r['down_payment'])?>)</div>
                                     </td>
                                     <td style="padding: 10px 14px; text-align: right; font-weight: 700;"><?=money($r['finance_amount'])?></td>

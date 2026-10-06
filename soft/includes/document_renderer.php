@@ -148,8 +148,17 @@ function render_document_html($docType, $data, $docNo, $template) {
                     <tr><td class="lbl">Store GSTIN:</td><td class="val"><?=e($data['shop_gstin'])?></td></tr>
                     <tr><td class="lbl">Product Financed:</td><td class="val"><?=e($data['product_name'])?></td></tr>
                     <tr><td class="lbl">Brand / Model:</td><td class="val"><?=e($data['product_brand'])?> <?=e($data['product_model'])?></td></tr>
+                    <?php if (!empty($data['imei_number'])): ?>
+                    <tr><td class="lbl">Device IMEI / SN:</td><td class="val" style="font-family: monospace; font-weight: 700; color: #0284c7;"><?=e($data['imei_number'])?></td></tr>
+                    <?php endif; ?>
                     <tr><td class="lbl">Product Price:</td><td class="val"><?=money($data['product_price'])?></td></tr>
                     <tr><td class="lbl">Down Payment:</td><td class="val" style="color:#059669;"><?=money($data['down_payment'])?> (Paid)</td></tr>
+                    <?php if (floatval($data['processing_fee'] ?? 0) > 0): ?>
+                    <tr><td class="lbl">Processing Fee:</td><td class="val"><?=money($data['processing_fee'])?></td></tr>
+                    <?php endif; ?>
+                    <?php if (floatval($data['insurance_fee'] ?? 0) > 0): ?>
+                    <tr><td class="lbl">Device Insurance:</td><td class="val"><?=money($data['insurance_fee'])?></td></tr>
+                    <?php endif; ?>
                 </table>
             </div>
         </div>
@@ -165,8 +174,8 @@ function render_document_html($docType, $data, $docNo, $template) {
                 <div class="value" style="color:#059669;"><?=money($data['emi_amount'])?>/mo</div>
             </div>
             <div class="highlight-item">
-                <div class="label">Tenure & Rate</div>
-                <div class="value"><?=e($data['tenure'])?> Mos @ <?=e($data['interest_rate'])?>%</div>
+                <div class="label">Repayment Tenure</div>
+                <div class="value"><?=e($data['tenure'])?> Months</div>
             </div>
             <div class="highlight-item">
                 <div class="label">Total Amount Paid</div>
@@ -327,9 +336,7 @@ function render_schedule_specifics($data) { ?>
                 <tr>
                     <th class="text-center">Inst #</th>
                     <th>Due Date</th>
-                    <th class="text-right">Principal (₹)</th>
-                    <th class="text-right">Interest (₹)</th>
-                    <th class="text-right">EMI Amount (₹)</th>
+                    <th class="text-right">Monthly EMI (₹)</th>
                     <th class="text-center">Payment Status</th>
                 </tr>
             </thead>
@@ -338,8 +345,6 @@ function render_schedule_specifics($data) { ?>
                     <tr>
                         <td class="text-center">#<?=$e['installment_no']?></td>
                         <td><?=date('d M Y', strtotime($e['due_date']))?></td>
-                        <td class="text-right"><?=money($e['principal'])?></td>
-                        <td class="text-right"><?=money($e['interest'])?></td>
                         <td class="text-right"><strong><?=money($e['amount'])?></strong></td>
                         <td class="text-center">
                             <?php if ($e['status'] === 'paid'): ?>
@@ -353,9 +358,7 @@ function render_schedule_specifics($data) { ?>
             </tbody>
             <tfoot>
                 <tr style="background: #f1f5f9; font-weight: 800;">
-                    <td colspan="2" class="text-center">TOTALS</td>
-                    <td class="text-right"><?=money($data['finance_amount'])?></td>
-                    <td class="text-right"><?=money($data['total_interest'])?></td>
+                    <td colspan="2" class="text-center">TOTAL REPAYABLE</td>
                     <td class="text-right"><?=money($data['total_payable'])?></td>
                     <td></td>
                 </tr>
