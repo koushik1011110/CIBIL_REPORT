@@ -44,7 +44,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (!isset($_POST['action']) || $_POST
         'smtp_username'          => trim($_POST['smtp_username'] ?? ''),
         'smtp_password'          => trim($_POST['smtp_password'] ?? ''),
         'smtp_from_email'        => trim($_POST['smtp_from_email'] ?? ''),
-        'smtp_from_name'         => trim($_POST['smtp_from_name'] ?? '')
+        'smtp_from_name'         => trim($_POST['smtp_from_name'] ?? ''),
+        'bureau_test_mode'       => $_POST['bureau_test_mode'] ?? '0',
+        'allow_new_to_credit_finance' => $_POST['allow_new_to_credit_finance'] ?? '1',
+        'finpay_credit_api_key'  => trim($_POST['finpay_credit_api_key'] ?? '')
     ];
 
     foreach ($settings as $key => $val) {
@@ -78,6 +81,10 @@ $smtpUser     = get_setting('smtp_username', '');
 $smtpPass     = get_setting('smtp_password', '');
 $smtpFromEmail = get_setting('smtp_from_email', 'contact@go4fin.com');
 $smtpFromName  = get_setting('smtp_from_name', 'GO4 Finance Private Limited');
+
+$bureauTestMode    = get_setting('bureau_test_mode', '0');
+$allowNtcFinance   = get_setting('allow_new_to_credit_finance', '1');
+$finpayApiKey      = get_setting('finpay_credit_api_key', '8d8fd1-efeaa9-928494-24a4fd-0c7dd1');
 
 start('System Settings & Gateway Config');
 ?>
@@ -259,6 +266,42 @@ start('System Settings & Gateway Config');
                 <label>Offline Developer License Key</label>
                 <input name="pos_addon_api_key" value="<?=e($posApiKey)?>" placeholder="e.g. KKWEBMART-PREMIUIM-ADDON-2022" style="width: 100%; padding: 10px; font-weight: 700;">
                 <small class="muted" style="margin-top: 4px; display: block;">Developer manual offline bypass key.</small>
+            </div>
+        </div>
+
+        <!-- CREDIT BUREAU (TRANSUNION CIBIL) CARD -->
+        <div class="card" style="border: 1px solid rgba(2, 132, 199, 0.4); background: rgba(2, 132, 199, 0.03);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3 style="font-size: 1.1rem; font-weight: 800; color: #fff; margin: 0; display: flex; align-items: center; gap: 8px;">
+                    <i data-lucide="shield-check" style="color: #0284c7;"></i> Credit Bureau (TransUnion CIBIL)
+                </h3>
+                <span class="badge" style="background: rgba(2, 132, 199, 0.2); color: #38bdf8; font-weight: 800; font-size: 0.72rem; padding: 2px 8px; border-radius: 6px;">
+                    FINPAY ULTRA API
+                </span>
+            </div>
+
+            <div class="field" style="margin-bottom: 16px;">
+                <label>Bureau Integration Mode</label>
+                <select name="bureau_test_mode" style="width: 100%; padding: 10px; font-weight: 700;">
+                    <option value="0" <?=$bureauTestMode === '0' ? 'selected' : ''?>>🚀 Live Production Bureau Mode (Fetches Live CIBIL / TransUnion)</option>
+                    <option value="1" <?=$bureauTestMode === '1' ? 'selected' : ''?>>🧪 Test / Sandbox Simulator Mode (₹0 Wallet Debit - No External API Hits)</option>
+                </select>
+                <small class="muted" style="margin-top: 4px; display: block;">Select Test Mode to simulate inquiries without hitting live FinPay Ultra servers.</small>
+            </div>
+
+            <div class="field" style="margin-bottom: 16px;">
+                <label>FinPay Ultra Credit API Key</label>
+                <input name="finpay_credit_api_key" value="<?=e($finpayApiKey)?>" placeholder="Enter FinPay API Key" style="width: 100%; padding: 10px; font-family: monospace;">
+                <small class="muted" style="margin-top: 4px; display: block;">Endpoint: https://api.finpayultra.com/api/transunion-pdf</small>
+            </div>
+
+            <div class="field" style="margin-bottom: 16px;">
+                <label>First-Time Borrower / New to Credit Policy</label>
+                <select name="allow_new_to_credit_finance" style="width: 100%; padding: 10px; font-weight: 600;">
+                    <option value="1" <?=$allowNtcFinance === '1' ? 'selected' : ''?>>✅ Allow Financing for New to Credit Applicants (Score -1 / NH, Clean Record)</option>
+                    <option value="0" <?=$allowNtcFinance === '0' ? 'selected' : ''?>>🔒 Require Minimum Credit Score 600 (Strict)</option>
+                </select>
+                <small class="muted" style="margin-top: 4px; display: block;">When enabled, customers verified by CIBIL as having zero loan history (New to Credit) can be sanctioned for store financing.</small>
             </div>
         </div>
 

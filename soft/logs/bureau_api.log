@@ -1,0 +1,14 @@
+2026-10-10 16:04:48 | REQ: https://api.finpayultra.com/api/transunion-pdf?api_key=8d8fd1-efeaa9-928494-24a4fd-0c7dd1&orderid=TXN26215&name=ASHMINA+BEGUM&mobile=7483561661&pan=HIEPB6611M&gender=male&consent=Y
+2026-10-10 16:04:48 | RES: {
+    "status_code": "400",
+    "status": "FAILED",
+    "message": "TransUnion CIBIL has no credit record matching the identity details supplied, so no score or report could be generated."
+}
+
+2026-10-10 16:13:36 | REQ: https://api.finpayultra.com/api/transunion-pdf?api_key=8d8fd1-efeaa9-928494-24a4fd-0c7dd1&orderid=TXN71383&name=ASHMINA+BEGUM&mobile=7483561661&pan=HIEPB6611M&gender=female&consent=Y
+2026-10-10 16:13:36 | RES: {
+    "status_code": "400",
+    "status": "FAILED",
+    "message": "TransUnion CIBIL has no credit record matching the identity details supplied, so no score or report could be generated."
+}
+

@@ -1023,7 +1023,7 @@ body.light-theme .cc-modal-cancel-btn:hover {
 
                     <?php foreach($customers as $c): 
                         $hasReport = !empty($c['credit_report_json']);
-                        $hasScore = !empty($c['credit_score']) && (int)$c['credit_score'] > 0;
+                        $hasScore = isset($c['credit_score']) && $c['credit_score'] !== '' && $c['credit_score'] !== null;
                         $lastChecked = !empty($c['last_checked_at']) ? date('d M Y, h:i A', strtotime($c['last_checked_at'])) : '';
                         $lastCheckedShort = !empty($c['last_checked_at']) ? date('d M Y', strtotime($c['last_checked_at'])) : '';
                     ?>
@@ -1035,9 +1035,9 @@ body.light-theme .cc-modal-cancel-btn:hover {
                              data-score="<?=e($c['credit_score'])?>"
                              data-lastcheck="<?=$lastChecked?>"
                              data-lastcheck-short="<?=$lastCheckedShort?>"
-                             data-provider="<?=e($c['last_provider'] ?? 'Equifax')?>"
+                             data-provider="<?=e($c['last_provider'] ?? 'Transunion CIBIL')?>"
                              data-checks="<?=e($c['total_checks'] ?? 0)?>"
-                             data-has-report="<?=$hasReport ? '1' : '0'?>"
+                             data-has-report="<?=($hasReport || $hasScore) ? '1' : '0'?>"
                              data-report='<?=e($c['credit_report_json'] ?? '')?>'
                              onclick="selectCustomerItem(this)">
                             <div>
@@ -1052,7 +1052,7 @@ body.light-theme .cc-modal-cancel-btn:hover {
                             <div style="text-align: right;">
                                 <?php if ($hasScore || $hasReport): ?>
                                     <span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #059669; border: 1px solid rgba(16, 185, 129, 0.4); font-size: 0.76rem; font-weight: 800;">
-                                        Score: <?=e($c['credit_score'] ?: 'Saved')?> · Checked
+                                        Score: <?=e((int)$c['credit_score'] <= 0 ? 'NH' : $c['credit_score'])?> · Checked
                                     </span>
                                     <?php if (!empty($lastCheckedShort)): ?>
                                         <div style="font-size: 0.7rem; color: #94a3b8; margin-top: 3px;">📅 <?=$lastCheckedShort?></div>
@@ -1150,13 +1150,14 @@ body.light-theme .cc-modal-cancel-btn:hover {
                 <!-- Verified Parameters Grid -->
                 <div class="form-grid" style="margin-top: 16px;">
                     <div class="field">
-                        <label class="cc-label">Customer Registered Mobile</label>
-                        <input type="text" id="dispMobile" class="cc-readonly-input" placeholder="Auto-populated upon customer selection..." readonly>
+                        <label class="cc-label">Customer CIBIL-Registered Mobile *</label>
+                        <input type="text" id="dispMobile" class="form-control" style="width: 100%; border-radius: 8px; padding: 10px; background: var(--input-bg); color: var(--text-color); border: 1px solid var(--border-color); font-weight: 600;" placeholder="Enter or verify CIBIL-linked mobile...">
+                        <small style="color: var(--text-muted); font-size: 0.78rem; display: block; margin-top: 4px;">💡 Enter customer's CIBIL / Bank-registered mobile number (must match for TransUnion verification).</small>
                     </div>
 
                     <div class="field">
-                        <label class="cc-label">Customer PAN Card Number</label>
-                        <input type="text" id="dispPan" class="cc-readonly-input" placeholder="Auto-populated upon customer selection..." readonly>
+                        <label class="cc-label">Customer PAN Card Number *</label>
+                        <input type="text" id="dispPan" class="form-control" style="width: 100%; border-radius: 8px; padding: 10px; background: var(--input-bg); color: var(--text-color); border: 1px solid var(--border-color); font-weight: 700; text-transform: uppercase;" placeholder="Enter customer PAN...">
                     </div>
 
                     <div class="field" style="grid-column: span 2;">
@@ -1238,13 +1239,13 @@ body.light-theme .cc-modal-cancel-btn:hover {
         <div class="card" id="reportResultCard">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 16px; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
                 <div>
-                    <span class="badge badge-success" id="rptProviderBadge">Equifax Bureau Verification</span>
+                    <span class="badge badge-success" id="rptProviderBadge">TransUnion CIBIL Bureau Verification</span>
                     <h3 class="cc-hero-title" style="font-size: 1.35rem; margin-top: 6px;" id="rptCustName">Customer Credit Report</h3>
                     <p class="muted" style="margin-top: 2px;" id="rptOrderMeta">Transaction Ref: -</p>
                 </div>
                 <div style="display: flex; gap: 10px; flex-wrap: wrap;" id="reportActionBtnGroup">
-                    <a id="btnExperianDirectPdf" class="btn" style="display:none; background: #059669; color:#fff;" target="_blank" href="#">
-                        <i data-lucide="file-text"></i> 📥 Open Bureau Official PDF
+                    <a id="btnExperianDirectPdf" class="btn" style="display:none; background: #00a6ca; color:#fff;" target="_blank" href="#">
+                        <i data-lucide="file-text"></i> 📥 Open TransUnion Official PDF
                     </a>
                     <button class="btn" type="button" onclick="printOfficialPdf()"><i data-lucide="printer"></i> 🖨️ Print Report</button>
                     <button class="btn cc-hero-btn" type="button" onclick="toggleJsonView()">
@@ -1664,15 +1665,24 @@ body.light-theme .cc-modal-cancel-btn:hover {
             return;
         }
 
+        // Auto-load report if customer has saved data but report has not been populated in memory yet
+        if (stepNum > 1 && !reportAvailable && selectedCustomerId) {
+            const el = document.querySelector(`.customer-select-item[data-id="${selectedCustomerId}"]`);
+            if (el && ((el.dataset.report && el.dataset.report.trim() !== '' && el.dataset.report !== 'null') || (el.dataset.score && el.dataset.score !== 'null' && el.dataset.score !== ''))) {
+                openStoredReport();
+                return;
+            }
+        }
+
         // CONDITION 1: Prevent accessing Step 2 or Step 3 if credit check is not done
-        if (stepNum > 1 && (!reportAvailable || selectedScore === null || selectedScore <= 0)) {
-            alert('Credit Check Required: Bureau credit check has not been performed for this customer yet. Please run a credit check or load their saved report first.');
+        if (stepNum > 1 && (!reportAvailable && selectedScore === null)) {
+            alert('Credit Check Required: Bureau credit check has not been performed for this customer yet. Please click "⚡ Check Credit Score via Bureau" on Step 1 to fetch their TransUnion CIBIL report.');
             return;
         }
 
-        // CONDITION 2: Prevent accessing Step 3 if credit score is below 600 or null
-        if (stepNum === 3 && (selectedScore === null || selectedScore < 600)) {
-            if (selectedScore === null || selectedScore <= 0) {
+        // CONDITION 2: Prevent accessing Step 3 if credit score is below 600 (allow New to Credit <= 0 or score >= 600)
+        if (stepNum === 3 && (selectedScore === null || (selectedScore < 600 && selectedScore > 0))) {
+            if (selectedScore === null) {
                 alert('Credit Check Required: Bureau credit check has not been performed for this customer yet.');
             } else {
                 alert('Store Financing Blocked: Customer credit score (' + selectedScore + ') is below 600. Applications cannot be created or submitted for credit scores under 600.');
@@ -1754,6 +1764,14 @@ body.light-theme .cc-modal-cancel-btn:hover {
         document.getElementById('customerSearchInput').value = `${el.dataset.name} (PAN: ${el.dataset.pan || 'N/A'} | Mobile: ${el.dataset.mobile || 'N/A'})`;
         document.getElementById('dispPan').value = el.dataset.pan || '';
         document.getElementById('dispMobile').value = el.dataset.mobile || '';
+
+        // Auto-detect gender for TransUnion CIBIL
+        const custNameStr = (el.dataset.name || '').toUpperCase();
+        const genderSelect = document.getElementById('custGender');
+        if (genderSelect) {
+            const isFemale = /\b(BEGUM|BIBI|KHATUN|DEVI|KUMARI|SULTANA|PARVEEN|FATIMA|MISS|MRS|MS|SHAHNAZ|NASIMA|ROHIMA|JASMINA|ASHMINA|HASINA|MONOWARA|SAHIDA|MOMINA)\b/i.test(custNameStr);
+            genderSelect.value = isFemale ? 'female' : 'male';
+        }
         
         // Auto-fill Equifax PDF v2 extra parameter fields
         if (selectedCustomerObj) {
@@ -1783,7 +1801,7 @@ body.light-theme .cc-modal-cancel-btn:hover {
         }
         
         const rawScore = el.dataset.score;
-        selectedScore = (rawScore && parseInt(rawScore) > 0) ? parseInt(rawScore) : null;
+        selectedScore = (rawScore !== undefined && rawScore !== null && rawScore !== '' && rawScore !== 'null' && !isNaN(parseInt(rawScore))) ? parseInt(rawScore) : null;
         
         document.getElementById('custSelectCheck').style.display = 'block';
         document.getElementById('clearSelectionBtn').style.display = 'inline-block';
@@ -1805,29 +1823,60 @@ body.light-theme .cc-modal-cancel-btn:hover {
 
         // Anti-Debit Duplicate Check Detection
         const hasExistingReport = (savedReportRaw && savedReportRaw.trim() !== '' && savedReportRaw !== 'null') || (el.dataset.hasReport === '1');
-        reportAvailable = hasExistingReport && selectedScore !== null && selectedScore > 0;
+        reportAvailable = hasExistingReport || (selectedScore !== null);
 
-        if (hasExistingReport || (selectedScore !== null && selectedScore > 0)) {
+        if (hasExistingReport || selectedScore !== null) {
+            // Auto-render stored report into memory & Step 2 UI so clicking Step 2 or Step 3 works seamlessly without requiring the user to find and click a separate button!
+            if (savedReportRaw && savedReportRaw.trim() !== '' && savedReportRaw !== 'null') {
+                try {
+                    const jsonObj = JSON.parse(savedReportRaw);
+                    renderCreditReport(jsonObj);
+                    reportAvailable = true;
+                } catch(e) {
+                    console.error('Error auto-parsing stored JSON:', e);
+                }
+            } else if (selectedScore !== null) {
+                const fallbackReport = {
+                    score: selectedScore,
+                    provider: el.dataset.provider || 'TransUnion CIBIL Bureau',
+                    customer: { name: el.dataset.name },
+                    orderid: 'STORED-' + selectedCustomerId,
+                    data: {
+                        credit_score: selectedScore,
+                        credit_report: {}
+                    }
+                };
+                renderCreditReport(fallbackReport);
+                reportAvailable = true;
+            }
+
             // SAFEGUARD ACTIVATED: Customer already has report
+            const isNtc = (selectedScore !== null && selectedScore <= 0);
+            const scoreLabel = isNtc ? 'NH (New to Credit)' : selectedScore;
             scoreBadgeContainer.innerHTML = `
-                <span class="badge ${selectedScore < 600 ? 'badge-danger' : 'badge-success'}" style="font-size:0.85rem; padding: 6px 14px;">
-                    Score: ${selectedScore} · Previously Checked
+                <span class="badge ${isNtc ? 'badge-info' : (selectedScore < 600 ? 'badge-danger' : 'badge-success')}" style="font-size:0.85rem; padding: 6px 14px; ${isNtc ? 'background:rgba(2,132,199,0.2); color:#38bdf8;' : ''}">
+                    Score: ${scoreLabel} · Previously Checked
                 </span>
             `;
 
             shieldBox.style.display = 'block';
-            document.getElementById('shieldLastScore').textContent = selectedScore;
+            document.getElementById('shieldLastScore').textContent = isNtc ? 'NH (-1)' : selectedScore;
             document.getElementById('shieldLastCheckDate').textContent = lastCheckDate || el.dataset.lastcheckShort || 'Database Stored';
 
             // Replace standard submit button with locked/guarded button
             newCheckArea.innerHTML = `
                 <div class="cc-safe-mode-note">
                     <div style="font-size: 0.85rem; color: #b45309; font-weight:600;">
-                        🛡️ <strong>Safe Mode Active:</strong> A report is already saved. Use the green button above to view without charges.
+                        🛡️ <strong>Safe Mode Active:</strong> Customer credit report is loaded. You can view report or proceed directly to EMI calculation.
                     </div>
-                    <button type="button" class="btn" style="background: rgba(245, 158, 11, 0.15); border: 1px solid #f59e0b; color: #b45309; font-size: 0.8rem; font-weight: 700;" onclick="triggerPaidCheckPrompt(true)">
-                        ⚠️ Run Fresh Bureau Inquiry (Paid)
-                    </button>
+                    <div style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;">
+                        <button type="button" class="btn" style="background: linear-gradient(135deg, #10b981, #059669); color: #fff; font-weight: 800; font-size: 0.85rem; padding: 10px 18px;" onclick="switchStep(2)">
+                            👁️ View Bureau Report (Step 2) ➔
+                        </button>
+                        <button type="button" class="btn" style="background: rgba(245, 158, 11, 0.15); border: 1px solid #f59e0b; color: #b45309; font-size: 0.8rem; font-weight: 700; padding: 10px 14px;" onclick="triggerPaidCheckPrompt(true)">
+                            ⚠️ Re-query Bureau (Paid Pull)
+                        </button>
+                    </div>
                 </div>
             `;
         } else {
@@ -1906,10 +1955,10 @@ body.light-theme .cc-modal-cancel-btn:hover {
         }
 
         // Fallback lightweight report
-        if (selectedScore > 0) {
+        if (selectedScore !== null) {
             const fallbackReport = {
                 score: selectedScore,
-                provider: el ? (el.dataset.provider || 'Equifax Bureau') : 'Equifax Bureau',
+                provider: el ? (el.dataset.provider || 'Transunion CIBIL Bureau') : 'Transunion CIBIL Bureau',
                 customer: { name: el ? el.dataset.name : 'Customer' },
                 orderid: 'STORED-' + selectedCustomerId,
                 data: {
@@ -2011,6 +2060,14 @@ body.light-theme .cc-modal-cancel-btn:hover {
             formData.append('report_type', 'transunion_pdf');
             formData.append('gender', document.getElementById('custGender') ? document.getElementById('custGender').value : 'male');
             formData.append('consent', 'Y');
+            const mobInput = document.getElementById('dispMobile');
+            if (mobInput && mobInput.value.trim()) {
+                formData.append('mobile', mobInput.value.trim());
+            }
+            const panInput = document.getElementById('dispPan');
+            if (panInput && panInput.value.trim()) {
+                formData.append('pan', panInput.value.trim().toUpperCase());
+            }
 
             const res = await fetch('<?=url('/api/credit-check.php')?>', {
                 method: 'POST',
@@ -2028,14 +2085,20 @@ body.light-theme .cc-modal-cancel-btn:hover {
                 const selectedItem = document.querySelector(`.customer-select-item[data-id="${selectedCustomerId}"]`);
                 if (selectedItem) {
                     selectedItem.dataset.report = JSON.stringify(data.overall_json || data);
-                    selectedItem.dataset.score = data.score || selectedScore;
+                    selectedItem.dataset.score = data.score !== undefined ? data.score : selectedScore;
                     selectedItem.dataset.hasReport = '1';
                 }
 
-                alert(`Success! Credit Bureau inquiry completed.\nScore: ${data.score || selectedScore}\nAmount Deducted: ₹${data.price_deducted || (activeBureauProvider === 'equifax_json' ? '150.00' : '80.00')}`);
+                const isNtc = data.is_new_to_credit || (data.score !== undefined && parseInt(data.score) <= 0);
+                const scoreDisp = isNtc ? 'NH (-1) · New to Credit' : (data.score || selectedScore);
+                alert(`Success! Credit Bureau inquiry completed.\nStatus: ${isNtc ? 'New to Credit (No Prior History)' : 'Record Found'}\nScore: ${scoreDisp}\nAmount Deducted: ₹${data.price_deducted || '80.00'}`);
                 switchStep(2);
             } else {
-                alert('Credit Check Error: ' + data.message);
+                if (data.is_auth_waiting) {
+                    alert("⚠️ TransUnion CIBIL Authentication Challenge Pending:\n\n" + data.message + "\n\n💡 Action: Please verify the customer's mobile number on their bank/CIBIL record in the mobile field above and try again.");
+                } else {
+                    alert('Credit Check Error: ' + data.message);
+                }
             }
         } catch (err) {
             alert('Bureau Network / Connection error: ' + err.message);
@@ -2066,28 +2129,45 @@ body.light-theme .cc-modal-cancel-btn:hover {
                         (data.report_url || null) || 
                         (data.overall_json ? (data.overall_json.pdf_url || (data.overall_json.data ? data.overall_json.data.report_url : null)) : null);
 
+        // Strictly reject any localhost or mock sample URLs
+        if (currentPdfUrl && (currentPdfUrl.includes('localhost') || currentPdfUrl.includes('127.0.0.1') || currentPdfUrl.includes('transunion-cibil-pdf') || currentPdfUrl.includes('sample-equifax-pdf'))) {
+            currentPdfUrl = null;
+        }
+
+        // If relative FinPay path, complete to official domain
+        if (currentPdfUrl && !currentPdfUrl.startsWith('http')) {
+            currentPdfUrl = 'https://pay.finpayultra.com/' + currentPdfUrl.replace(/^\/+/, '');
+        }
+
         document.getElementById('rptCustName').textContent = (data.customer && data.customer.name) ? data.customer.name : (data.name || (data.data ? data.data.name : (selectedCustomerObj ? selectedCustomerObj.name : 'Customer Credit Report')));
         document.getElementById('rptOrderMeta').textContent = 'Transaction Ref: ' + (data.orderid || (data.data ? data.data.orderid : ('TXN' + Date.now())));
-        document.getElementById('rptScoreVal').textContent = selectedScore;
-        document.getElementById('rptProviderBadge').textContent = data.provider || 'Equifax Bureau Verification';
+        document.getElementById('rptScoreVal').textContent = (selectedScore <= 0) ? 'NH' : selectedScore;
+        document.getElementById('rptProviderBadge').textContent = data.provider || 'Transunion CIBIL Bureau';
 
         // Update Circular Gauge
         updateScoreDial(selectedScore);
 
-        // PDF Button
+        // PDF Button: Strictly display only when genuine remote bureau PDF exists
         const pdfBtn = document.getElementById('btnExperianDirectPdf');
         if (pdfBtn) {
-            if (currentPdfUrl) {
+            if (currentPdfUrl && currentPdfUrl.startsWith('http')) {
                 pdfBtn.href = currentPdfUrl;
                 pdfBtn.style.display = 'inline-flex';
                 pdfBtn.target = '_blank';
+                pdfBtn.innerHTML = '<i data-lucide="file-text"></i> Official Bureau PDF (FinPay)';
             } else {
                 pdfBtn.style.display = 'none';
             }
         }
 
         const badge = document.getElementById('rptScoreBadge');
-        if (selectedScore >= 750) {
+        if (selectedScore <= 0) {
+            badge.textContent = 'NEW TO CREDIT / NO HISTORY (NH)';
+            badge.className = 'badge badge-info';
+            badge.style.background = 'rgba(2, 132, 199, 0.2)';
+            badge.style.color = '#38bdf8';
+            badge.style.border = '1px solid rgba(56, 189, 248, 0.4)';
+        } else if (selectedScore >= 750) {
             badge.textContent = 'EXCELLENT RISK';
             badge.className = 'badge badge-success';
         } else if (selectedScore >= 700) {
@@ -2095,9 +2175,6 @@ body.light-theme .cc-modal-cancel-btn:hover {
             badge.className = 'badge badge-info';
         } else if (selectedScore >= 600) {
             badge.textContent = 'MODERATE RISK';
-            badge.className = 'badge badge-warning';
-        } else if (selectedScore <= 0) {
-            badge.textContent = 'NEW TO CREDIT / NO HISTORY (' + selectedScore + ')';
             badge.className = 'badge badge-warning';
         } else {
             badge.textContent = 'CRITICAL RISK (< 600 INELIGIBLE)';
@@ -2195,10 +2272,13 @@ body.light-theme .cc-modal-cancel-btn:hover {
         const submitBtn = document.getElementById('btnSubmitFinanceApp');
 
         // CASE 1: WITHOUT CREDIT CHECK
-        if (!reportAvailable || selectedScore === null || selectedScore <= 0) {
+        if (!reportAvailable || selectedScore === null) {
             if (emiCard) emiCard.style.display = 'none';
+            if (lowAlert) lowAlert.style.display = 'none';
             if (step3BlockAlert) {
                 step3BlockAlert.style.display = 'block';
+                step3BlockAlert.style.background = 'rgba(239, 68, 68, 0.08)';
+                step3BlockAlert.style.borderColor = 'rgba(239, 68, 68, 0.3)';
                 if (step3BlockTitle) step3BlockTitle.textContent = 'Credit Bureau Verification Required';
                 if (step3BlockDesc) step3BlockDesc.innerHTML = 'Customer credit score has not been verified yet. Under store financing policy, <strong>finance applications cannot be issued without a verified bureau credit check</strong>.';
             }
@@ -2214,6 +2294,32 @@ body.light-theme .cc-modal-cancel-btn:hover {
                 continueBtn.innerHTML = '⚡ Perform Credit Check First';
             }
         } 
+        // CASE 1B: VERIFIED NEW TO CREDIT (SCORE <= 0 / NH)
+        else if (selectedScore <= 0) {
+            if (emiCard) emiCard.style.display = 'block';
+            if (lowAlert) lowAlert.style.display = 'none';
+            if (step3BlockAlert) {
+                step3BlockAlert.style.display = 'block';
+                step3BlockAlert.style.background = 'rgba(2, 132, 199, 0.1)';
+                step3BlockAlert.style.borderColor = 'rgba(56, 189, 248, 0.4)';
+                if (step3BlockTitle) {
+                    step3BlockTitle.textContent = 'ℹ️ Verified New to Credit Applicant (NH / Score -1)';
+                    step3BlockTitle.style.color = '#38bdf8';
+                }
+                if (step3BlockDesc) step3BlockDesc.innerHTML = 'TransUnion CIBIL Bureau Verified: Customer has <strong>no prior credit or loan accounts</strong> on file (Clean record, zero defaults). Financing is sanctioned under the <strong>First-Time Borrower / New to Credit Scheme</strong>.';
+            }
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = '1';
+                submitBtn.style.cursor = 'pointer';
+                submitBtn.innerHTML = '<i data-lucide="check-circle"></i> 🚀 Sanction First-Time Borrower Finance Application';
+            }
+            if (continueBtn) {
+                continueBtn.disabled = false;
+                continueBtn.style.opacity = '1';
+                continueBtn.innerHTML = 'Continue to EMI Calculator (Step 3) ➔';
+            }
+        }
         // CASE 2: CREDIT SCORE BELOW 600
         else if (selectedScore < 600) {
             if (emiCard) emiCard.style.display = 'none';
@@ -2257,7 +2363,7 @@ body.light-theme .cc-modal-cancel-btn:hover {
     }
 
     function printOfficialPdf() {
-        if (currentPdfUrl) {
+        if (currentPdfUrl && currentPdfUrl.startsWith('http') && !currentPdfUrl.includes('localhost') && !currentPdfUrl.includes('127.0.0.1')) {
             window.open(currentPdfUrl, '_blank');
         } else {
             window.print();
@@ -2455,14 +2561,14 @@ body.light-theme .cc-modal-cancel-btn:hover {
         }
 
         // CONDITION 1: Without Credit Check
-        if (!reportAvailable || selectedScore === null || selectedScore <= 0) {
-            alert('Submission Blocked: Credit bureau inquiry has not been performed for this customer yet. A verified credit score (minimum 600) is mandatory before submitting a loan application.');
+        if (!reportAvailable || selectedScore === null) {
+            alert('Submission Blocked: Credit bureau inquiry has not been performed for this customer yet. A verified credit score or bureau inquiry is required before submitting a loan application.');
             switchStep(1);
             return;
         }
 
-        // CONDITION 2: Credit Score Below 600
-        if (selectedScore < 600) {
+        // CONDITION 2: Credit Score Below 600 (allow New to Credit <= 0)
+        if (selectedScore > 0 && selectedScore < 600) {
             alert('Submission Blocked: Customer credit score (' + selectedScore + ') is below 600. Store financing applications cannot be sanctioned or submitted for credit scores under 600.');
             return;
         }

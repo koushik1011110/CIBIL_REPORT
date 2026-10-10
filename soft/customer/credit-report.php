@@ -30,7 +30,7 @@ start('My Credit Bureau Report');
 
 <div class="card" style="margin-bottom: 24px;">
     <h3 style="font-size: 1.1rem; font-weight: 800; color: #fff;">My Credit Bureau Assessment Report</h3>
-    <p class="muted" style="margin-top: 4px;">Equifax / Experian official credit report details linked to your account</p>
+    <p class="muted" style="margin-top: 4px;">TransUnion CIBIL official credit report details linked to your account</p>
 </div>
 
 <div class="card">
@@ -64,10 +64,16 @@ start('My Credit Bureau Report');
             if ($reportObj) {
                 $pdfUrl = $reportObj['pdf_url'] ?? ($reportObj['data']['pdf_url'] ?? ($reportObj['data']['report_url'] ?? ($reportObj['report_url'] ?? null)));
             }
+            if (!empty($pdfUrl) && (strpos($pdfUrl, 'localhost') !== false || strpos($pdfUrl, '127.0.0.1') !== false || strpos($pdfUrl, 'transunion-cibil-pdf') !== false || strpos($pdfUrl, 'sample-equifax-pdf') !== false)) {
+                $pdfUrl = null;
+            }
+            if (!empty($pdfUrl) && strpos($pdfUrl, 'http') !== 0) {
+                $pdfUrl = 'https://pay.finpayultra.com/' . ltrim($pdfUrl, '/');
+            }
             ?>
-            <?php if ($pdfUrl): ?>
-                <a href="<?=e($pdfUrl)?>" target="_blank" class="btn" style="background: linear-gradient(135deg, var(--secondary), #0d9488); font-size: 0.9rem; padding: 12px 18px;">
-                    📥 Open / Print Official PDF Bureau Report
+            <?php if ($pdfUrl && strpos($pdfUrl, 'http') === 0): ?>
+                <a href="<?=e($pdfUrl)?>" target="_blank" class="btn" style="background: linear-gradient(135deg, #00a6ca, #0b2341); color: #fff; font-size: 0.9rem; padding: 12px 18px; font-weight: 700;">
+                    📥 Open / Print Official TransUnion CIBIL Report (FinPay)
                 </a>
             <?php endif; ?>
         </div>

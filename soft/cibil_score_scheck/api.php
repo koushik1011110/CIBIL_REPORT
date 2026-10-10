@@ -75,6 +75,28 @@ if ($responseData) {
     }
 }
 
+// Check for TransUnion CIBIL No Record Found (New to Credit / NH)
+$checkMsg = strtolower($apiMsg . ' ' . (isset($responseData['message']) ? $responseData['message'] : '') . ' ' . (isset($responseData['error']) ? $responseData['error'] : ''));
+$isNoRecordFound = (
+    strpos($checkMsg, 'has no credit record matching') !== false ||
+    strpos($checkMsg, 'no credit record') !== false ||
+    strpos($checkMsg, 'no credit history') !== false ||
+    strpos($checkMsg, 'no record matching') !== false ||
+    strpos($checkMsg, 'no record found') !== false ||
+    strpos($checkMsg, 'no matching record') !== false ||
+    (isset($responseData['status']) && in_array(strtolower((string)$responseData['status']), ['no_hit', 'nh', 'no_record_found']))
+);
+
+if ($isNoRecordFound) {
+    $isSuccess = true;
+    if (!is_array($responseData)) $responseData = [];
+    $responseData['status'] = 'success';
+    $responseData['credit_score'] = -1;
+    $responseData['score'] = -1;
+    $responseData['bureau_status'] = 'NO_RECORD_FOUND';
+    $responseData['message'] = 'TransUnion CIBIL Bureau Verified: Customer has no prior credit or loan record on file (New to Credit / NH Score -1).';
+}
+
 if (!$isSuccess) {
     echo json_encode([
         "status" => "error",

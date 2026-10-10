@@ -48,7 +48,7 @@ start('Shop Wallet & PayU Realtime Topup');
         <div style="font-size: 2.8rem; font-weight: 800; color: #fff; margin: 12px 0; display: flex; align-items: center; gap: 8px;">
             <span style="color: var(--primary);"><?=money($walletBalance)?></span>
         </div>
-        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">Shop wallet balance is used for credit check fees (Equifax ₹70 / Experian ₹60) and credit assessment services.</p>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">Shop wallet balance is used for credit check fees (TransUnion CIBIL ₹80.00) and credit assessment services.</p>
         <span class="badge badge-success" style="font-size: 0.8rem; padding: 6px 12px;"><i data-lucide="zap"></i> PayU Realtime Enabled</span>
     </div>
 

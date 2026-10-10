@@ -174,12 +174,12 @@ start('Credit Check & Product EMI Calculator');
     <div class="card" id="reportResultCard" style="display: block;">
         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 16px; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
             <div>
-                <span class="badge badge-success" id="rptProviderBadge">Equifax Bureau Verification</span>
+                <span class="badge badge-success" id="rptProviderBadge">TransUnion CIBIL Bureau Verification</span>
                 <h3 style="font-size: 1.4rem; font-weight: 800; color: #fff; margin-top: 6px;" id="rptCustName">Customer Credit Report</h3>
                 <p class="muted" id="rptOrderMeta">Transaction Ref: -</p>
             </div>
             <div style="display: flex; gap: 10px; flex-wrap: wrap;" id="reportActionBtnGroup">
-                <a id="btnExperianDirectPdf" class="btn" style="display:none; background: var(--secondary);" target="_blank" href="#">📥 Open / Print Official PDF Report</a>
+                <a id="btnExperianDirectPdf" class="btn" style="display:none; background: #00a6ca; color: #fff;" target="_blank" href="#">📥 Open TransUnion Official PDF</a>
                 <button class="btn" type="button" onclick="printOfficialPdf()"><i data-lucide="printer"></i> 🖨️ Print Report</button>
                 <button class="btn" type="button" style="background: rgba(30,41,59,0.9); border: 1px solid var(--border-color);" onclick="toggleJsonView()"><i data-lucide="code"></i> { } View Overall JSON</button>
             </div>
@@ -449,7 +449,14 @@ start('Credit Check & Product EMI Calculator');
         const scoreText = document.getElementById('ineligibleScoreText');
         const nextBtn = document.getElementById('btnNextToStep2');
 
-        if (selectedScore < 600) {
+        if (selectedScore <= 0) {
+            if (emiCard) emiCard.style.display = 'block';
+            if (lowAlert) lowAlert.style.display = 'none';
+            if (nextBtn) {
+                nextBtn.innerHTML = 'Next Step: View Bureau Report & EMI (New to Credit) ➔';
+                nextBtn.style.background = 'linear-gradient(135deg, #0284c7, #0369a1)';
+            }
+        } else if (selectedScore < 600) {
             if (emiCard) emiCard.style.display = 'none';
             if (lowAlert) lowAlert.style.display = 'block';
             if (scoreText) scoreText.textContent = selectedScore;
@@ -517,7 +524,7 @@ start('Credit Check & Product EMI Calculator');
         document.getElementById('dispPan').value = el.dataset.pan || '';
         document.getElementById('dispMobile').value = el.dataset.mobile || '';
 
-        selectedScore = (el.dataset.score && parseInt(el.dataset.score) > 0) ? parseInt(el.dataset.score) : 746;
+        selectedScore = (el.dataset.score !== undefined && el.dataset.score !== null && el.dataset.score !== '' && el.dataset.score !== 'null' && !isNaN(parseInt(el.dataset.score))) ? parseInt(el.dataset.score) : 746;
         document.getElementById('custSelectCheck').style.display = 'block';
         document.getElementById('customerDropdownList').style.display = 'none';
 
@@ -615,8 +622,12 @@ start('Credit Check & Product EMI Calculator');
                 const selectedItem = document.querySelector(`.customer-select-item[data-id="${selectedCustomerId}"]`);
                 if (selectedItem) {
                     selectedItem.dataset.report = JSON.stringify(data.overall_json || data);
-                    selectedItem.dataset.score = data.score || selectedScore;
+                    selectedItem.dataset.score = data.score !== undefined ? data.score : selectedScore;
                 }
+
+                const isNtc = data.is_new_to_credit || (data.score !== undefined && parseInt(data.score) <= 0);
+                const scoreDisp = isNtc ? 'NH (-1) · New to Credit' : (data.score || selectedScore);
+                alert(`Success! Credit Bureau inquiry completed.\nStatus: ${isNtc ? 'New to Credit (No Prior History)' : 'Record Found'}\nScore: ${scoreDisp}\nAmount Deducted: ₹${data.price_deducted || '80.00'}`);
 
                 btn.innerHTML = '<i data-lucide="refresh-cw"></i> 🔄 Re-check / Refresh Bureau Credit Score (New API Inquiry)';
                 const nextBtn = document.getElementById('btnNextToStep2');
@@ -639,7 +650,7 @@ start('Credit Check & Product EMI Calculator');
     let currentPdfUrl = null;
 
     function printOfficialPdf() {
-        if (currentPdfUrl) {
+        if (currentPdfUrl && currentPdfUrl.startsWith('http') && !currentPdfUrl.includes('localhost') && !currentPdfUrl.includes('127.0.0.1')) {
             window.open(currentPdfUrl, '_blank');
         } else {
             window.print();
@@ -725,25 +736,41 @@ start('Credit Check & Product EMI Calculator');
                         (data.report_url || null) || 
                         (data.overall_json ? (data.overall_json.pdf_url || (data.overall_json.data ? data.overall_json.data.report_url : null)) : null);
 
+        // Strictly reject any localhost or mock sample URLs
+        if (currentPdfUrl && (currentPdfUrl.includes('localhost') || currentPdfUrl.includes('127.0.0.1') || currentPdfUrl.includes('transunion-cibil-pdf') || currentPdfUrl.includes('sample-equifax-pdf'))) {
+            currentPdfUrl = null;
+        }
+
+        // If relative FinPay path, complete to official domain
+        if (currentPdfUrl && !currentPdfUrl.startsWith('http')) {
+            currentPdfUrl = 'https://pay.finpayultra.com/' + currentPdfUrl.replace(/^\/+/, '');
+        }
+
         document.getElementById('rptCustName').textContent = data.customer ? data.customer.name : (data.name || (data.data ? data.data.name : 'Customer Credit Report'));
         document.getElementById('rptOrderMeta').textContent = 'Transaction Ref: ' + (data.orderid || (data.data ? data.data.orderid : 'TXN98412'));
-        document.getElementById('rptScoreVal').textContent = selectedScore;
-        document.getElementById('rptProviderBadge').textContent = data.provider || 'Equifax Bureau Verification';
+        document.getElementById('rptScoreVal').textContent = (selectedScore <= 0) ? 'NH' : selectedScore;
+        document.getElementById('rptProviderBadge').textContent = data.provider || 'Transunion CIBIL Bureau';
 
         const pdfBtn = document.getElementById('btnExperianDirectPdf');
         if (pdfBtn) {
-            if (currentPdfUrl) {
+            if (currentPdfUrl && currentPdfUrl.startsWith('http')) {
                 pdfBtn.href = currentPdfUrl;
                 pdfBtn.style.display = 'inline-flex';
                 pdfBtn.target = '_blank';
-                pdfBtn.innerHTML = '📥 Open / Print Official PDF Report';
+                pdfBtn.innerHTML = '📥 Open / Print Official PDF Report (FinPay)';
             } else {
                 pdfBtn.style.display = 'none';
             }
         }
 
         const badge = document.getElementById('rptScoreBadge');
-        if (selectedScore >= 750) {
+        if (selectedScore <= 0) {
+            badge.textContent = 'NEW TO CREDIT / NO HISTORY (NH)';
+            badge.className = 'badge badge-info';
+            badge.style.background = 'rgba(2, 132, 199, 0.2)';
+            badge.style.color = '#38bdf8';
+            badge.style.border = '1px solid rgba(56, 189, 248, 0.4)';
+        } else if (selectedScore >= 750) {
             badge.textContent = 'EXCELLENT RISK';
             badge.className = 'badge badge-success';
         } else if (selectedScore >= 700) {
@@ -751,9 +778,6 @@ start('Credit Check & Product EMI Calculator');
             badge.className = 'badge badge-info';
         } else if (selectedScore >= 600) {
             badge.textContent = 'MODERATE RISK';
-            badge.className = 'badge badge-warning';
-        } else if (selectedScore <= 0) {
-            badge.textContent = 'NEW TO CREDIT / NO HISTORY (' + selectedScore + ')';
             badge.className = 'badge badge-warning';
         } else {
             badge.textContent = 'CRITICAL RISK (SCORE < 600 - INELIGIBLE)';

@@ -16,20 +16,31 @@ try {
         exit;
     }
 
-    // Verify Customer Credit Score eligibility: Bureau check is MANDATORY and score must be >= 600
-    $cStmt = db()->prepare('SELECT credit_score FROM customers WHERE id = ?');
+    // Verify Customer Credit Score eligibility: Bureau check is MANDATORY and score must be >= 600 or verified New to Credit
+    $cStmt = db()->prepare('SELECT credit_score, credit_report_json FROM customers WHERE id = ?');
     $cStmt->execute([$customerId]);
-    $custScore = $cStmt->fetchColumn();
+    $cRow = $cStmt->fetch();
+    $custScore = $cRow ? $cRow['credit_score'] : null;
 
-    if ($custScore === false || $custScore === null || (int)$custScore <= 0) {
+    if ($custScore === false || $custScore === null) {
         echo json_encode([
             'success' => false,
-            'message' => 'Loan application blocked: Credit bureau check has not been performed for this customer yet. A verified credit score (minimum 600) is required before submitting a loan application.'
+            'message' => 'Loan application blocked: Credit bureau check has not been performed for this customer yet. A verified credit score or bureau inquiry is required before submitting a loan application.'
         ]);
         exit;
     }
 
-    if ((int)$custScore < 600) {
+    $isNtc = ((int)$custScore <= 0);
+    if ($isNtc) {
+        $allowNtc = get_setting('allow_new_to_credit_finance', '1') === '1';
+        if (!$allowNtc) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Loan application notice: Customer is New to Credit (NH / Score -1) with zero prior loan history. Under current store risk policy, automated financing requires a score >= 600.'
+            ]);
+            exit;
+        }
+    } elseif ((int)$custScore < 600) {
         echo json_encode([
             'success' => false,
             'message' => 'Loan application rejected: Customer credit score (' . (int)$custScore . ') is below the minimum required limit of 600.'

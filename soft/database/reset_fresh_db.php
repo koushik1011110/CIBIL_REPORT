@@ -317,10 +317,13 @@ $tablesToTruncate = [
     'pos_sale_items',
     'website_leads',
     'whatsapp_logs',
-    'customers'
+    'customers',
+    'credit_reports',
+    'product_variants',
+    'products'
 ];
 
-echo "Clearing transactional test data...\n";
+echo "Clearing all transactional and test data...\n";
 foreach ($tablesToTruncate as $t) {
     try {
         $p->exec("TRUNCATE TABLE `$t`");
@@ -372,73 +375,64 @@ echo "  [✓] Shop Owner:  shop@example.com / password (Wallet: ₹100,000)\n";
 $stmtUser->execute([3, 1, 'Sales Staff', 'staff@example.com', $hashedPassword, 'staff', 50000.00]);
 echo "  [✓] Sales Staff: staff@example.com / password (Wallet: ₹50,000)\n";
 
-// 5. Clean and reset Products table with fresh catalog
-echo "\nSetting up standard products catalog...\n";
-$p->exec("DELETE FROM products");
-$p->exec("ALTER TABLE products AUTO_INCREMENT = 1");
+// 5. Clean Products table (0 rows for fresh A to Z data entry)
+$seedProducts = in_array('--seed-products', $argv ?? []);
+if ($seedProducts) {
+    echo "\nSeeding standard universal products catalog...\n";
+    $sampleProducts = [
+        [
+            'name' => 'Samsung Galaxy S24 Ultra 5G (12GB RAM, 256GB)',
+            'brand' => 'Samsung',
+            'model' => 'Galaxy S24 Ultra',
+            'sku' => 'SAM-S24U-256',
+            'hsn_code' => '8517',
+            'category' => 'Smartphones',
+            'selling_price' => 74999.00,
+            'gst_rate' => 18.00,
+            'stock' => 25
+        ],
+        [
+            'name' => 'Apple iPhone 15 (128GB Storage, Blue)',
+            'brand' => 'Apple',
+            'model' => 'iPhone 15',
+            'sku' => 'APL-IP15-128',
+            'hsn_code' => '8517',
+            'category' => 'Smartphones',
+            'selling_price' => 64999.00,
+            'gst_rate' => 18.00,
+            'stock' => 20
+        ],
+        [
+            'name' => 'OnePlus 12 5G (16GB RAM, 512GB Storage)',
+            'brand' => 'OnePlus',
+            'model' => 'OnePlus 12',
+            'sku' => 'OP-12-512',
+            'hsn_code' => '8517',
+            'category' => 'Smartphones',
+            'selling_price' => 54999.00,
+            'gst_rate' => 18.00,
+            'stock' => 15
+        ]
+    ];
 
-$sampleProducts = [
-    [
-        'name' => 'Samsung Galaxy S24 Ultra 5G (12GB RAM, 256GB)',
-        'brand' => 'Samsung',
-        'model' => 'Galaxy S24 Ultra',
-        'sku' => 'SAM-S24U-256',
-        'hsn_code' => '8517',
-        'category' => 'Smartphones',
-        'selling_price' => 74999.00,
-        'gst_rate' => 18.00,
-        'stock' => 25
-    ],
-    [
-        'name' => 'Apple iPhone 15 (128GB Storage, Blue)',
-        'brand' => 'Apple',
-        'model' => 'iPhone 15',
-        'sku' => 'APL-IP15-128',
-        'hsn_code' => '8517',
-        'category' => 'Smartphones',
-        'selling_price' => 64999.00,
-        'gst_rate' => 18.00,
-        'stock' => 20
-    ],
-    [
-        'name' => 'OnePlus 12 5G (16GB RAM, 512GB Storage)',
-        'brand' => 'OnePlus',
-        'model' => 'OnePlus 12',
-        'sku' => 'OP-12-512',
-        'hsn_code' => '8517',
-        'category' => 'Smartphones',
-        'selling_price' => 54999.00,
-        'gst_rate' => 18.00,
-        'stock' => 15
-    ],
-    [
-        'name' => 'LG 1.5 Ton 5 Star AI DUAL Inverter Split AC',
-        'brand' => 'LG',
-        'model' => 'RS-Q19PWZE',
-        'sku' => 'LG-AC-15T',
-        'hsn_code' => '8415',
-        'category' => 'Air Conditioners',
-        'selling_price' => 42999.00,
-        'gst_rate' => 18.00,
-        'stock' => 10
-    ]
-];
-
-$stmtProd = $p->prepare("INSERT INTO products (shop_id, name, brand, model, sku, hsn_code, category, selling_price, gst_rate, stock, status) VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')");
-foreach ($sampleProducts as $pr) {
-    $stmtProd->execute([
-        $pr['name'],
-        $pr['brand'],
-        $pr['model'],
-        $pr['sku'],
-        $pr['hsn_code'],
-        $pr['category'],
-        $pr['selling_price'],
-        $pr['gst_rate'],
-        $pr['stock']
-    ]);
+    $stmtProd = $p->prepare("INSERT INTO products (shop_id, name, brand, model, sku, hsn_code, category, selling_price, gst_rate, stock, status) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')");
+    foreach ($sampleProducts as $pr) {
+        $stmtProd->execute([
+            $pr['name'],
+            $pr['brand'],
+            $pr['model'],
+            $pr['sku'],
+            $pr['hsn_code'],
+            $pr['category'],
+            $pr['selling_price'],
+            $pr['gst_rate'],
+            $pr['stock']
+        ]);
+    }
+    echo "  [✓] 3 universal retail products seeded into inventory.\n";
+} else {
+    echo "\n  [✓] Products & Variants cleared to 0 rows (Ready for fresh product addition by Super Admin).\n";
 }
-echo "  [✓] 4 retail products seeded into inventory.\n";
 
 // 6. Reset Finance Rules for Shop 1
 echo "\nSetting up Finance Rules...\n";
